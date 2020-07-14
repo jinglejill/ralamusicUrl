@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="printer_setting_category"
+        android:summary="@string/text_bluetooth_setting"
+        android:title="@string/text_device_setting">
+
+        <EditTextPreference
+            android:enabled="true"
+            android:key="printer_power_off_time"
+            android:title="@string/text_printer_power_off_time" />
+        <EditTextPreference
+            android:enabled="true"
+            android:key="printer_power_off_time_battery"
+            android:title="@string/text_printer_power_off_time_battery" />
+
+
+        <ListPreference
+            android:entries="@array/jpeg_halftone_array"
+            android:entryValues="@array/jpeg_halftone_array_value"
+            android:key="print_jpeg_halftone"
+            android:title="@string/text_print_jpeg_halftone" />
+
+        <ListPreference
+            android:entries="@array/enable_array"
+            android:entryValues="@array/enable_array_value"
+            android:key="print_jpeg_scale"
+            android:title="@string/text_print_jpeg_scale" />
+
+        <ListPreference
+            android:entries="@array/pj_density_array"
+            android:entryValues="@array/pj_density_array_value"
+            android:key="pj_print_density"
+            android:title="@string/text_print_density" />
+
+        <ListPreference
+            android:entries="@array/density_array"
+            android:entryValues="@array/density_array_value"
+            android:key="print_density"
+            android:title="@string/text_print_density" />
+
+
+        <ListPreference
+            android:entries="@array/pj_speed_array"
+            android:entryValues="@array/pj_speed_array_value"
+            android:key="print_speed"
+            android:title="@string/text_print_speed" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

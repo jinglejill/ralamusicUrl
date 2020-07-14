@@ -1,0 +1,18 @@
+truncate lazadaproducttemp;
+insert into lazadaproducttemp ( `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `Name`, `Description`, `Short_Description`, `SellerSku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `Package_Weight`, `Package_Width`, `Package_Height`, `Package_Length`, `Status`,'bot'  FROM `lazadaproduct1temp`;
+
+insert into lazadaproducttemp ( `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `Name`, `Description`, `Short_Description`, `SellerSku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `Package_Weight`, `Package_Width`, `Package_Height`, `Package_Length`, `Status`,'bot'  FROM `lazadaproduct2temp`;
+
+insert into lazadaproducttemp ( `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `Name`, `Description`, `Short_Description`, `SellerSku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `Package_Weight`, `Package_Width`, `Package_Height`, `Package_Length`, `Status`,'bot'  FROM `lazadaproduct3temp`;
+
+
+truncate lazadaproductbackup;
+insert into lazadaproductbackup (`ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser` from lazadaproduct;
+
+
+truncate lazadaproduct;
+insert into lazadaproduct (`ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser` from lazadaproducttemp;
+
+
+truncate mainproduct;
+insert into mainproduct (`ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser`) select `ProductID`, `Name`, `Description`, `ShortDescription`, `Sku`, `Quantity`, `Price`, `Video`, `MainImage`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `PackageWeight`, `PackageWidth`, `PackageHeight`, `PackageLength`, `Status`, `ModifiedUser` from lazadaproduct;

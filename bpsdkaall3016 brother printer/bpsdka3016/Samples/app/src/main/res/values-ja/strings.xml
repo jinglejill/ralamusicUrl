@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Brother Print Sdk Demo</string>
+    <string name="menu_settings">設定</string>
+    <string name="button_print">印刷</string>
+    <string name="button_update_firm">ファームアップデート</string>
+    <string name="button_printer_settings">プリンター設定</string>
+    <string name="button_transfer_template">テンプレート転送</string>
+    <string name="button_get_firmver">ファームバージョン</string>
+    <string name="button_get_mediaver">メディアバージョン</string>
+    <string name="button_get_serialnum">シリアルナンバー</string>
+    <string name="button_get_systemreport">自己印字文字列</string>
+    <string name="button_get_batteryInfo">バッテリー情報</string>
+    <string name="button_send_mediainfo">媒体情報送信</string>
+    <string name="button_check_firm_file">Firmファイルバージョン</string>
+    <string name="button_check_media_file">Mediaファイルバージョン</string>
+    <string name="button_send_database_data">データベース転送</string>
+    <string name="button_remove_template">テンプレート削除</string>
+    <string name="button_select_file">ファイル選択</string>
+    <string name="button_select">選択</string>
+    <string name="button_add">追加</string>
+    <string name="button_delete">削除</string>
+    <string name="button_get_list">一覧取得</string>
+    <string name="file_explorer_title">ファイル　エクスプローラ</string>
+    <string name="button_printer_status">プリンターステータス</string>
+    <string name="button_send_binfile">ファイル送信</string>
+    <string name="button_multi_print">連続印刷</string>
+
+    <string name="text_select_pdz">pdzかblfファイルを選択してください</string>
+    <string name="text_select_image">image/prnファイルを選択してください</string>
+    <string name="text_input_data">入力データ:</string>
+    <string name="text_template_Index">番号指定:</string>
+    <string name="text_template_name">名前指定:</string>
+    <string name="text_template_text">テキスト:</string>
+    <string name="text_template_key">テンプレート キー:</string>
+    <string name="text_template_replace_texts">文字列置換:</string>
+    <string name="text_select_pdf">pdfファイルを選択してください</string>
+    <string name="text_pdf_pages_start">開始ページ</string>
+    <string name="text_pdf_pages_end">終了ページ</string>
+    <string name="chkbox_multiple_select">複数ファイル選択</string>
+    <string name="chkbox_all_pages">全てのページ</string>
+    <string name="text_print_image">Image/Prn ファイルプリント</string>
+    <string name="text_print_pdf">Pdf ファイルプリント</string>
+    <string name="text_print_template">テンプレートプリント</string>
+    <string name="text_device_setting">デバイス設定</string>
+    <string name="text_transfer_manager">転送マネージャ</string>
+    <string name="text_transfer_pdz">テンプレート転送</string>
+    <string name="text_remove_template">テンプレート削除</string>
+    <string name="text_not_exit_template">テンプレートが存在しません</string>
+    <string name="unable_access">アクセスできません</string>
+    <string name="no_network_device">ネットプリンターが見つかりません</string>
+    <string name="setting_printer">基本設定</string>
+    <string name="printer_title">接続先プリンター</string>
+    <string name="printer_text">接続先プリンターを選択してください </string>
+    <string name="setting_label">設定</string>
+    <string name="about_label">About</string>
+    <string name="about_title">Brother Print Sdk Demo</string>
+    <string name="about_text">Ver.3.0.15\n© 2018 Brother Industries, Ltd.\n</string>
+    <string name="netPrinterListTitle_label">ネットプリンター</string>
+    <string name="progress_dialog_message_preparing_connection">接続の準備をしています</string>
+    <string name="progress_dialog_message_createData">データ作成中</string>
+    <string name="progress_dialog_message_sendingData">通信中…</string>
+    <string name="progress_dialog_message_sendingPrintingData">印刷データを送信しています</string>
+    <string name="progress_dialog_message_startPrint">ページ印刷中 </string>
+    <string name="progress_dialog_message_dataSent">データを送信しました</string>
+    <string name="progress_dialog_message_printed">印刷を終了しました </string>
+    <string name="progress_dialog_message_close_connection">通信終了</string>
+    <string name="progress_dialog_message_set_paper">紙をセットしてください</string>
+    <string name="progress_dialog_message_cooling_start">クーリング開始</string>
+    <string name="progress_dialog_message_cooling_end">クーリング完了</string>
+    <string name="progress_dialog_message_waiting_peel">ラベルを剥離してください</string>
+    <string name="progress_dialog_message_sending_template">ファイルを転送しています</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">Bluetooth設定を取得しています </string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">Bluetooth設定を送信しています</string>
+    <string name="progress_dialog_message_removing_template">テンプレートを削除しています </string>
+    <string name="progress_dialog_message_getting_template">テンプレート一覧を取得しています </string>
+    <string name="error_message_none">成功しました</string>
+    <string name="error_message_runtime">実行時エラーが発生しました</string>
+    <string name="printer_model_title">プリンターモデル</string>
+    <string name="printer_model_value">プリンターモデルを選択して下さい </string>
+    <string name="error_message_weong_os">Android OSは対応されていません</string>
+    <string name="error_message_no_usb">USBデバイスが見つかりません</string>
+    <string name="port_title">ポート</string>
+    <string name="port_value">ポートを選択してください</string>
+    <string name="address_title">IPアドレス</string>
+    <string name="address_value">IPアドレスを設定してください</string>
+    <string name="mac_address_title">MACアドレス</string>
+    <string name="mac_address_value">MACアドレスを設定してください</string>
+    <string name="paper_size_title">用紙サイズ</string>
+    <string name="paper_size_value">用紙サイズを選択してください</string>
+    <string name="orientation_title">用紙方向</string>
+    <string name="orientation_value">用紙方向を選択してください</string>
+
+    <string name="pj_paper_kind_title">用紙種類</string>
+    <string name="pj_paper_kind_value">用紙種類を選択してください</string>
+
+    <string-array name="orientation">
+        <item>縦</item>
+        <item>横</item>
+    </string-array>
+
+    <string name="number_of_copies_title">印刷部数</string>
+    <string name="number_of_copies_value">印刷部数を設定してください</string>
+    <string name="halftoning_title">ハーフトーン</string>
+    <string name="halftoning_value">ハーフトーンの種類を選択して下さい </string>
+
+    <string-array name="halfToning">
+        <item>単純２値</item>
+        <item>パターンディザ</item>
+        <item>誤差拡散</item>
+    </string-array>
+
+    <string name="overwrite_title">上書き設定</string>
+    <string name="overwrite_value">保存時に上書きするか選択してください</string>
+
+    <string-array name="yes_no_entries">
+        <item>はい</item>
+        <item>いいえ</item>
+    </string-array>
+
+    <string name="fit_to_page_title">印刷サイズ</string>
+    <string name="fit_to_page_value">印刷サイズを選択して下さい</string>
+
+    <string-array name="fitToPage">
+        <item>オリジナルサイズ</item>
+        <item>ページに合わせる</item>
+        <item>数字指定</item>
+        <item>用紙に合わせる</item>
+    </string-array>
+
+
+    <string-array name="check_print_end">
+        <item>確認しない</item>
+        <item>最終ページのみ確認しない</item>
+        <item>毎ページ確認する</item>
+    </string-array>
+
+    <string-array name="printer_case">
+        <item>無効</item>
+        <item>有効（アンチカールなし）</item>
+        <item>有効（アンチカールあり、ショートフィード有効）</item>
+    </string-array>
+
+
+    <string name="is_carbon_title">複写紙</string>
+    <string name="is_carbon_value">複写紙を設定してください</string>
+    <string name="pj_density_title">PJ印字濃度</string>
+    <string name="pj_density_value">PJ印字濃度を設定してください</string>
+    <string name="mode9_title">Mode9</string>
+    <string name="mode9_value">Mode9を設定してください</string>
+    <string name="image_thresholding_title">単純二値閾値</string>
+    <string name="image_thresholding_value">単純二値の閾値を設定してください </string>
+    <string name="scale_value_title">倍率</string>
+    <string name="scale_value_value">拡大率を指定してください </string>
+    <string name="pj_speed_title">PJ印字速度</string>
+    <string name="pj_speed_value">PJ印字速度を設定してください</string>
+    <string name="save_prn_path_title">印刷ファイル保存先</string>
+    <string name="save_prn_path_text">印刷ファイルの保存先を選択してください </string>
+    <string name="save_folder_title">保存フォルダ</string>
+    <string name="save_folder_text">保存フォルダを選択してください </string>
+    <string name="save_file_title">保存ファイル</string>
+    <string name="printer_case_title">プリンタケース</string>
+    <string name="printer_case_value">プリンタケースを設定してください</string>
+    <string name="is_skip_status_check_title">ステータスチェックのスキップ</string>
+    <string name="is_skip_status_check_value">ステータスチェックをスキップする場合はONにしてください</string>
+
+    <string name="trim_tape_after_data_title">後部余白カット</string>
+    <string name="trim_tape_after_data_value">後部余白カットをする場合はONにしてください</string>
+
+    <string name="tethering_title">テザリング</string>
+    <string name="tethering_value">テザリングを有効にする場合はONにしてください</string>
+
+
+    <string name="print_quality_title">高解像度モード</string>
+    <string name="print_quality_value">解像度設定を行う選択してください</string>
+    <string-array name="print_quality_array">
+        <item>ドラフト印刷</item>
+        <item>高品質</item>
+        <item>高速</item>
+        <item>高解像度印刷</item>
+    </string-array>
+
+
+    <string name="check_print_end_title">印刷後のステータス確認</string>
+    <string name="check_print_end_value">印刷後にステータス確認を行う選択してください</string>
+
+    <string name="feed_mode_title">排紙方式</string>
+    <string name="feed_mode_value">排紙方式を設定してください</string>
+
+    <string-array name="feed_mode">
+        <item>排紙なし（ロール）</item>
+        <item>固定サイズ排紙（ロール）</item>
+        <item>一ページ排紙（カット紙）</item>
+        <item>一ページ排紙（マークつきロール）</item>
+    </string-array>
+
+    <string name="align_title">横アラインメント</string>
+    <string name="align_value">横アラインメントを設定してください</string>
+
+    <string-array name="align">
+        <item>左寄せ</item>
+        <item>中寄せ</item>
+        <item>右寄せ</item>
+    </string-array>
+    <string-array name="alignValues">
+        <item>LEFT</item>
+        <item>CENTER</item>
+        <item>RIGHT</item>
+    </string-array>
+
+    <string name="valign_title">縦アラインメント</string>
+    <string name="valign_value">縦アラインメントを設定してください</string>
+
+    <string-array name="valign">
+        <item>上寄せ</item>
+        <item>中寄せ</item>
+        <item>下寄せ</item>
+    </string-array>
+
+    <string name="left_margin_title">左マージン値</string>
+    <string name="left_margin_value">左マージン値を設定してください</string>
+    <string name="top_margin_title">上マージン値</string>
+    <string name="top_margin_value">上マージン値を設定してください </string>
+    <string name="custom_paper_width_title">カスタマイズ紙の幅</string>
+    <string name="custom_paper_width_value">カスタマイズ紙の幅を指定してください</string>
+    <string name="custom_paper_length_title">カスタマイズ紙の長</string>
+    <string name="custom_paper_length_value">カスタマイズ紙の長を指定してください</string>
+    <string name="custom_setting_title">カスタマイズ用紙 (ファイル)</string>
+    <string name="custom_setting_value">カスタマイズ用紙ファイルを指定してください</string>
+    <string name="custom_manual_setting_title">カスタマイズ用紙 (手動)</string>
+    <string name="custom_manual_setting_value">カスタマイズ用紙の情報を入力してください</string>
+    <string name="enable_manual_custom_settings_title">手動設定を有効にする</string>
+    <string name="enable_manual_custom_settings_value"></string>
+    <string name="rj_paper_kind_title">用紙種別</string>
+    <string name="rj_paper_kind_value">用紙種別を指定してください</string>
+    <string-array name="rj_paper_kind_entries">
+        <item>ロール</item>
+        <item>ダイカット</item>
+        <item>マーク付きロール</item>
+    </string-array>
+    <string name="rj_paper_width_title">用紙幅</string>
+    <string name="rj_paper_width_value">用紙幅を指定してください</string>
+    <string name="rj_paper_length_title">用紙長さ</string>
+    <string name="rj_paper_length_value">用紙長さを指定してください</string>
+    <string name="rj_paper_right_margin_title">右マージン</string>
+    <string name="rj_paper_right_margin_value">右マージンを指定してください</string>
+    <string name="rj_paper_left_margin_title">左マージン</string>
+    <string name="rj_paper_left_margin_value">左マージンを指定してください</string>
+    <string name="rj_paper_top_margin_title">上マージン</string>
+    <string name="rj_paper_top_margin_value">上マージンを指定してください</string>
+    <string name="rj_paper_bottom_margin_title">下マージン</string>
+    <string name="rj_paper_bottom_margin_value">下マージンを指定してください</string>
+    <string name="rj_paper_label_pitch_title">ラベル間距離</string>
+    <string name="rj_paper_label_pitch_value">ラベル間距離を指定してください</string>
+    <string name="rj_paper_mark_position_title">マーク位置</string>
+    <string name="rj_paper_mark_position_value">マーク位置を指定してください</string>
+    <string name="rj_paper_mark_height_title">マーク高さ</string>
+    <string name="rj_paper_mark_height_value">マーク高さを指定してください</string>
+    <string name="rj_paper_unit_title">単位</string>
+    <string name="rj_paper_unit_value">単位を指定してください</string>
+    <string-array name="rj_paper_unit_entries">
+        <item>inch</item>
+        <item>mm</item>
+    </string-array>
+    <string name="custom_feed_title">排紙量設定</string>
+    <string name="custom_feed_value">排紙量を設定してください</string>
+    <string name="density_title">印字濃度</string>
+    <string name="density_value">印字濃度を設定してください</string>
+    <string name="dash_line_title">ミシン目印刷</string>
+    <string name="dash_line_value">ミシン目印刷</string>
+
+    <string name="is_rotate180_title">回転 180</string>
+    <string name="is_rotate180_value">回転 180</string>
+
+    <string name="is_end_cut_title">エンドカット</string>
+    <string name="is_end_cut_value">エンドカットをする</string>
+    <string name="is_auto_cut_title">オートカット</string>
+    <string name="is_auto_cut_value">オートカットする</string>
+    <string name="is_peel_mode_title">ハクリモード</string>
+    <string name="is_peel_mode_value">ハクリする</string>
+    <string name="otherSettings_title">その他</string>
+    <string name="ip_mac_title">IP/MAC アドレス</string>
+    <string name="ip_mac_value">IP/MAC アドレスを設定してください</string>
+    <string name="alignment_settings_title">マージン 設定</string>
+    <string name="alignment_settings_value">マージンを設定してください</string>
+    <string name="pj_settings_title">PJ 設定</string>
+    <string name="pj_settings_value">PJを設定してください</string>
+    <string name="pj_td_settings_title">RJ/TD 設定</string>
+    <string name="pj_td_settings_value">RJ/TDを設定してください</string>
+    <string name="cut_settings_value">カットオプションを設定してください</string>
+    <string name="cut_settings_title">カットオプション</string>
+    <string name="cutSettingsPT_P3_value">カットオプションを設定してください</string>
+    <string name="cutSettingsPT_P3_title">PT-P3用カットオプション</string>
+
+    <string name="paper_pos_title">給紙位置</string>
+    <string name="paper_pos_value">給紙位置を設定してください</string>
+    <string name="no_bluetooth_device">Bluetoothプリンターが見つかりません</string>
+    <string name="button_refresh">更新</string>
+    <string name="button_get">取得</string>
+    <string name="button_update">更新</string>
+    <string name="text_ssp">SSP設定</string>
+    <string name="text_power_saving">省電力モード</string>
+    <string name="button_settings">設定</string>
+    <string name="search_printer">検索…</string>
+    <string name="end_title">終了</string>
+    <string name="end_message">起動画面に戻る</string>
+    <string name="close_message">アプリケーションを閉じる</string>
+    <string name="button_cancel">キャンセル</string>
+    <string name="button_ok">OK</string>
+    <string name="battery_full">多</string>
+    <string name="battery_middle">中</string>
+    <string name="battery_weak">小</string>
+    <string name="battery_charge">要充電</string>
+    <string name="ac_adapter">AC アダプタ</string>
+    <string name="progress_dialog_message_communication_start">通信開始…</string>
+    <string name="close_connect">クローズ…</string>
+    <string name="bluetooth_printer_list_title_label">Bluetoothプリンタ</string>
+    <string name="progress_dialog_message_transfer_start">転送スタート…</string>
+    <string name="folder_name">フォルダ名</string>
+    <string name="error_input">入力データは間違いです</string>
+    <string name="msg_title_warning">警告</string>
+    <string name="button_next_print">次のページ</string>
+    <string name="cancel_printer_msg">キャンセルを処理しています、待ってください</string>
+    <string name="template_encoding">エンコード:</string>
+    <string name="button_bluetooth_settings">Bluetooth設定</string>
+    <string name="button_network_settings">ネットワーク設定</string>
+    <string name="button_device_settings">デバイス設定</string>
+    <string name="supported_device">PJ-700/RJ-4030Ai/RJ-2000</string>
+
+    <string name="mw_series">MWシリーズ</string>
+    <string name="text_net_bootmode">	パワーオン時動作	(BT/USB)</string>
+    <string name="text_net_interface">	インターフェース選択(BT/USB)	</string>
+    <string name="text_net_used_ipv6">IPv6有効/無効	</string>
+    <string name="text_net_priority_ipv6">IPv6優先</string>
+    <string name="text_net_ip4_staticmode">固定IPアドレス有効/無効	</string>
+    <string name="text_net_ipv4_static_address">	IPアドレス	</string>
+    <string name="text_net_subnetmask">	サブネットマスク	</string>
+    <string name="text_net_gateway">	ゲートウェイアドレス	</string>
+    <string name="text_net_dns_ipv4_bootmethod">DNSサーバー手動設定</string>
+    <string name="text_net_primary_dns_ipv4address">プライマリDNSサーバーアドレス	</string>
+    <string name="text_net_second_dns_ipv4address">	セカンダリDNSサーバーアドレス	</string>
+    <string name="text_net_ip6_staticmode">固定IPv6アドレス有効/無効</string>
+    <string name="text_net_ipv6_static_address">固定IPv6アドレス	</string>
+    <string name="text_net_primary_dns_ipv6address">プライマリDNSサーバーアドレス	</string>
+    <string name="text_net_second_dns_ipv6address">セカンダリDNSサーバーアドレス	</string>
+    <string name="text_net_ipv6address_list">	IPv6アドレスリスト(取得のみ)</string>
+    <string name="text_net_communication_mode">接続モード	</string>
+    <string name="text_net_ssid">SSID</string>
+    <string name="text_net_channel">チャンネル</string>
+    <string name="text_net_authentication_method">認証方式</string>
+    <string name="text_net_encryption_mode">暗号化方式</string>
+    <string name="text_net_wepkey">	WEPキー(設定のみ)	</string>
+    <string name="text_net_passphrase">	PSK(事前共有キー)(設定のみ)	</string>
+    <string name="text_net_user_Id">	ユーザID(設定のみ)	</string>
+    <string name="text_net_password">	パスワード(設定のみ)	</string>
+    <string name="text_net_nodenam">	無線LANノード名	</string>
+    <string name="text_wirelessdirect_key_create_mode">	SSID/ネットワークキー生成(BT/USB)	</string>
+    <string name="text_wirelessdirect_ssid">	SSID(BT/USB)	</string>
+    <string name="text_wirelessdirect_network_key">	ネットワークキー(設定のみ)(BT/USB)	</string>
+    <string name="text_printer_power_off_time">オートパワーオフ時間	</string>
+    <string name="text_printer_power_off_time_battery">	オートパワーオフ時間(バッテリ)	</string>
+    <string name="text_print_jpeg_halftone">	JPEG印刷(BT/USB)	</string>
+    <string name="text_print_jpeg_scale">	JPEG印刷倍率設定(BT/USB)	</string>
+    <string name="text_print_density">	印字濃度(BT/USB)</string>
+    <string name="text_print_speed">印刷速度(BT/USB)			</string>
+    <string name="text_bt_isdiscoverable">他のデバイス検索設定(BT/USB)</string>
+    <string name="text_bt_devicename">	デバイス名(BT/USB)	</string>
+    <string name="text_bt_bootmode">	Bluetoothの起動状態(BT/USB)	</string>
+    <string name="text_bt_auto_connection">	Bluetoothの再接続(BT/USB)	</string>
+
+
+    <!-- P-touch用に追加　 2013/10/01 Start -->
+    <string-array name="ssp_array">
+        <item>未設定</item>
+        <item>有効</item>
+        <item>無効</item>
+    </string-array>
+    <string-array name="power_mode_array">
+        <item>未設定</item>
+        <item>省電力優先</item>
+        <item>標準</item>
+        <item>接続時間優先</item>
+    </string-array>
+
+    <string name="text_no_data">(NO DATA)</string>
+
+    <string-array name="bootmode_array">
+        <item>常にON</item>
+        <item>常にOFF</item>
+        <item>前回の状態維持</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="net_interface_array">
+        <item>OFF</item>
+        <item>無線LAN</item>
+        <item>Wireless Direct</item>
+        <item>無線LANとWireless Directを有効</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="enable_array">
+        <item>無効</item>
+        <item>有効</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="chanel_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="ip_address_array">
+        <item>AUTO</item>
+        <item>BOOTP</item>
+        <item>DHCP</item>
+        <item>RARP</item>
+        <item>STATIC</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="communication_mode_array">
+        <item>アドホック</item>
+        <item>インフラストラクチャ</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="authentication_method_array">
+        <item>Open System</item>
+        <item>Shared Key</item>
+        <item>WPA/WPA2-PSK	</item>
+        <item>LEAP CKIP	</item>
+        <item>EAP-FAST/NONE	</item>
+        <item>EAP-FAST/MS-CHAPv2</item>
+        <item>EAP-FAST/GTC</item>
+        <item>PEAP/MS-CHAPv2</item>
+        <item>PEAP/GTC</item>
+        <item>EAP-TTLS/CHAP</item>
+        <item>EAP-TTLS/MS-CHAP</item>
+        <item>EAP-TTLS/MS-CHAPv2</item>
+        <item>EAP-TTLS/PAP TKIP</item>
+        <item>EAP-TLS</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="net_encryptionmode_array">
+        <item>None</item>
+        <item>WEP</item>
+        <item>TKIP+AES</item>
+        <item>AES</item>
+        <item>CKIP</item>
+        <item>TKIP</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="dns_mode_array">
+        <item>AUTO</item>
+        <item>STATIC</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="bt_devicename_array">
+        <item>検索できない</item>
+        <item>検索できる</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string-array name="jpeg_halftone_array">
+        <item>Binary	</item>
+        <item>	Error Diffusion	</item>
+        <item>@string/text_no_data</item>
+    </string-array>
+    <string name="half_cut_title">ハーフカット(PT専用)</string>
+    <string name="half_cut_value">ハーフカットの指定</string>
+    <string name="special_tape_title">特殊テープ(PT専用)</string>
+    <string name="special_tape_value">特殊テープの指定</string>
+    <string name="cut_mark_title">カットマーク</string>
+    <string name="cut_mark_value">カットマークの指定</string>
+
+
+    <string name="label_margin_title">余白設定</string>
+    <string name="label_margin_value">余白の指定</string>
+
+    <string name="work_path_value">作業フォルダを指定する</string>
+    <string name="work_path_title">作業フォルダ</string>
+
+    <string-array name="work_path_entries">
+        <item>指定なし</item>
+        <item>アプリケーション領域</item>
+        <item>外部フォルダ</item>
+    </string-array>
+
+    <string name="timeout_title">タイムアウト</string>
+    <string name="timeout_text">タイムアウトを選択してください </string>
+    <string name="processTimeout_value">全体のタイムアウト時間を設定してください</string>
+    <string name="processTimeout_title">タイムアウト 時間</string>
+    <string name="sendTimeout_value">送信待ち時間を設定してください</string>
+    <string name="sendTimeout_title">送信待ち時間 </string>
+    <string name="receiveTimeout_title">受信待ち時間</string>
+    <string name="receiveTimeout_value">受信時のタイムアウト時間を設定してください </string>
+    <string name="connectionTimeout_title">接続開始待ち時間</string>
+    <string name="connectionTimeout_value">接続開始待ち時間を設定してください</string>
+    <string name="close_wait_time_value">切断処理前の待ち時間</string>
+    <string name="close_wait_time_title">切断処理前の待ち時間を設定してください</string>
+
+
+    <string name="raw_mode_title">非圧縮</string>
+    <string name="raw_mode_value">非圧縮を使用する場合はONにしてください</string>
+    <string name="soft_focusing_title">淡化処理</string>
+    <string name="soft_focusing_value">淡化処理を行う場合はONにしてください</string>
+    <string name="use_legacy_halftone_engine_title">レガシーなハーフトーン処理を行う</string>
+    <string name="use_legacy_halftone_engine_value">レガシーなハーフトーン処理を行う場合はONにしてください</string>
+</resources>

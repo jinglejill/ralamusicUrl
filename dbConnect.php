@@ -1,0 +1,4175 @@
+<?php
+    include_once "./lazada/LazopSdk.php";
+    include_once "./jdOpenApi.php";
+    
+    //conection variable
+    $con;
+    $con2;
+    $globalDBName="SAIM";
+    $dbUser = "FFD";
+    $appImageUrl = "https://minimalist.co.th/saim";
+    
+    //line
+    $lineNotifyToken = "Iw9r67OTA4B7ZuOqlv0lEiwTipakqPKvaNwqGabZZ2X";
+    $lineAdminToken = "nYfj6oMyVaJDSg8QQzGivPXDJMPzXwMI837Egr2gZED";
+    
+    //wordPress
+    $wordPressDB = "mini_2018";
+    $testWordPressDB = "test_mini";
+    $pointPerBaht = 40;
+    $minimumPointSpend = 4000;
+    $earnedCheckPoints = "PPRP";
+    $redeemCheckPoints = "RP";
+    $earnedFactor = 0.1;
+    $expirePeriod = 2;
+    
+    
+    //lazada variable minimalist
+    $url = "https://api.lazada.co.th/rest";
+    $appKey = "117625";
+    $appSecret = "qYcpF3J7HWqIeGQMnDGq14XRrEMGxHUS";
+    $accessToken = "500008016371jbdirixrC6jCTeMztHmlwHaGQ0FeakuvgOt3q1fea0119aeOn1zc";//start 27 june 8.30
+    $refreshToken = "50001800b37guoiAp4ss986HXDJxZWvk9CFSdsxvGHjQm0iyt1a510ee3yUP0lzb";//expire in 15544206 ประมาณปลายตุลา 2020
+
+    
+    
+//    //lazada variable ralamusic
+//    $url = "https://api.lazada.co.th/rest";
+//    $appKey = "119433";
+//    $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
+//    $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+//    $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+
+    
+    //shopee variable minimalist
+    $host = "partner.shopeemobile.com";
+    $contentType = "application/json";
+    $key = "42995589cb4a87c62e3f2b239c43647053736610c1fcae8c9373395d4877a745";
+    $partnerID = 845302;
+    $shopID = 88091;
+    $addressID = 25425270;
+    
+    
+    
+//    //shopee variable ralamusic
+//    $host = "partner.shopeemobile.com";
+//    $contentType = "application/json";
+//    $key = "bc7b1996a69b9384eef86490a752d0c5388febc168b8aa0b3ed86066d5f0ba05";
+//    $partnerID = 845652;
+//    $shopID = 1396523;
+//    $addressID = 25425270;
+    $defaultCategoryID = 24941;
+    $defaultAttributeID = 23277;
+    $defaultAttributeValue = "ไม่มียี่ห้อ(No Brand)";
+    $defaultJdCategoryID = 1853;
+    $defaultJdBrandID = 8238;
+    
+    
+    //jd variable minimalist
+    $appKeyJd = "222ffa678534712a816efc3535049e41";
+    $appSecretJd = "25b12ddf8b66efe51ff35d38460b2bd1";
+    $accessTokenJd = "35f6a652e822627337db132c85e5b5c5";
+    $serverUrl = "https://open.jd.co.th/api";
+    $serverUrlBigData = "https://open.jd.co.th/api_bigdata";
+    
+//    //jd variable ralamusic
+//    $appKeyJd = "4f167657105d3afd732653da83fb49a5";
+//    $appSecretJd = "7789c6f973f9c3ad22c1206c97382663";
+//    $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
+//    $serverUrl = "http://open.jd.co.th/api";
+//
+
+    function cors()
+    {
+        writeToLog("cors");
+        header('Content-Type: application/json');
+//        header('Access-Control-Allow-Origin: *');
+        // Allow from any origin
+        if (isset($_SERVER['HTTP_ORIGIN']))
+        {
+            writeToLog("HTTP_ORIGIN:" . isset($_SERVER['HTTP_ORIGIN']));
+            writeToLog("HTTP_ORIGIN:" . $_SERVER['HTTP_ORIGIN']);
+            // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
+            // you want to allow, and if so:
+            
+            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+            header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Max-Age: 86400');    // cache for 1 day
+        }
+
+        // Access-Control headers are received during OPTIONS requests
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            writeToLog("REQUEST_METHOD:" . isset($_SERVER['REQUEST_METHOD']));
+            writeToLog("REQUEST_METHOD:" . $_SERVER['REQUEST_METHOD']);
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+            {
+                writeToLog("HTTP_ACCESS_CONTROL_REQUEST_METHOD:" . isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']));
+                writeToLog("HTTP_ACCESS_CONTROL_REQUEST_METHOD:" . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']);
+                // may also be using PUT, PATCH, HEAD etc
+                header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            }
+            
+
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+            {
+                writeToLog("HTTP_ACCESS_CONTROL_REQUEST_HEADERS:" . isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']));
+                writeToLog("HTTP_ACCESS_CONTROL_REQUEST_HEADERS:" . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+            }
+            
+
+            exit(0);
+        }
+
+//    echo "You have CORS!";
+    }
+    
+    function getApiManager()
+    {
+        global $appKeyJd;
+        global $appSecretJd;
+        global $accessTokenJd;
+        global $serverUrl;
+        
+        $c = new ApiManager();
+        
+        $c->appKey = $appKeyJd;
+        $c->appSecret = $appSecretJd;
+        $c->accessToken = $accessTokenJd;
+        $c->serverUrl = $serverUrl;
+        
+        return $c;
+    }
+    
+    function getApiManagerBigData()
+    {
+        global $appKeyJd;
+        global $appSecretJd;
+        global $accessTokenJd;
+        global $serverUrlBigData;
+        
+        $c = new ApiManager();
+        
+        $c->appKey = $appKeyJd;
+        $c->appSecret = $appSecretJd;
+        $c->accessToken = $accessTokenJd;
+        $c->serverUrl = $serverUrlBigData;
+        
+        return $c;
+    }
+    
+    function JdImageUpload($url,$tmpFileName)
+    {
+        $currentFolder = getcwd();
+        copy($url, "./tmp/$tmpFileName");
+        $contents = $currentFolder."\\tmp\\$tmpFileName";
+        $c = getApiManagerBigData();
+        $c->method = "jingdong.common.image.UploadFile";
+        $c->param_json = "";
+        $c->param_file = $contents;
+        $resp = $c->call4BigData();
+        
+        
+        $openapi_data = json_decode($resp)->openapi_data;
+        $JdUrl = json_decode($openapi_data)->data;
+        return $JdUrl;
+    }
+    
+    function getJdBrands($categoryId)
+    {
+        $c = getApiManager();
+        $c->method = "com.productQueryApiService.querycategory";
+        $param = array();
+        $param["categoryId"] = $categoryId;
+        $param["locale"] = "th_TH";
+        $c->param_json = json_encode($param);
+        $resp = $c->call();
+
+        $openapi_data = json_decode($resp)->openapi_data;
+        $data = json_decode($openapi_data)->data;
+        
+//        writeToLog(json_encode($data->brands));
+        return $data->brands;
+    }
+    
+    function getPendingOrdersJd()
+    {
+        $orders = array();
+        for($i=0; $i<4; $i++)//set max 4 times
+        {
+            $c = getApiManager();
+            $c->method = "com.jd.th.pop.open.OrderInformationFacade.listOrder";
+            $data = array();
+            $data["locale"] = "th_TH";
+            $data["page"] = $i;
+            $data["pageSize"] = 100;
+            $data["orderStatusType"] = 2;
+            
+            $param["param"] = $data;
+            $c->param_json = json_encode($param);
+            $resp = $c->call();
+            
+            writeToLog("getPendingOrdersJd result:" . $resp);
+            $openapi_data = json_decode($resp)->openapi_data;
+            $data = json_decode($openapi_data)->data;
+            
+            $orders = array_merge($orders,$data->itemList);
+            if(sizeof($data->itemList) < 100)
+            {
+                break;
+            }
+        }
+       
+        return $orders;
+    }
+    
+    function insertJdProduct($data)
+    {
+        writeToLog(json_encode($data));
+        
+        $c = getApiManager();
+        $c->method = "com.productUpdateApiService.saveProduct";
+        $param = array();
+        $param["updateProductParam"] = $data;
+        $c->param_json = json_encode($param);
+        $resp = $c->call();
+        
+        writeToLog("insertJdProduct result:" . $resp);
+        $openapi_data = json_decode($resp)->openapi_data;
+        return json_decode($openapi_data);
+    }
+    
+    function hasJdProduct($sku)
+    {
+        $c = getApiManager();
+        $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+        $c->param_json = '{"searchSkusByOuterIdParam":{"outerId":"' . $sku . '"}}';
+        $resp = $c->call();
+        
+        writeToLog("has product search jd result:" . $resp);
+        $openapi_data = json_decode($resp)->openapi_data;
+        $objs = json_decode($openapi_data)->objs;
+        return sizeof($objs)>0;
+    }
+    
+    function getJdProductSkuIds($sku)
+    {
+        writeToLog("sku:".$sku);
+        $c = getApiManager();
+        $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+        $c->param_json = '{"searchSkusByOuterIdParam":{"outerId":"' . $sku . '"}}';
+        $resp = $c->call();
+        
+        writeToLog("get product jd skuId result:" . $resp);
+        $openapi_data = json_decode($resp)->openapi_data;
+        $objs = json_decode($openapi_data)->objs;
+         
+        
+        $productSkuIds = array();
+        for($i=0; $i<sizeof($objs); $i++)
+        {
+            $productSkuId = array();
+            $productSkuId["productId"] = json_decode($objs[$i])->productId;
+            $productSkuId["skuId"] = json_decode($objs[$i])->skuId;
+            $productSkuIds[] = $productSkuId;
+        }
+        return $productSkuIds;
+    }
+    
+    function getJdProductSkuIdsInApp($sku)
+    {
+        $sql = "select * from jdProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        $productSkuIds = array();
+        for($i=0; $i<sizeof($selectedRow); $i++)
+        {
+            $jdProduct = $selectedRow[$i];
+            $productSkuId = array();
+            $productSkuId["productId"] = $jdProduct["ProductId"];
+            $productSkuId["skuId"] = $jdProduct["SkuId"];
+            $productSkuIds[] = $productSkuId;
+        }
+        return $productSkuIds;
+    }
+    
+    function updateStockQuantityJd($sku,$quantity)
+    {
+        $productSkuIds = getJdProductSkuIdsInApp($sku);
+        for($i=0; $i<sizeof($productSkuIds); $i++)
+        {
+            $skuId = $productSkuIds[$i]["skuId"];
+            $ret = updateStockJd($skuId,$quantity,0);
+            if(!$ret)
+            {
+                //roll back updated
+                for($j=0; $j<$i; $j++)
+                {
+                    $skuId = $productSkuIds[$j]["skuId"];
+                    updateStockJd($skuId,$quantity,0);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function updateStockQuantityJdInApp($sku,$quantity)
+    {
+        $productSkuIds = getJdProductSkuIdsInApp($sku);
+        for($i=0; $i<sizeof($productSkuIds); $i++)
+        {
+            $skuId = $productSkuIds[$i]["skuId"];
+            $ret = updateStockJd($skuId,$quantity,0);
+            if(!$ret)
+            {
+                //roll back updated
+                for($j=0; $j<$i; $j++)
+                {
+                    $skuId = $productSkuIds[$j]["skuId"];
+                    updateStockJd($skuId,$quantity,0);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function updateStockJd($skuId,$quantity,$sid)
+    {
+        writeToLog("skuID:".$skuId.", quantity:".$quantity. ", sid:".$sid);
+        $c = getApiManager();
+        $c->method = "jingdong.stock.updateSkuStock";
+        $c->param_json = '{"updateSkuStockParam":{"skuId":"' . $skuId . '","sid":"' . $sid . '","stockNum":"' . $quantity . '"}}';
+        $resp = $c->call();
+        writeToLog("update stock jd result:".$resp);
+                
+        $openapi_data = json_decode($resp)->openapi_data;
+        $resultCode = json_decode($openapi_data)->resultCode;
+        
+        return $resultCode == 1?true:false;
+    }
+    
+    function getStockQuantityJd($sku)
+    {
+        $productSkuIds = getJdProductSkuIds($sku);
+        if(sizeof($productSkuIds)>0)
+        {
+            $productId = $productSkuIds[0]["productId"];
+            $skuId = $productSkuIds[0]["skuId"];
+            
+            writeToLog("get quantity productId: ". $productId . ", skuId: ". $skuId);
+            $product = getJdProduct($productId);
+            $skuList = $product->skuList;
+            for($i=0; $i<sizeof($skuList); $i++)
+            {
+                $skuItem = $skuList[$i];
+                if($skuItem->outerId == $sku)
+                {
+                    return $skuItem->stockNum;
+                }
+            }
+        }
+        return 0;
+    }
+    
+    function getJdProduct($productId)
+    {
+        $c = getApiManager();
+        $c->method = "com.productQueryApiService.queryProductById";
+        $c->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+        $resp = $c->call();
+        writeToLog("get jd product result:".$resp);
+        
+        $openapi_data = json_decode($resp)->openapi_data;
+        $data = json_decode($openapi_data)->data;
+        
+        return $data;
+    }
+    
+    function hasLazadaProductInRala($sku)
+    {
+        $sql = "select * from lazadaProduct where SellerSku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasShopeeProductInRala($sku)
+    {
+        $sql = "select * from shopeeProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasJdProductInRala($sku)
+    {
+        $sql = "select * from jdProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasMainProduct($sku)
+    {
+        $sql = "select * from mainProduct where Sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+
+    function hasLazadaProductInApp($sku)
+    {
+//        $sql = "select * from lazadaProduct where SellerSku = '$sku'";
+        $sql = "select * from lazadaProduct where Sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasShopeeProductInApp($sku)
+    {
+        $sql = "select * from shopeeProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasJdProductInApp($sku)
+    {
+        $sql = "select * from jdProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function hasWebProductInApp($sku)
+    {
+        $sql = "select * from webProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        return sizeof($selectedRow)>0;
+    }
+    
+    function lazadaOrderExist($orderNo)
+    {
+        $sql = "select * from lazadaOrder where orderNo = '$orderNo'";
+        $lazadaOrderList = executeQueryArray($sql);
+        
+        return sizeof($lazadaOrderList);
+    }
+    
+    function shopeeOrderExist($orderSn)
+    {
+        $sql = "select * from shopeeOrder where orderNo = '$orderSn'";
+        $shopeeOrderList = executeQueryArray($sql);
+        
+        return sizeof($shopeeOrderList);
+    }
+    
+    function updateShopeeStock($itemID,$stock)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/items/update_stock";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        $paramBody["stock"] = intval($stock);
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+    
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("update shopee stock result: " . $result);
+        return json_decode($result);
+    }
+    
+    function updateShopeePrice($itemID,$price)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/items/update_price";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        $paramBody["price"] = floatval($price);
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+    
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("update shopee price result: " . $result);
+        return json_decode($result);
+    }
+    
+    function updateShopeeImages($itemID,$images)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/img/update";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        $paramBody["images"] = $images;
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+    
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("update shopee images result: " . $result);
+        return json_decode($result);
+    }
+    
+    function insertShopeeProduct($paramBody)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/add";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+//        //param
+//        $date = new DateTime();
+//        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+    
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("add shopee item result: " . $result);
+        return json_decode($result);
+    }
+    
+    function updateShopeeProduct($paramBody)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/update";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+//        //param
+//        $date = new DateTime();
+//        $timestamp = $date->getTimestamp();
+
+
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+
+        writeToLog("update shopee item result: " . $result);
+        return json_decode($result);
+    }
+    
+    function getShopeeAttributes($categoryID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        $url = "https://partner.shopeemobile.com/api/v1/item/attributes/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+        
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["category_id"] = $categoryID;
+        
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("get shopee attributes: " . ($result != null));
+        return json_decode($result)->attributes;
+    }
+    
+    function setPickupTime($orderSn,$pickupTimeID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        global $addressID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/logistics/init";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+        $pickup = array();
+        $pickup["address_id"] = $addressID;
+        $pickup["pickup_time_id"] = $pickupTimeID;
+        
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["ordersn"] = $orderSn;
+        $paramBody["pickup"] = $pickup;
+        
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("time slot:" . $result);
+//        $obj = json_decode($result);
+    }
+    
+    function getShopeePickupTimeID($orderSn)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        global $addressID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/logistics/timeslot/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+      
+        
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["ordersn"] = $orderSn;
+        $paramBody["address_id"] = $addressID;
+        
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("time slot:" . $result);
+        $obj = json_decode($result);
+        if($obj->msg)
+        {
+            sendNotiToAdmin("cannot get shopee time slot: ". $obj->msg);
+        }
+        for($i=0; $i<sizeof($obj->pickup_time); $i++)
+        {
+            $pickupTimeID = $obj->pickup_time[$i]->pickup_time_id;
+            $weekday = date('N', $pickupTimeID);
+            if($weekday != 1)//mon no pickup
+            {
+                break;
+            }
+        }
+        return $pickupTimeID;
+    }
+    
+    function saveAndGetPostCustomerID($name,$fullAddress,$zipCode,$phone)
+    {
+        global $con;
+
+        $sql = "select * from postCustomer where firstName like '%$name%' and street1 like '%$fullAddress%' and postCode = '$zipCode' and telephone = '$phone'";
+        mysqli_set_charset($con, "tis-620");
+        $selectedRow = getSelectedRow($sql);
+//        echo "size of postcustomer:" . sizeof($selectedRow) . "<br>";
+        if(sizeof($selectedRow) > 0)
+        {
+            $postCustomerID = $selectedRow[0]["PostCustomerID"];
+        }
+        else
+        {
+            $telephone = $phone;
+            $sql = "select * from postCustomer where telephone = '$telephone'";
+            $selectedRow = getSelectedRow($sql);
+            if(sizeof($selectedRow) == 0)
+            {
+                $sql = "INSERT INTO `customer`(`ModifiedDate`) VALUES (now())";
+                $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
+                if($ret != "")
+                {
+                    mysqli_rollback($con);
+            //        putAlertToDevice($_POST["modifiedUser"]);
+                    echo json_encode($ret);
+                    exit();
+                }
+                $customerID = mysqli_insert_id($con);
+            }
+            else
+            {
+                $customerID = $selectedRow[0]["CustomerID"];
+            }
+            
+            $firstName = $name;
+            $street1 = $fullAddress;
+            $postcode = $zipCode;
+            $telephone = $phone;
+            //query statement
+            $sql = "INSERT INTO PostCustomer(CustomerID, FirstName, Street1, Postcode, Country, Telephone, LineID, FacebookID, EmailAddress, TaxCustomerName, TaxCustomerAddress, TaxNo, Other) VALUES ('$customerID', '$firstName', '$street1', '$postcode', '$country', '$telephone', '$lineID', '$facebookID', '$emailAddress', '$taxCustomerName', '$taxCustomerAddress', '$taxNo', '$other')";
+            $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+            if($ret != "")
+            {
+                mysqli_rollback($con);
+        //        putAlertToDevice($_POST["modifiedUser"]);
+                echo json_encode($ret);
+                exit();
+            }
+            
+            //insert ผ่าน
+            $newID = mysqli_insert_id($con);
+            $postCustomerID = $newID;
+        }
+        return $postCustomerID;
+    }
+    
+    function getPreOrderProductList($searchSku,$quantity)
+    {
+        $sql = "select * from product left join productName on product.productCategory2 = productName.ProductCategory2 and product.productCategory1 = productName.ProductCategory1 and product.productName = productName.code left join color on product.color = color.code left join productSize on product.size = productSize.code where replace(concat(productName.name,color.name,case when productSize.sizeLabel = '-' then '' else productSize.sizeLabel end),' ','') = '$searchSku' and status = 'I' and eventID not in (332) order by eventID";
+        $preOrderProductListTemp = executeQueryArray($sql);
+        $preOrderProductList = array();
+        for($i=0; $i<sizeof($preOrderProductListTemp) && $i<$quantity; $i++)
+        {
+            $preOrderProductList[] = $preOrderProductListTemp[$i];
+        }
+        return $preOrderProductList;
+    }
+    
+    function createAppOrder($param)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.jinglejill.com/saim/SAIMReceiptAndProductBuyInsert9.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($param);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        $obj = json_decode($result);
+        writeToLog("create app result:" . $result);
+        
+        if($obj->status != 1)
+        {
+            $message = "create app order fail, channel: " . $param["Channel"] . ", order no.:" . $param["OrderNo"];
+            sendNotiToAdmin($message);
+        }
+        return $obj->status;
+    }
+    
+    function getShopeeOrders($status)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/orders/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+        
+        
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["order_status"] = $status;
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("orders: " . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->orders;
+    }
+
+    function getShopeeOrder($orderSn)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/orders/detail";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+        $orderSnList = array();
+        $orderSnList[] = $orderSn;
+        
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["ordersn_list"] = $orderSnList;
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("order:" . $result);
+        $obj = json_decode($result);
+        
+        
+        
+        return $obj;
+    }
+    
+    function getStockQuantityShopee($sku)
+    {
+        $variations = getAllVariationsShopee($sku);
+        writeToLog("all variations:" . json_encode($variations));
+        if(sizeof($variations) > 0)
+        {
+            $variation = $variations[0];
+            $itemID = $variation["item_id"];
+            $variationID = $variation["variation_id"];
+            $quantity = getStockShopee($itemID,$variationID);
+            return $quantity;
+        }
+        
+        return 0;
+    }
+    
+    //in case of multiple link of the same sku
+    function updateStockToAllSkuInOrder($orderObj)
+    {
+        global $globalDBName;
+        
+        $fail = 0;
+        $updateItems = array();
+        $updateVariations = array();
+        $items = $orderObj->orders[0]->items;
+        for($i=0; $i<sizeof($items); $i++)
+        {
+            $item = $items[$i];
+            $itemID = $item->item_id;
+            $variationID = $item->variation_id;
+            $itemSku = $item->item_sku;
+            $variationSku = $item->variation_sku;
+            if(strpos($itemSku, "middleton") !== false && strlen($itemSku) > 9)
+            {
+                continue;
+            }
+            
+            //for both case with/without variation
+            writeToLog("itemID:" . $itemID . ", variationID:".$variationID);
+            $quantity = getStockShopee($itemID,$variationID);
+            writeToLog("quantity:" . $quantity);
+            if($variationID != "")
+            {
+                writeToLog("variationSku:" . $variationSku);
+                $searchSku = $variationSku;
+            }
+            else
+            {
+                writeToLog("itemSku:" . $itemSku);
+                $searchSku = $itemSku;
+            }
+            
+            if($searchSku == "")
+            {
+                return;
+            }
+            
+            if(globalDBName == "RALAMUSIC" || globalDBName == "RALAMUSICTEST")
+            {
+                $variations = getAllVariationsShopeeInApp($searchSku);
+            }
+            else
+            {
+                $variations = getAllVariationsShopee($searchSku);
+            }
+            
+            writeToLog("all variations:" . json_encode($variations));
+            if(sizeof($variations) > 5)//เพื่อกันไม่ให้ update stock กรณีค้นหา variations ผิด และออกมามากเกิน
+            {
+                return;
+            }
+            for($j=0; $j<sizeof($variations); $j++)
+            {
+                $variation = $variations[$j];
+                $stock = 0;
+                $stock += $quantity;
+                
+                if($variation["item_id"]==$itemID && $variation["variation_id"]==$variationID)
+                {
+                    continue;
+                }
+                
+                //update stock
+                $updateVariation = array();
+                $updateVariation["item_id"] = $variation["item_id"];
+                $updateVariation["variation_id"] = $variation["variation_id"];
+                $updateVariation["stock"] = $stock;
+                
+                if($variation["variation_id"] > 0)
+                {
+                    $updateVariations[] = $updateVariation;
+                }
+                else
+                {
+                    $updateItems[] = $updateVariation;
+                }
+            }
+        }
+        
+        writeToLog( "update items:" . json_encode($updateItems));
+        writeToLog( "update variations:" . json_encode($updateVariations));
+        if(sizeof($updateItems)>0)
+        {
+            $ret = updateStockBatchShopee($updateItems,"items");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        if(sizeof($updateVariations)>0)
+        {
+            $ret = updateStockBatchShopee($updateVariations,"vars");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        
+        return $fail == 0;
+    }
+    
+    function getStockShopee($itemID,$variationID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+
+        $obj = json_decode($result);
+        if(!$obj->item)
+        {
+            writeToLog("cannot get quantity shopee (itemID,variationID): (" . $itemID.",".$variationID.")" );
+        }
+        if(sizeof($obj->item->variations) > 0)
+        {
+            for($i=0; $i<sizeof($obj->item->variations); $i++)
+            {
+                $variation = $obj->item->variations[$i];
+                if($variation->variation_id == $variationID)
+                {
+                    curl_close($ch);
+                    return $variation->stock;
+                }
+            }
+        }
+        else
+        {
+            curl_close($ch);
+            return $obj->item->stock;
+        }
+        
+        
+        curl_close($ch);
+        return 0;
+    }
+    
+    function getItemShopee($itemID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+
+        $obj = json_decode($result);
+        if(!$obj->item)
+        {
+            writeToLog("cannot get item shopee itemID:" . $itemID );
+        }
+        
+        curl_close($ch);
+        return $obj->item;
+    }
+    
+    function getAllSkuShopee()
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //find item_id and variation_id
+        $url = "https://partner.shopeemobile.com/api/v1/items/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        $variations = array();
+        for($j=0; $j<60; $j++)//เผื่อไว้เป็น 60 ไม่อยากใส่ while(true)
+        {
+            //param
+            $pageEntries = 100;
+            $pageOffset = $j*$pageEntries;
+            $date = new DateTime();
+            $timestamp = $date->getTimestamp();//1586502149;
+            
+            
+            //payload
+            $paramBody = array();
+            $paramBody["pagination_offset"] = $pageOffset;
+            $paramBody["pagination_entries_per_page"] = $pageEntries;
+            $paramBody["partner_id"] = $partnerID;
+            $paramBody["shopid"] = $shopID;
+            $paramBody["timestamp"] = $timestamp;
+            
+            
+            $payload = json_encode($paramBody);
+            writeToLog("payload:" . $payload);
+            
+            
+            $contentLength = strlen($payload);
+            $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+            
+            
+            //header
+            $header = array();
+            $header[] = 'Host:' . $host;
+            $header[] = 'Content-Type:' . $contentType;
+            $header[] = 'Content-Length:' . $contentLength;
+            $header[] = 'Authorization:' . $authorization;
+            writeToLog("header:" . json_encode($header));
+            
+            
+            //set header and payload
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            
+            
+            //exec curl
+            $result = curl_exec($ch);
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curl_errno = curl_errno($ch);
+            if ($http_status==503)
+            {
+                writeToLog( "HTTP Status == 503");
+            }
+              
+            if ($result === false)
+            {
+                writeToLog('Curl error: ' . curl_error($ch));
+            }
+            
+
+            $obj = json_decode($result);
+            
+            for($i=0; $i<sizeof($obj->items); $i++)
+            {
+                $item = $obj->items[$i];
+
+                if(sizeof($item->variations) > 0)
+                {
+                    for($k=0; $k<sizeof($item->variations); $k++)
+                    {
+                        $variation = $item->variations[$k];
+    //                    if($variation->variation_sku == $sku)
+                        {
+                            $variation = array();
+                            $variation["item_id"] = $item->item_id;
+                            $variation["item_sku"] = $item->item_sku;
+                            $variation["variation_id"] = $item->variation_id;
+                            $variation["variation_sku"] = $item->variation_sku;
+                            $variations[] = $variation;
+//                            echo "<br>".$item->item_id.";".$item->item_sku.";".$variation->variation_id.";".$variation->variation_sku;
+                        }
+                    }
+                }
+                else
+                {
+    //                if($item->item_sku == $sku)
+                    {
+                        $variation = array();
+                        $variation["item_id"] = $item->item_id;
+                        $variation["item_sku"] = $item->item_sku;
+                        $variation["variation_id"] = 0;
+                        $variation["variation_sku"] = "";
+                        $variations[] = $variation;
+//                        echo "<br>".$item->item_id.";".$item->item_sku.";"."0".";"."";
+                    }
+                }
+            }
+            
+            if(sizeof($obj->items) < 100)
+            {
+                return $variations;
+//                break;
+            }
+        }
+    }
+    
+    function getAllVariationsShopee($sku)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //find item_id and variation_id
+        $url = "https://partner.shopeemobile.com/api/v1/items/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        $variations = array();
+        for($j=0; $j<60; $j++)//เผื่อไว้เป็น 60 ไม่อยากใส่ while(true)
+        {
+            //param
+            $pageEntries = 100;
+            $pageOffset = $j*$pageEntries;
+            $date = new DateTime();
+            $timestamp = $date->getTimestamp();//1586502149;
+            
+            
+            //payload
+            $paramBody = array();
+            $paramBody["pagination_offset"] = $pageOffset;
+            $paramBody["pagination_entries_per_page"] = $pageEntries;
+            $paramBody["partner_id"] = $partnerID;
+            $paramBody["shopid"] = $shopID;
+            $paramBody["timestamp"] = $timestamp;
+            
+            
+            $payload = json_encode($paramBody);
+            writeToLog("payload:" . $payload);
+            
+            
+            $contentLength = strlen($payload);
+            $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+            
+            
+            //header
+            $header = array();
+            $header[] = 'Host:' . $host;
+            $header[] = 'Content-Type:' . $contentType;
+            $header[] = 'Content-Length:' . $contentLength;
+            $header[] = 'Authorization:' . $authorization;
+            writeToLog("header:" . json_encode($header));
+            
+            
+            //set header and payload
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            
+            
+            //exec curl
+            $result = curl_exec($ch);
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curl_errno = curl_errno($ch);
+            if ($http_status==503)
+            {
+                writeToLog( "HTTP Status == 503");
+            }
+              
+            if ($result === false)
+            {
+                writeToLog('Curl error: ' . curl_error($ch));
+            }
+            
+
+            $obj = json_decode($result);
+            
+            
+            for($i=0; $i<sizeof($obj->items); $i++)
+            {
+                $item = $obj->items[$i];
+                if($item->item_sku == "middleton")
+                {
+                    continue;
+                }
+                if(sizeof($item->variations) > 0)
+                {
+                    for($k=0; $k<sizeof($item->variations); $k++)
+                    {
+                        $variation = $item->variations[$k];
+                        if($variation->variation_sku == $sku)
+                        {
+                            $foundVariation = array();
+                            $foundVariation["item_id"] = $item->item_id;
+                            $foundVariation["variation_id"] = $variation->variation_id;
+                            $variations[] = $foundVariation;
+                        }
+                    }
+                }
+                else
+                {
+                    if($item->item_sku == $sku)
+                    {
+                        $foundVariation = array();
+                        $foundVariation["item_id"] = $item->item_id;
+                        $foundVariation["variation_id"] = 0;
+                        $variations[] = $foundVariation;
+                    }
+                }
+            }
+            
+            if(sizeof($obj->items) < 100)
+            {
+                break;
+            }
+        }
+        return $variations;
+    }
+    
+    function getAllVariationsShopeeInApp($sku)
+    {
+        $sql = "select * from shopeeProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        $variations = array();
+        for($i=0; $i<sizeof($selectedRow); $i++)
+        {
+            $shopeeProduct = $selectedRow[$i];
+            
+            $variation =  array();
+            $variation["item_id"] = intval($shopeeProduct["ItemID"]);
+            $variation["variation_id"] = intval($shopeeProduct["VariationID"]);
+            $variations[] = $variation;
+        }
+        return $variations;
+    }
+    
+    function hasShopeeProduct($sku)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //find item_id and variation_id
+        $url = "https://partner.shopeemobile.com/api/v1/items/get";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        $variations = array();
+        for($j=0; $j<60; $j++)//เผื่อไว้เป็น 60 ไม่อยากใส่ while(true)
+        {
+            //param
+            $pageEntries = 100;
+            $pageOffset = $j*$pageEntries;
+            $date = new DateTime();
+            $timestamp = $date->getTimestamp();//1586502149;
+            
+            
+            //payload
+            $paramBody = array();
+            $paramBody["pagination_offset"] = $pageOffset;
+            $paramBody["pagination_entries_per_page"] = $pageEntries;
+            $paramBody["partner_id"] = $partnerID;
+            $paramBody["shopid"] = $shopID;
+            $paramBody["timestamp"] = $timestamp;
+            
+            
+            $payload = json_encode($paramBody);
+            writeToLog("payload:" . $payload);
+            
+            
+            $contentLength = strlen($payload);
+            $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+            
+            
+            //header
+            $header = array();
+            $header[] = 'Host:' . $host;
+            $header[] = 'Content-Type:' . $contentType;
+            $header[] = 'Content-Length:' . $contentLength;
+            $header[] = 'Authorization:' . $authorization;
+            writeToLog("header:" . json_encode($header));
+            
+            
+            //set header and payload
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            
+            
+            //exec curl
+            $result = curl_exec($ch);
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curl_errno = curl_errno($ch);
+            if ($http_status==503)
+            {
+                writeToLog( "HTTP Status == 503");
+            }
+              
+            if ($result === false)
+            {
+                writeToLog('Curl error: ' . curl_error($ch));
+            }
+            
+
+            $obj = json_decode($result);
+            
+            
+            for($i=0; $i<sizeof($obj->items); $i++)
+            {
+                $item = $obj->items[$i];
+                if($item->item_sku == "middleton")
+                {
+                    continue;
+                }
+                if(sizeof($item->variations) > 0)
+                {
+                    for($k=0; $k<sizeof($item->variations); $k++)
+                    {
+                        $variation = $item->variations[$k];
+                        if($variation->variation_sku == $sku)
+                        {
+                            writeToLog("found shopee sku:".$sku);
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if($item->item_sku == $sku)
+                    {
+                        writeToLog("found shopee sku:".$sku);
+                        return true;
+                    }
+                }
+            }
+            
+            if(sizeof($obj->items) < 100)
+            {
+                break;
+            }
+        }
+        writeToLog("not found shopee sku");
+        return false;
+    }
+    
+    function getShopeeProduct($variaions,$sku)
+    {
+        for($i=0; $i<sizeof($variaions); $i++)
+        {
+            $variation = $variaions[$i];
+            $itemSku = $variation["item_sku"];
+            if($itemSku == $sku)
+            {
+                return $variation;
+            }
+        }
+        return null;
+    }
+    
+//    function updateStockQuantityShopee($sku,$quantity)
+//    {
+//        global $host;
+//        global $contentType;
+//        global $key;
+//        global $partnerID;
+//        global $shopID;
+//
+//
+//        //get all variations
+//        writeToLog( "sku:" . $sku);
+//        if($sku == "")
+//        {
+//            return false;
+//        }
+//        $variations = getAllVariationsShopee($sku);
+//        writeToLog( "all variations:" . json_encode($variations));
+//
+//
+//        //get stock
+//        for($i=0; $i<sizeof($variations); $i++)
+//        {
+//            $variation = $variations[$i];
+//            $stock = 0;
+//            $stock += $quantity;
+//
+//
+//            //update stock
+//            $updateVariations = array();
+//            $updateVariation = array();
+//            $updateVariation["item_id"] = $variation["item_id"];
+//            $updateVariation["variation_id"] = $variation["variation_id"];
+//            $updateVariation["stock"] = $stock;
+//            $updateVariations[] = $updateVariation;
+//            writeToLog( "update variation:" . json_encode($updateVariations));
+//            if($variation["variation_id"] > 0)
+//            {
+//                $ret = updateStockBatchShopee($updateVariations,"vars");
+//                return $ret;
+//            }
+//            else
+//            {
+//                $ret = updateStockBatchShopee($updateVariations,"items");
+//                return $ret;
+//            }
+//        }
+//        return false;
+//    }
+    
+    function updateStockQuantityShopeeInApp($sku,$quantity)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //get all variations
+        writeToLog( "sku:" . $sku);
+        if($sku == "")
+        {
+            return false;
+        }
+        
+        $fail = 0;
+        $updateItems = array();
+        $updateVariations = array();
+        $variations = getAllVariationsShopeeInApp($sku);
+        writeToLog( "all variations:" . json_encode($variations));
+        
+        
+        //get stock
+        for($i=0; $i<sizeof($variations); $i++)
+        {
+            $variation = $variations[$i];
+            $stock = 0;
+            $stock += $quantity;
+            
+            
+            //update stock
+//            $updateVariations = array();
+            $updateVariation = array();
+            $updateVariation["item_id"] = $variation["item_id"];
+            $updateVariation["variation_id"] = $variation["variation_id"];
+            $updateVariation["stock"] = $stock;
+            
+            if($variation["variation_id"] > 0)
+            {
+                $updateVariations[] = $updateVariation;
+            }
+            else
+            {
+                $updateItems[] = $updateVariation;
+            }
+        }
+        
+        writeToLog( "update items:" . json_encode($updateItems));
+        writeToLog( "update variation:" . json_encode($updateVariations));
+        
+        if(sizeof($updateItems)>0)
+        {
+            $ret = updateStockBatchShopee($updateItems,"items");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        if(sizeof($updateVariations)>0)
+        {
+            $ret = updateStockBatchShopee($updateVariations,"vars");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        
+        return $fail == 0;
+    }
+    
+//    function updateStockShopee($productName,$color,$size,$quantity)
+//    {
+//        writeToLog( "product:".$productName." / ".$color." / ".$size." / ".$quantity);
+//        if($size == "-")
+//        {
+//            $sku = $productName . $color;
+//        }
+//        else
+//        {
+//            $sku = $productName . $color . $size;
+//        }
+//        $sku = str_replace(" ","",$sku);
+//        $sku = strtolower($sku);
+//
+//
+//        updateStockQuantityShopee($sku,$quantity);
+//    }
+    
+    function addStockShopee($productName,$color,$size,$quantity)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        writeToLog( "product:".$productName." / ".$color." / ".$size." / ".$quantity);
+        if($size == "-")
+        {
+            $sku = $productName . $color;
+        }
+        else
+        {
+            $sku = $productName . $color . $size;
+        }
+        $sku = str_replace(" ","",$sku);
+        $sku = strtolower($sku);
+        
+        
+        //get all variations
+        writeToLog( "sku:" . $sku);
+        if($sku == "")
+        {
+            return;
+        }
+        $variations = getAllVariationsShopee($sku);
+        writeToLog( "all variations:" . json_encode($variations));
+        
+        
+        //get stock
+        for($i=0; $i<sizeof($variations); $i++)
+        {
+            $variation = $variations[$i];
+            writeToLog( "item id:" . $variation["item_id"] . ", variation id:" . $variation["variation_id"]);
+            $stock = getStockShopee($variation["item_id"],$variation["variation_id"]);
+            writeToLog( "stock:" . $stock);
+            $stock += $quantity;
+            if($stock < 0)
+            {
+                $stock = 0;
+            }
+            
+            //update stock
+            $updateVariations = array();
+            $updateVariation = array();
+            $updateVariation["item_id"] = $variation["item_id"];
+            $updateVariation["variation_id"] = $variation["variation_id"];
+            $updateVariation["stock"] = $stock;
+            $updateVariations[] = $updateVariation;
+            writeToLog( "update variation:" . json_encode($updateVariations));
+            if($variation["variation_id"] > 0)
+            {
+                updateStockBatchShopee($updateVariations,"vars");
+            }
+            else
+            {
+                updateStockBatchShopee($updateVariations,"items");
+            }
+        }
+    }
+    
+    function updateStockBatchShopee($variations,$type)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();//1586502149;
+        
+        
+        //url
+        if($type == "vars")
+        {
+            $url = "https://partner.shopeemobile.com/api/v1/items/update/vars_stock";
+        }
+        else
+        {
+            $url = "https://partner.shopeemobile.com/api/v1/items/update/items_stock";
+        }
+        writeToLog("url:".$url);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        $message = "";
+        for($i=0; $i<floor((sizeof($variations)-1)/50)+1; $i++)
+        {
+            $partVariations = array();
+            for($j=50*$i; $j<50*($i+1) && $j<sizeof($variations); $j++)
+            {
+                $partVariations[] = $variations[$j];
+            }
+            
+
+            //payload
+            $paramBody = array();
+            if($type == "vars")
+            {
+                $paramBody["variations"] = $partVariations;
+            }
+            else
+            {
+                $paramBody["items"] = $partVariations;
+            }
+            $paramBody["partner_id"] = $partnerID;
+            $paramBody["shopid"] = $shopID;
+            $paramBody["timestamp"] = $timestamp;
+            
+            
+            $payload = json_encode($paramBody);
+            writeToLog("payload:" . $payload);
+            
+            
+            $contentLength = strlen($payload);
+            $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+            
+            
+            //header
+            $header = array();
+            $header[] = 'Host:' . $host;
+            $header[] = 'Content-Type:' . $contentType;
+            $header[] = 'Content-Length:' . $contentLength;
+            $header[] = 'Authorization:' . $authorization;
+            writeToLog("header:" . json_encode($header));
+            
+            
+            //set header and payload
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            
+            
+            //exec curl
+            $result = curl_exec($ch);
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curl_errno = curl_errno($ch);
+            if ($http_status==503)
+            {
+                writeToLog( "HTTP Status == 503");
+                //notify
+                $message = "shopee update stock: HTTP Status == 503";
+                sendNotiToAdmin($message);
+            }
+              
+            if ($result === false)
+            {
+                writeToLog('Curl error: ' . curl_error($ch));
+                writeToLog( "Curl Errno returned $curl_errno");
+                //notify
+                $message = "shopee update stock: Curl Errno returned $curl_errno";
+                sendNotiToAdmin($message);
+            }
+            
+            $obj = json_decode($result);
+            if($obj->error != "")
+            {
+                //notify
+                $message = "shopee update stock -> $result->error:$result->msg";
+                sendNotiToAdmin($message);
+            }
+            else if(sizeof($obj->batch_result->failures)>0)
+            {
+                //notify
+                $message = "shopee update stock fail";
+                sendNotiToAdmin($message);
+            }
+            
+            writeToLog( "curl result:".$result);
+        }
+        
+        curl_close($ch);
+        return $message == "";
+    }
+    
+    function updateSkuShopee($itemID,$variationID,$itemSku,$variationSku,$sizeChart)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //param
+        $itemID = intval($itemID);//"3803984978";
+//        $itemSku = $_GET["itemSku"];
+        $variationID = intval($variationID);//"8843388604";
+//        $variationSku = $_GET["variationSku"];
+//        $sizeChart = intval($_GET["sizeChart"]);
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();//1586502149;
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/update";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        
+        //payload
+        $paramBody = array();
+        $paramBody["item_id"] = $itemID;
+        $paramBody["item_sku"] = $itemSku;
+        $variations = array();
+        $variation = array();
+        $variation["variation_id"] = $variationID;
+        $variation["variation_sku"] = $variationSku;
+        $variations[] = $variation;
+        $paramBody["variations"] = $variations;
+        $paramBody["size_chart"] = $sizeChart;
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            echo "HTTP Status == 503 <br/>";
+        }
+        
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            echo "Curl Errno returned $curl_errno <br/>";
+        }
+        
+        $obj = json_decode($result);
+        
+        if($obj->item)
+        {
+            echo "update success<br>";
+            writeToLog("update success");
+        }
+        
+        curl_close($ch);
+    }
+    
+    function getStockWordPress($productName,$color,$size)
+    {
+        global $wordPressDB;
+        global $con;
+        
+        
+        if($size == "-")
+        {
+            $productSku = $productName . $color;
+        }
+        else
+        {
+            $productSku = $productName . $color . $size;
+        }
+        
+        $productSku = str_replace(" ","",$productSku);
+        
+        
+        //variation
+        $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product.post_status = 'publish' and replace(replace(product_sku.meta_value,'-',''),' ','') = '$productSku'";
+        $selectedRow = getSelectedRow($sql);
+        if(sizeof($selectedRow)>0)
+        {
+            return true;
+        }
+        else
+        {
+//            echo $productSku . ",   ";
+            return false;
+        }
+    }
+    
+    function insertWebProduct($payload)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.ralamusic.com/saim/SAIMWordPressProductInsert.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($payload,JSON_UNESCAPED_UNICODE);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("wordpress product insert result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
+    }
+    
+    function hasWebProduct($sku)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.ralamusic.com/saim/SAIMHasWebProductGet.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode(array("sku"=>$sku));
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("has web product result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
+    }
+    
+    function hasWebProductInRalaWeb($sku)
+    {
+        global $wordPressDB;
+        global $con;
+        
+        
+        $productSku = $sku;
+        
+        
+        //variation
+        $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product_sku.meta_value = '$productSku'";// and product.post_status = 'publish'
+        $selectedRow = getSelectedRow($sql);
+        if(sizeof($selectedRow)>0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    function updateStockWordPressSku($sku,$quantity)
+    {
+        global $wordPressDB;
+        global $con;
+        
+        
+        $productSku = $sku;
+        $stockStatus = $quantity > 0?"instock":"outofstock";
+        
+        
+        //variation
+        $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product.post_status = 'publish' and product_sku.meta_value = '$productSku'";
+        $selectedRow = getSelectedRow($sql);
+        if(sizeof($selectedRow) > 0 && sizeof($selectedRow) <= 2)
+        {
+            for($j=0; $j<sizeof($selectedRow); $j++)
+            {
+                $postID = $selectedRow[$j]["ID"];
+                $sql = "update $wordPressDB.wp_postmeta set meta_value = '$stockStatus' where meta_key = '_stock_status' and post_id = '$postID'";
+                $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+                if($ret != "")
+                {
+                    writeToLog("updateStockWordPressSku fail [sku,quantity]:[$sku,$quantity], ".json_encode($ret));
+                    sendNotiToAdmin("updateStockWordPressSku fail [sku,quantity]:[$sku,$quantity]");
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    function updateStockWordPress($productName,$color,$size,$stockStatus)
+    {
+        global $wordPressDB;
+        global $con;
+//        $wordPressDB = "test_mini";//test
+        
+        if($size == "-")
+        {
+            $productSku = $productName . $color;
+        }
+        else
+        {
+            $productSku = $productName . $color . $size;
+        }
+        
+        $productSku = str_replace(" ","",$productSku);
+        
+        
+        //variation
+        $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product.post_status = 'publish' and replace(replace(product_sku.meta_value,'-',''),' ','') = '$productSku'";
+        $selectedRow = getSelectedRow($sql);
+        if(sizeof($selectedRow) > 0 && sizeof($selectedRow) <= 2)
+        {
+            for($j=0; $j<sizeof($selectedRow); $j++)
+            {
+                $postID = $selectedRow[$j]["ID"];
+                $sql = "update $wordPressDB.wp_postmeta set meta_value = '$stockStatus' where meta_key = '_stock_status' and post_id = '$postID'";
+                $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+                if($ret != "")
+                {
+                    writeToLog("updateStockWordPressSku fail [sku,quantity]:[$productSku,$quantity], ".json_encode($ret));
+                    sendNotiToAdmin("updateStockWordPressSku fail [sku,quantity]:[$productSku,$quantity]");
+                    return;
+                }
+            }
+        }
+        
+        
+        
+        //product
+        if($size != "-")//has parent sku
+        {
+            $parentSku = $productName . $color;
+            $parentSku = str_replace(" ","",$parentSku);
+            $updateParent = true;
+            
+            
+            
+            //check case out of stock with variation
+            if($stockStatus == "outofstock")
+            {
+                $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID LEFT JOIN $wordPressDB.wp_postmeta as product_status ON product.ID = product_status.post_ID WHERE product.post_type = 'product_variation' and product_sku.meta_key = '_sku' and product.post_status = 'publish' and replace(replace(product_sku.meta_value,'-',''),' ','') like '$parentSku%' and product_status.meta_value = 'instock'";
+                $selectedRow = getSelectedRow($sql);
+                if(sizeof($selectedRow) > 0)
+                {
+                    $updateParent = false;
+                }
+            }
+            
+            
+            if($updateParent)
+            {
+                $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product.post_status = 'publish' and replace(replace(product_sku.meta_value,'-',''),' ','') = '$parentSku'";
+                $selectedRow = getSelectedRow($sql);
+                if(sizeof($selectedRow) > 0 && sizeof($selectedRow) <= 2)
+                {
+                    for($j=0; $j<sizeof($selectedRow); $j++)
+                    {
+                        $postID = $selectedRow[$j]["ID"];
+                        $sql = "update $wordPressDB.wp_postmeta set meta_value = '$stockStatus' where meta_key = '_stock_status' and post_id = '$postID'";
+                        $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+                        if($ret != "")
+                        {
+                            writeToLog("updateStockWordPressSku fail [sku,quantity]:[$productSku,$quantity], ".json_encode($ret));
+                            sendNotiToAdmin("updateStockWordPressSku fail [sku,quantity]:[$productSku,$quantity]");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    function getDocument($docType,$orderItemIDs)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/document/get','GET');
+        $request->addApiParam('doc_type',$docType);
+        $request->addApiParam('order_item_ids',$orderItemIDs);
+        $resp = $c->execute($request, $accessToken);
+        
+        $respObject = json_decode($resp);
+        return $respObject;
+    }
+    
+    function setStatusToPacked($orderItemIDs)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+
+
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/pack');
+        $request->addApiParam('shipping_provider','LEX');
+        $request->addApiParam('delivery_type','dropship');
+        $request->addApiParam('order_item_ids',$orderItemIDs);
+        $resp = $c->execute($request, $accessToken);
+        
+        $respObject = json_decode($resp);
+        writeToLog("setStatusToPacked result:". json_encode($respObject));
+        if($respObject->code != "0")
+        {
+            $message = "cannot set status to packed, [order_item_id]: " . $orderItemIDs;
+            writeToLog($message);
+            sendNotiToAdmin($message);
+            return false;
+        }
+        return $respObject->data->order_items;
+    }
+    
+    function setInvoiceNo($orderItemID,$invoiceNo)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/invoice_number/set');
+        $request->addApiParam('order_item_id',$orderItemID);
+        $request->addApiParam('invoice_number',$invoiceNo);
+        $resp = $c->execute($request, $accessToken);
+        
+        $respObject = json_decode($resp);
+        writeToLog("setInvoice result:". json_encode($respObject));
+        if($respObject->code != "0")
+        {
+            $message = "cannot set invoice no., order no.: " . $invoiceNo . ", order_item_id: " . $orderItemID;
+            writeToLog($message);
+            sendNotiToAdmin($message);
+            return false;
+        }
+        return true;
+    }
+    
+    function setReadyToShip($orderItemIDs,$trackingNo)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+                
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/rts');
+        $request->addApiParam('delivery_type','dropship');
+        $request->addApiParam('order_item_ids',$orderItemIDs);
+        $request->addApiParam('shipment_provider','LEX');
+        $request->addApiParam('tracking_number',$trackingNo);
+        $resp = $c->execute($request, $accessToken);
+        
+        $respObject = json_decode($resp);
+        writeToLog("setReadyToShip result:". json_encode($respObject));
+        if($respObject->code != "0")
+        {
+            $message = "cannot set ready to ship, [order_item_id]: " . $orderItemIDs;
+            writeToLog($message);
+            sendNotiToAdmin($message);
+            return false;
+        }
+        return true;
+    }
+    
+    function getSkuFromLazadaSku($lazadaSku)
+    {
+        $sql = "select * from lazadaSku where lazadaSku = '$lazadaSku'";
+        $skuItem = executeQueryArray($sql);
+    
+        if(sizeof($skuItem) != 0)
+        {
+            return $skuItem[0]->Sku;
+        }
+        
+        return $lazadaSku;
+    }
+    
+    function getLazadaProducts()
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/products/get','GET');
+        $request->addApiParam('filter','live');
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        return $respObject->data->products;
+    }
+    
+    function getOrderLazada($orderNo)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/get','GET');
+        $request->addApiParam('order_id',$orderNo);
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        $order = $respObject->data;
+        $orderNo = $order->order_number;
+        $orderItems = getOrderItemLazada($orderNo);
+        $order->items = $orderItems;
+        
+        return $order;
+    }
+    
+    function getPendingOrdersLazada()
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        $orders = array();
+        for($i=0; $i<4; $i++)//set max 4 times
+        {
+            $c = new LazopClient($url,$appKey,$appSecret);
+            $request = new LazopRequest('/orders/get','GET');
+            $request->addApiParam('status','pending');
+            $request->addApiParam('sort_direction','ASC');
+            $request->addApiParam('offset',$i*100);
+            $request->addApiParam('limit','100');
+            $request->addApiParam('update_after','2020-01-01T09:00:00+08:00');
+            $request->addApiParam('sort_by','updated_at');            
+            $resp = $c->execute($request, $accessToken);
+            $respObject = json_decode($resp);
+            
+            
+            
+            
+            if(sizeof($respObject->data->orders) == 0)
+            {
+                break;
+            }
+            else
+            {
+                $orders = array_merge($orders,$respObject->data->orders);
+            }
+        }
+        
+        
+        
+        //fill order items for all orders
+        for($i=0; $i<sizeof($orders); $i++)
+        {
+            $orderNo = $orders[$i]->order_number;
+            $orderItems = getOrderItemLazada($orderNo);
+            $orders[$i]->items = $orderItems;
+        }
+        return $orders;
+    }
+    
+    function getOrderItemLazada($orderNo)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/order/items/get','GET');
+        $request->addApiParam('order_id',$orderNo);
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        return $respObject->data;
+    }
+    
+    function getStockQuantityLazada($sku)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+
+//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('seller_sku',$sku);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        
+        if(($respObject->data) != null)
+        {
+            return $respObject->data->skus[0]->quantity;
+        }
+        else
+        {
+            writeToLog("cannot get stock quantity lazada sku:" . $sku);
+            return 0;
+        }
+    }
+    
+    function hasLazadaProduct($sku)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+
+//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('seller_sku',$sku);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        
+        if(($respObject->data) != null)
+        {
+            writeToLog("found lazada sku:".$sku);
+            return true;
+        }
+        else
+        {
+            writeToLog("not found lazada sku:".$sku);
+            return false;
+        }
+    }
+    
+    function addStockLazada($productName, $color, $size,$updateQuantity)
+    {
+        //set sku
+        if($size == "-")
+        {
+            $sku = $productName . $color;
+        }
+        else
+        {
+            $sku = $productName . $color . $size;
+        }
+        $sku = str_replace(" ","",$sku);
+        $sku = strtolower($sku);
+        
+        
+        //get lazada sku
+        $sku = getLazadaSku($sku);
+        
+        
+        //get stock quantity
+        writeToLog("get stock quantity sku:" . $sku);
+        $quantity = getStockQuantityLazada($sku);
+        writeToLog("get quantity:" . $quantity);
+        
+        
+        //update quantity
+        $quantity += $updateQuantity;
+        if($quantity < 0)
+        {
+            $quantity = 0;
+        }
+        
+        
+        writeToLog("update quantity:" . $quantity);
+        updateStockQuantityLazada($sku,$quantity);
+    }
+    
+    function updateStockQuantityLazadaInApp($sku,$quantity)
+    {
+        $sql = "select * from lazadaProduct where sku = '$sku'";
+        $selectedRow = getSelectedRow($sql);
+        if(sizeof($selectedRow) > 0)
+        {
+            return updateStockQuantityLazada($sku,$quantity);
+        }
+        return true;
+    }
+    
+    function updateStockQuantityLazada($sku,$quantity)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        //update part
+        $payLoad = file_get_contents('./lazadaUpdateQuantityTemplate2.php');
+        $payLoad = str_replace("#sku#",$sku,$payLoad);
+        $payLoad = str_replace("#quantity#",$quantity,$payLoad);
+            
+            
+//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/price_quantity/update','POST');
+        $request->addApiParam('payload',$payLoad);
+        $resp = $c->execute($request, $accessToken);
+        writeToLog("update stock quantity lazada result:".json_encode($resp));
+        $respObject = json_decode($resp);
+        
+        if($respObject->code == "0")
+        {
+            writeToLog("update quantity success, sku:" . $sku . ", quantity:" . $quantity);
+            return true;
+        }
+//        else if($respObject->message == "SELLER_SKU_NOT_FOUND")
+//        {
+//            writeToLog("sku:" . $sku . " not found, quantity:" . $quantity);
+//            return true;
+//        }
+        else
+        {
+            writeToLog("lazada update stock fail:".json_encode($respObject->detail));
+            //notify
+            $message = "lazada update stock fail:".json_encode($respObject->detail);
+            sendNotiToAdmin($message);
+            return false;
+        }
+    }
+    
+    function getLazadaAccessToken()
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $refreshToken;
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/auth/token/refresh');
+        $request->addApiParam('refresh_token',$refreshToken);
+        $resp = $c->execute($request);
+        
+        $respObject = json_decode($resp);
+        writeToLog("accessToken:" .  $respObject->access_token);
+        return $respObject->access_token;
+    }
+    
+    function getStockLazada($productName, $color, $size)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        if($size == "-")
+        {
+            $searchProductName = $productName . $color;
+        }
+        else
+        {
+            $searchProductName = $productName . $color . $size;
+        }
+        $searchProductName = str_replace(" ","",$searchProductName);
+        $searchProductName = strtolower($searchProductName);
+        
+        
+        //get lazada sku
+        $searchProductName = getLazadaSku($searchProductName);
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('seller_sku',$searchProductName);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        
+        if(($respObject->data) != null)
+        {
+            return true;
+        }
+        else
+        {
+//            echo $searchProductName . ",    ";
+            return false;
+        }
+    }
+    
+    function getLazadaProduct($sku)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('seller_sku',$sku);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        
+        
+        if(($respObject->data) != null)
+        {
+            return $respObject->data;
+        }
+        else
+        {
+            writeToLog("Lazada: Cannot get product ($resp)");
+            return null;
+        }
+    }
+    
+    function updateStockLazada($productName, $color, $size,$quantity)
+    {
+        //set sku
+        if($size == "-")
+        {
+            $sku = $productName . $color;
+        }
+        else
+        {
+            $sku = $productName . $color . $size;
+        }
+        $sku = str_replace(" ","",$sku);
+        $sku = strtolower($sku);
+
+
+        //get lazada sku
+        $sku = getLazadaSku($sku);
+        
+
+
+        writeToLog("update sku:" . $sku);
+        writeToLog("update quantity:" . $quantity);
+        updateStockQuantityLazada($sku,$quantity);
+    }
+    
+    function getLazadaSku($sku)
+    {
+        $sql = "select * from lazadaSku where lazadaSku = '$sku'";
+        $skuItem = executeQueryArray($sql);
+    
+        if(sizeof($skuItem) != 0)
+        {
+            return $skuItem[0]->LazadaSku;
+        }
+        
+        return $sku;
+    }
+    
+    function executeMultiQueryArray($sql)
+    {
+        global $con;
+        if (mysqli_multi_query($con, $sql)) {
+            $arrOfTableArray = array();
+            $resultArray = array();
+            do {
+                /* store first result set */
+                if ($result = mysqli_store_result($con)) {
+                    while ($row = mysqli_fetch_object($result)) {
+                        array_push($resultArray, $row);
+                    }
+                    array_push($arrOfTableArray,$resultArray);
+                    $resultArray = [];
+                    mysqli_free_result($result);
+                }
+                if(!mysqli_more_results($con))
+                {
+                    break;
+                }
+            } while (mysqli_next_result($con));
+            
+            writeToLog("multi query sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            return $arrOfTableArray;
+        }
+        else
+        {
+            echo "executeMultiQueryArray fail:" . $sql;
+        }
+        return "";
+    }
+    
+    function executeQueryArray($sql)
+    {
+        global $con;
+
+        if ($result = mysqli_query($con, $sql)) {
+            $resultArray = array();
+
+            while ($row = mysqli_fetch_object($result)) {
+                array_push($resultArray, $row);
+            }
+            mysqli_free_result($result);
+            
+            writeToLog("query sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            return $resultArray;
+        }
+        else
+        {
+            echo "executeQueryArray fail:" . $sql;
+        }
+        return null;
+    }
+    
+    function printAllPost()
+    {
+        global $con;
+        $paramAndValue;
+        $i = 0;
+        foreach ($_POST as $param_name => $param_val)
+        {
+            if($i == 0)
+            {
+                $paramAndValue = "PostParam=Value: ";
+            }
+            $paramAndValue .= "$param_name=$param_val&";
+            $_POST['$param_name'] = mysqli_real_escape_string($con,$param_val);
+            $i++;
+        }
+        
+        if(sizeof($_POST) > 0)
+        {
+            writeToLog($paramAndValue);
+        }
+    }
+    
+    function printAllGet()
+    {
+        global $con;
+        $paramAndValue;
+        $i = 0;
+        foreach ($_GET as $param_name => $param_val)
+        {
+            if($i == 0)
+            {
+                $paramAndValue = "GetParam=Value: ";
+            }
+            $paramAndValue .= "$param_name=$param_val&";
+            $_POST['$param_name'] = mysqli_real_escape_string($con,$param_val);
+            $i++;
+        }
+        
+        if(sizeof($_GET) > 0)
+        {
+            writeToLog($paramAndValue);
+        }
+    }
+    
+    function putAlertToDevice($user)
+    {
+        global $con;
+        // push alert to device
+        // Set autocommit to on
+        mysqli_autocommit($con,TRUE);
+        writeToLog("set auto commit to on");
+        
+        
+        //alert query fail-> please check recent transactions again
+        $type = 'alert';
+        $action = '';
+        writeToLog("fail from push notification: " . $type);
+        
+        
+        $deviceToken = getDeviceTokenFromUsername($user);
+        $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync) values ('$deviceToken','$type','$action','',now())";        
+        $res = mysqli_query($con,$sql);
+        if(!$res)
+        {
+            $error = "query fail, sql: " . $sql . ", modified user: " . $user . " error: " . mysqli_error($con);
+            writeToLog($error);
+        }
+        else
+        {
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $user);
+            
+            $pushSyncID = mysqli_insert_id($con);
+            writeToLog('pushsyncid: '.$pushSyncID);
+            $paramBody = array(
+                               'badge' => 0
+                               );
+            sendPushNotification($deviceToken, $paramBody);
+            //----------
+        }
+        mysqli_close($con);
+    }
+    
+    function setConnectionValue($dbName)
+    {
+        global $con;
+        global $con2;
+        global $globalDBName;
+        global $wordPressDB;
+        $host = "localhost";
+        $dbPassword = "123456";
+        
+        
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        global $appKeyJd;
+        global $appSecretJd;
+        global $accessTokenJd;
+        
+        
+        if($dbName == "")
+        {
+            $dbName = "MINIMALIST";
+            $globalDBName = $dbName;
+            $dbUser = $dbName;
+        }
+        else
+        {
+            $globalDBName = $dbName;
+            $dbUser = $dbName;
+            if($dbName == "RALAMUSIC")
+            {
+                //web
+                $wordPressDB = "RALAMUSIC";
+                
+                
+                //LAZADA
+                $url = "https://api.lazada.co.th/rest";
+                $appKey = "119433";
+                $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
+                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                
+                
+                //shopee
+                $key = "bc7b1996a69b9384eef86490a752d0c5388febc168b8aa0b3ed86066d5f0ba05";
+                $partnerID = 845652;
+                $shopID = 1396523;
+                
+                
+                //jd
+                $appKeyJd = "4f167657105d3afd732653da83fb49a5";
+                $appSecretJd = "7789c6f973f9c3ad22c1206c97382663";
+                $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
+                
+                $dbUser = "MINIMALIST";
+            }
+            else if( $dbName == "MINIMALISTTEST")
+            {
+                //shopee
+                $key = "adfd6427d69ccda13459756d57acb7f93002e134882c1da29917afdfd094a193";
+                $partnerID = 842613;
+                $shopID = 215964291;
+            }
+            else if( $dbName == "RALAMUSICTEST")
+            {
+                //web
+                $wordPressDB = "RALAMUSIC";
+                
+                
+                //LAZADA
+                $url = "https://api.lazada.co.th/rest";
+                $appKey = "119433";
+                $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
+                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                
+                
+                //shopee
+//                $key = " e11e4df1f0badd2d79fe2c1ca176a99de792d3b0456cef0dd97bfe6367f4f667";
+//                $partnerID = 842997;
+//                $shopID = 220004172;
+                $key = "bc7b1996a69b9384eef86490a752d0c5388febc168b8aa0b3ed86066d5f0ba05";
+                $partnerID = 845652;
+                $shopID = 1396523;
+                
+                
+                //jd
+                $appKeyJd = "4f167657105d3afd732653da83fb49a5";
+                $appSecretJd = "7789c6f973f9c3ad22c1206c97382663";
+                $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
+                
+                $dbUser = "MINIMALIST";
+            }
+            else if( $dbName == "RALAMUSICWEB")
+            {
+                //web
+                $wordPressDB = "ralamusi_2018a";
+                
+                
+                //LAZADA
+                $url = "https://api.lazada.co.th/rest";
+                $appKey = "119433";
+                $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
+                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                
+                
+                //shopee
+//                $key = " e11e4df1f0badd2d79fe2c1ca176a99de792d3b0456cef0dd97bfe6367f4f667";
+//                $partnerID = 842997;
+//                $shopID = 220004172;
+                $key = "bc7b1996a69b9384eef86490a752d0c5388febc168b8aa0b3ed86066d5f0ba05";
+                $partnerID = 845652;
+                $shopID = 1396523;
+                
+                
+                //jd
+                $appKeyJd = "4f167657105d3afd732653da83fb49a5";
+                $appSecretJd = "7789c6f973f9c3ad22c1206c97382663";
+                $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
+                
+                
+                $dbName = "ralamusi_2018a";
+                $dbUser = "ralamusi_2018a";
+                $dbPassword = "rala*2018";
+                $host = "localhost";
+//                $host = "ralamusic.com";
+            }
+        }
+        
+        
+//        $dbUser = "FFD";
+        
+        // Create connection
+        $con=mysqli_connect($host,$dbUser,$dbPassword,$dbName);
+        $con2=mysqli_connect($host,$dbUser,$dbPassword,$dbName);
+
+        
+        $timeZone = mysqli_query($con,"SET SESSION time_zone = '+07:00'");
+        mysqli_set_charset($con, "utf8");
+        $_POST["modifiedDate"] = date("Y-m-d H:i:s");
+    }
+    
+    function getDeviceTokenFromUsername($user)
+    {
+        global $con;
+        $sql = "select DeviceToken from useraccount where username = '$user'";
+        $selectedRow = getSelectedRow($sql);
+        $deviceToken = $selectedRow[0]['DeviceToken'];
+        
+        
+        writeToLog('getDeviceTokenFromUsername deviceToken: ' . $deviceToken);
+        return $deviceToken;
+    }
+    function doQueryTask($con,$sql,$user)
+    {
+        $res = mysqli_query($con,$sql);        
+        if(!$res)
+        {
+            $error = "query fail, sql: " . $sql . ", modified user: " . $user . " error: " . mysqli_error($con);
+            writeToLog($error);
+            
+            
+            // Rollback transaction
+            mysqli_rollback($con);
+            $response = array('status' => $error, 'sucess'=>false);
+            return $response;
+        }
+        else
+        {
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+        }
+        return "";
+    }
+    function doQueryTask2($con,$sql,$user)
+    {
+        $res = mysqli_query($con,$sql);
+        if(!$res)
+        {
+            $error = "query fail, sql: " . $sql . ", modified user: " . $user . " error: " . mysqli_error($con);
+            writeToLog($error);
+            
+    
+            $response = array('status' => $error);
+            return $response;
+        }
+        else
+        {
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+        }
+        return "";
+    }
+
+    function doPushNotificationTaskToDevice($con,$user,$deviceToken,$selectedRow,$type,$action)
+    {
+        $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync) values ('$deviceToken','$type','$action','" . json_encode($selectedRow, JSON_UNESCAPED_UNICODE) . "',now())";
+        $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+        if($ret != "")
+        {
+            mysqli_rollback($con);
+            return $ret;
+        }
+        $pushSyncID = mysqli_insert_id($con);
+        writeToLog('pushsyncid: '.$pushSyncID);
+        
+        return "";
+    }
+    
+    function doPushNotificationTask($con,$user,$deviceToken,$selectedRow,$type,$action)
+    {
+        $pushDeviceTokenList = getDeviceTokenList($deviceToken);
+        
+        foreach ($pushDeviceTokenList as $iDeviceToken)
+        {
+            //query statement
+            if(strcmp($type,"sProductSales") == 0)
+            {
+                $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync) values ('$iDeviceToken','$type','$action','" . $selectedRow . "',now())";
+            }
+            else if(strcmp($type,"sCompareInventory") == 0)
+            {
+                $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync) values ('$iDeviceToken','$type','$action','" . $selectedRow . "',now())";
+            }
+            else
+            {
+                $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync) values ('$iDeviceToken','$type','$action','" . json_encode($selectedRow, JSON_UNESCAPED_UNICODE) . "',now())";
+            }
+            $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+            if($ret != "")
+            {
+                mysqli_rollback($con);
+                return $ret;
+            }
+            $pushSyncID = mysqli_insert_id($con);
+            writeToLog('pushsyncid: '.$pushSyncID);
+        }
+        return "";
+    }
+    
+    function doPushNotificationTaskAsLog($con,$user,$deviceToken,$selectedRow,$type,$action)
+    {
+        //query statement
+        $sql = "insert into pushSync (DeviceToken, TableName, Action, Data, TimeSync,TimeSynced) values ('$deviceToken','$type','delete log','" . json_encode($selectedRow, true) . "',now(),now())";
+        $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+        if($ret != "")
+        {
+            mysqli_rollback($con);
+            return $ret;
+        }
+        $pushSyncID = mysqli_insert_id($con);
+        writeToLog('delete log pushsyncid: '.$pushSyncID);
+        return "";
+    }
+    
+    function sendPushNotificationToAllDevices()
+    {
+        $pushDeviceTokenList = getAllDeviceTokenList();
+        
+        foreach ($pushDeviceTokenList as $iDeviceToken)
+        {
+            sendPushNotificationToDevice($iDeviceToken);
+        }
+    }
+    
+    function sendPushNotificationToOtherDevices($deviceToken)
+    {
+        $pushDeviceTokenList = getDeviceTokenList($deviceToken);
+        foreach ($pushDeviceTokenList as $iDeviceToken)
+        {
+            sendPushNotificationToDevice($iDeviceToken);
+        }
+    }
+    
+    function sendPushNotificationToDevice($deviceToken)
+    {
+        $paramBody = array(
+                           'badge' => 0
+                           );
+        sendPushNotification($deviceToken, $paramBody);
+    }
+    
+    function doApplePushNotificationTask($con,$user,$deviceToken,$badge)
+    {
+        $deviceTokenAndCountNotSeenList = getDeviceTokenAndCountNotSeenList($user,$deviceToken);
+        foreach ($deviceTokenAndCountNotSeenList as $deviceTokenAndCountNotSeen)
+        {
+            $deviceTokenCountNotSeen = $deviceTokenAndCountNotSeen["DeviceToken"];
+            $countNotSeen = $deviceTokenAndCountNotSeen["CountNotSeen"];
+            $username = $deviceTokenAndCountNotSeen["Username"];
+            writeToLog('device token: ' . $deviceToken. ', count not seen: ' . $countNotSeen);
+            $updateBadge = $badge+$countNotSeen;
+            
+
+            //query statement
+            $sql = "update useraccount set countnotseen = '$updateBadge' where username = '$username'";
+            $res = mysqli_query($con,$sql);
+            if(!$res)
+            {
+                $error = "query fail, sql: " . $sql . ", modified user: " . $user . " error: " . mysqli_error($con);
+                writeToLog($error);
+                
+                
+                $response = array('status' => $error);
+                return $response;
+            }
+            else
+            {
+                writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            }
+ 
+            $paramBody = array(
+                               'badge' => $updateBadge
+                               );
+            sendApplePushNotification($deviceTokenCountNotSeen, $paramBody);
+        }
+        return "";
+    }
+    
+    function updateCountNotSeen($con,$user,$deviceToken,$badge)
+    {
+        $deviceTokenAndCountNotSeenList = getDeviceTokenAndCountNotSeenList($user,$deviceToken);
+        foreach ($deviceTokenAndCountNotSeenList as $deviceTokenAndCountNotSeen)
+        {
+            $deviceTokenCountNotSeen = $deviceTokenAndCountNotSeen["DeviceToken"];
+            $countNotSeen = $deviceTokenAndCountNotSeen["CountNotSeen"];
+            $username = $deviceTokenAndCountNotSeen["Username"];
+            writeToLog('device token: ' . $deviceToken. ', count not seen: ' . $countNotSeen);
+            writeToLog('badge to add: ' . $badge);
+            $updateBadge = $badge+$countNotSeen;
+            
+            
+            //query statement
+            $sql = "update useraccount set countnotseen = $updateBadge where username = '$username'";
+            $ret = doQueryTask2($con,$sql,$_POST["modifiedUser"]);
+            if($ret != "")
+            {
+//                mysqli_rollback($con);
+                return $ret;
+            }
+            
+            $paramBody = array(
+                               'badge' => $updateBadge
+                               );
+            sendPushNotification($deviceTokenCountNotSeen, $paramBody);
+        }
+        return "";
+    }
+    
+    function getSelectedRow($sql)
+    {
+        global $con;        
+        if ($result = mysqli_query($con, $sql))
+        {
+            $resultArray = array();
+            $tempArray = array();
+            
+            while($row = mysqli_fetch_array($result))
+            {
+                $tempArray = $row;
+                array_push($resultArray, $tempArray);
+            }
+            mysqli_free_result($result);
+        }
+        if(sizeof($resultArray) == 0)
+        {
+            $error = "query: selected row count = 0, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"];
+            writeToLog($error);
+        }
+        else
+        {
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+        }
+        
+        return $resultArray;
+    }
+    
+    function getAllDeviceTokenList()
+    {
+        global $con;
+        $sql = "select DeviceToken from Device where DeviceToken != ''";
+        if ($result = mysqli_query($con, $sql))
+        {
+            $deviceTokenList = array();
+            while($row = mysqli_fetch_array($result))
+            {
+                $strDeviceToken = $row["DeviceToken"];
+                array_push($deviceTokenList, $strDeviceToken);
+            }
+            mysqli_free_result($result);
+        }
+        return $deviceTokenList;
+    }
+    
+    function getDeviceTokenList($modifiedDeviceToken)
+    {
+        global $con;
+        $sql = "select DeviceToken from Device where DeviceToken != '' and DeviceToken != '" . $modifiedDeviceToken . "'";
+        if ($result = mysqli_query($con, $sql))
+        {
+            $deviceTokenList = array();
+            while($row = mysqli_fetch_array($result))
+            {
+                $strDeviceToken = $row["DeviceToken"];
+                array_push($deviceTokenList, $strDeviceToken);
+            }
+            mysqli_free_result($result);
+        }
+
+        return $deviceTokenList;
+    }
+    
+    function getDeviceTokenAndCountNotSeenList($modifiedUser,$modifiedDeviceToken)
+    {
+        global $con;
+        $sql = "select Device.DeviceToken, UserAccount.CountNotSeen, UserAccount.Username from Device left join UserAccount on Device.DeviceToken = UserAccount.DeviceToken where Device.DeviceToken != '" . $modifiedDeviceToken . "' and Device.DeviceToken != '' and UserAccount.PushOnSale = 1";
+        writeToLog("countNotSeenList: " . $sql);
+        if ($result = mysqli_query($con, $sql))
+        {
+            $deviceTokenAndCountNotSeenList = array();
+            while($row = mysqli_fetch_array($result))
+            {
+                $strDeviceToken = $row["DeviceToken"];
+                $strCountNotSeen = $row["CountNotSeen"];
+                $strUsername = $row["Username"];
+                array_push($deviceTokenAndCountNotSeenList, array("DeviceToken" => $strDeviceToken,"CountNotSeen" => $strCountNotSeen,"Username"=>$strUsername));
+            }
+            mysqli_free_result($result);
+        }
+        return $deviceTokenAndCountNotSeenList;
+    }
+    
+    function writeToLogFromParentFolder($message)
+    {
+        global $globalDBName;
+        $mday = getdate()["mday"];
+        $day = sprintf("%02d", $mday);
+        $mon = getdate()["mon"];
+        $month = sprintf("%02d", $mon);
+        $year = getdate()["year"];
+        $logPath = './' . $globalDBName . '/TransactionLog/';
+        $logFile = 'saimTransactinLog' . $year . $month . $day . '.log';
+        if (!file_exists($logPath)) {
+            mkdir($logPath, 0777, true);
+        }
+        $logPath = $logPath . $logFile;
+        
+        
+        if ($fp = fopen($logPath, 'at'))
+        {
+            fwrite($fp, date('c') . ' ' . $message . PHP_EOL);
+            fclose($fp);
+        }
+    }
+    
+    function writeToLog($message)
+    {
+        global $globalDBName;
+        $mday = getdate()["mday"];
+        $day = sprintf("%02d", $mday);
+        $mon = getdate()["mon"];
+        $month = sprintf("%02d", $mon);
+        $year = getdate()["year"];
+        
+        $fileName = 'saimTransactinLog' . $year . $month . $day . '.log';
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/SAIM/' . $globalDBName . '/TransactionLog/';
+        if (!file_exists($filePath))
+        {
+            mkdir($filePath, 0777, true);
+        }
+        
+        $filePath = $filePath . $fileName;
+        
+        
+        if ($fp = fopen($filePath, 'at'))
+        {
+            $arrMessage = explode("\\n",$message);
+            if(sizeof($arrMessage) > 1)
+            {
+                foreach($arrMessage as $eachLine)
+                {
+                    $newMessge .= PHP_EOL . $eachLine ;
+                }
+            }
+            else
+            {
+                $newMessge = $message;
+            }
+            
+            fwrite($fp, date('c') . ' ' . $newMessge . PHP_EOL);
+            fclose($fp);
+        }
+    }
+
+    function writeToErrorLog($message)
+    {
+        global $globalDBName;
+        $mday = getdate()["mday"];
+        $day = sprintf("%02d", $mday);
+        $mon = getdate()["mon"];
+        $month = sprintf("%02d", $mon);
+        $year = getdate()["year"];
+        
+        $fileName = 'saimErrorLog' . $year . $month . $day . '.log';
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/SAIM/' . $globalDBName . '/TransactionLog/';
+        if (!file_exists($filePath))
+        {
+            mkdir($filePath, 0777, true);
+        }
+        
+        $filePath = $filePath . $fileName;
+        
+        
+        if ($fp = fopen($filePath, 'at'))
+        {
+            $arrMessage = explode("\\n",$message);
+            if(sizeof($arrMessage) > 1)
+            {
+                foreach($arrMessage as $eachLine)
+                {
+                    $newMessge .= PHP_EOL . $eachLine ;
+                }
+            }
+            else
+            {
+                $newMessge = $message;
+            }
+            
+            fwrite($fp, date('c') . ' ' . $newMessge . PHP_EOL);
+            fclose($fp);
+        }
+    }
+    
+    function sendPushNotification($strDeviceToken,$arrBody)
+    {
+//        writeToLog("send push to device: " . $strDeviceToken . ", body: " . json_encode($arrBody));
+//        global $pushFail;
+//        $token = $strDeviceToken;
+//        $pass = 'jill';
+//        $message = 'คุณพิสุทธิ์ กำลังไปเขาใหญ่กับฉัน แกอยากได้อะไรไหมกั๊ง (สายน้ำผึ้ง)pushnotification';
+//
+//
+//        $ctx = stream_context_create();
+//        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
+//        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
+//
+//
+//        if(!$pushFail)
+//        {
+//            $fp = stream_socket_client(
+//                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
+//                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+//        }
+//
+//
+//        if (!$fp)
+//        {
+//            $pushFail = true;
+//            $error = "ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
+//            writeToLog($error);
+//
+//            return;
+//        }
+//
+//
+//        $body['aps'] = $arrBody;
+//        $json = json_encode($body);
+//        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
+//        $result = fwrite($fp, $msg, strlen($msg));
+//        if (!$result)
+//        {
+//            $status = "0";
+//            writeToLog("push notification: fail, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+//        }
+//        else
+//        {
+//            $status = "1";
+//            writeToLog("push notification: success, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+//        }
+//
+//        fclose($fp);
+//        return $status;
+    }
+    function sendApplePushNotification($strDeviceToken,$arrBody)
+    {
+        global $pushFail;
+        $token = $strDeviceToken;
+        $pass = 'jill';
+        $message = 'คุณพิสุทธิ์ กำลังไปเขาใหญ่กับฉัน แกอยากได้อะไรไหมกั๊ง (สายน้ำผึ้ง)pushnotification';
+        
+        
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
+        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
+        
+        
+        if(!$pushFail)
+        {            
+            $fp = stream_socket_client(
+                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
+                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+        }
+        
+        
+        if (!$fp)
+        {
+            $pushFail = true;
+            $error = "apple push: ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
+            writeToLog($error);
+            
+            return;
+        }
+        
+        
+        $body['aps'] = $arrBody;
+        $json = json_encode($body);
+        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
+        $result = fwrite($fp, $msg, strlen($msg));
+        if (!$result)
+        {
+            $status = "0";
+            writeToLog("apple push notification: fail, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+        }
+        else
+        {
+            $status = "1";
+            writeToLog("apple push notification: success, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+        }
+        
+        fclose($fp);
+        return $status;
+    }
+    function sendTestApplePushNotification($strDeviceToken,$arrBody)
+    {
+        global $pushFail;
+        $token = $strDeviceToken;
+        $pass = 'jill';
+        $message = 'คุณพิสุทธิ์ กำลังไปเขาใหญ่กับฉัน แกอยากได้อะไรไหมกั๊ง (สายน้ำผึ้ง)pushnotification';
+        
+        
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
+        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
+        
+        
+        if(!$pushFail)
+        {
+            $fp = stream_socket_client(
+                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
+                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+        }
+        
+        
+        if (!$fp)
+        {
+            $pushFail = true;
+            $error = "apple push: ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
+            writeToLog($error);
+            
+            return;
+        }
+        
+        
+        $body['aps'] = $arrBody;
+        $json = json_encode($body);
+        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
+        $result = fwrite($fp, $msg, strlen($msg));
+        if (!$result)
+        {
+            $status = "0";
+            writeToLog("apple push notification: fail, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+        }
+        else
+        {
+            $status = "1";
+            writeToLog("apple push notification: success, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
+        }
+        
+        fclose($fp);
+        return $status;
+    }
+
+    function sendLineNotify($sMessage)
+    {
+        global $lineNotifyToken;
+        
+        sendNotifyToDevice($lineNotifyToken,$sMessage);
+    }
+    
+    function sendNotiToAdmin($sMessage)
+    {
+        global $lineAdminToken;
+        global $globalDBName;
+        
+        sendNotifyToDevice($lineAdminToken,"[$globalDBName]".$sMessage);
+    }
+    
+    function sendNotifyToDevice($lineNotifyToken,$sMessage)
+    {
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
+        error_reporting(E_ALL);
+        date_default_timezone_set("Asia/Bangkok");
+
+
+        $sToken = $lineNotifyToken;
+//        $sToken = "UHpcdJ6MfMVkN3FBpKEyiapJjuUkKLDB3SWdCQLS1DL";
+//        $sMessage = "ทดสอบ reminder stock to testReminderStock Group....";
+
+        
+        $chOne = curl_init();
+        curl_setopt( $chOne, CURLOPT_URL, "https://notify-api.line.me/api/notify");
+        curl_setopt( $chOne, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt( $chOne, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt( $chOne, CURLOPT_POST, 1);
+        curl_setopt( $chOne, CURLOPT_POSTFIELDS, "message=".$sMessage);
+        $headers = array( 'Content-type: application/x-www-form-urlencoded', 'Authorization: Bearer '.$sToken.'', );
+        curl_setopt($chOne, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt( $chOne, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec( $chOne );
+
+        //Result error
+        if(curl_error($chOne))
+        {
+            writeToLog('error:' . curl_error($chOne));
+        }
+        else {
+            $result_ = json_decode($result, true);
+            writeToLog( "status : ".$result_['status']);
+            writeToLog( "message : ". $result_['message']);
+        }
+        curl_close( $chOne );
+    }
+    
+    function luhnAlgorithm($number)
+    {
+        $stack = 0;
+        $number = str_split(strrev($number));
+
+        foreach ($number as $key => $value)
+        {
+            if ($key % 2 == 0)
+            {
+                $value = array_sum(str_split($value * 2));
+            }
+            $stack += $value;
+        }
+        $stack %= 10;
+
+        if ($stack != 0)
+        {
+            $stack -= 10;     $stack = abs($stack);
+        }
+
+
+        $number = implode('', array_reverse($number));
+        $number = $number . strval($stack);
+        return $number;
+    }
+    
+    function randomPassword() {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array(); //remember to declare $pass as an array
+        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); //turn the array into a string
+    }
+?>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:summary="@string/text_bluetooth_setting"
+        android:title="@string/text_bluetooth_setting">
+        <ListPreference
+            android:entries="@array/bt_devicename_array"
+            android:entryValues="@array/bt_devicename_array_value"
+            android:key="bt_isdiscoverable"
+            android:title="@string/text_bt_isdiscoverable" />
+
+        <EditTextPreference
+            android:enabled="true"
+            android:key="bt_devicename"
+            android:title="@string/text_bt_devicename" />
+
+        <ListPreference
+            android:entries="@array/bootmode_array"
+            android:entryValues="@array/bootmode_array_value"
+            android:key="bt_bootmode"
+            android:title="@string/text_bt_bootmode" />
+
+        <ListPreference
+            android:entries="@array/enable_array"
+            android:entryValues="@array/enable_array_value"
+            android:key="bt_auto_connection"
+            android:title="@string/text_bt_auto_connection" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
