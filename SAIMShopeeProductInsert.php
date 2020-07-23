@@ -55,44 +55,53 @@
     $sql = "select * from mainproduct where sku = '$sku'";
     $product = executeQueryArray($sql);
     $primaryCategory = $product[0]->PrimaryCategory;
-
+    $productBrand = $product[0]->Brand;
     
     $sql = "select * from categoryMapping where lazadaCategoryID = '$primaryCategory'";
     $selectedRow = getSelectedRow($sql);
     $attributesProduct = array();//id, value(options)
     if(sizeof($selectedRow) > 0)
     {
-        $shopeeCategoryID = $selectedRow[0]["ShopeeCategoryID"];
-        $attributes = getShopeeAttributes(intval($shopeeCategoryID));
-
-        
-        for($i=0; $i<sizeof($attributes); $i++)//rala ส่วนมากมี 1 attribute_id
+        for($k=0; $k<sizeof($selectedRow); $k++)
         {
-            $attribute = $attributes[$i];
+            $shopeeCategoryID = $selectedRow[$k]["ShopeeCategoryID"];
+            $attributes = getShopeeAttributes(intval($shopeeCategoryID));
+
             
-            $foundAttribute = false;
-            for($j=0; $j<sizeof($attribute->options); $j++)
+            for($i=0; $i<sizeof($attributes); $i++)//rala ส่วนมากมี 1 attribute_id
             {
-                $option = $attribute->options[$j];
-                if(strpos($option, $lazadaProduct->attributes->brand) !== false)
+                $attribute = $attributes[$i];
+                
+                $foundAttribute = false;
+                for($j=0; $j<sizeof($attribute->options); $j++)
                 {
-                    $foundAttribute = true;
-                    $attributeValue = $option;
-                    break;
+                    $option = $attribute->options[$j];
+                    if(stripos($option, $productBrand) !== false)
+                    {
+                        $foundAttribute = true;
+                        $attributeValue = $option;
+                        break;
+                    }
+                }
+                
+                if($foundAttribute)
+                {
+                    $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
+                    $attributesProduct[] = $attribute1;
                 }
             }
             
             if($foundAttribute)
             {
-                $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                $attributesProduct[] = $attribute1;
-            }
-            else
-            {
-                $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                $attributesProduct[] = $attribute1;
+                break;
             }
         }
+        if(!$foundAttribute)
+        {
+            $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
+            $attributesProduct[] = $attribute1;
+        }
+        
     }
     else
     {
@@ -123,11 +132,12 @@
     $price = floatval($product[0]->Price);//skus[0]->price
     $stock = intval($product[0]->Quantity);//skus[0]->quantity
     $itemSku = $product[0]->Sku;//skus[0]->SellerSku
+    $salePrice = floatval($lazadaProduct->skus[0]->special_price);
     $weight = floatval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
     $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
     $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
     $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
-    $status = "UNLIST";//NORMAL, UNLIST
+    $status = "NORMAL";//NORMAL, UNLIST
     $daysToShip = 2;
     $isPreOrder = false;
     $condition = "NEW";
@@ -234,7 +244,7 @@
     $paramBody["category_id"] = $categoryId;
     $paramBody["name"] = $name;
     $paramBody["description"] = $description;
-    $paramBody["price"] = $price;
+    $paramBody["price"] = $salePrice;
     $paramBody["stock"] = $stock;
     $paramBody["item_sku"] = $itemSku;
     $paramBody["weight"] = $weight;
@@ -264,7 +274,7 @@
         
         if($result->item_id)
         {
-            $itemID = $obj->item_id;
+            $itemID = $result->item_id;
             
             //insert into shopeeProduct
             $sql = "insert into shopeeProduct (itemID,sku,modifiedUser) values('$itemID','$sku','$modifiedUser')";

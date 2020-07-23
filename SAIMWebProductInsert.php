@@ -36,11 +36,11 @@
     {
         if($insert)
         {
-            $message = "เพิ่มสินค้าใน JD ไม่สำเร็จ";
+            $message = "เพิ่มสินค้าใน Web ไม่สำเร็จ";
         }
         else
         {
-            $message = "แก้ไขสินค้าใน JD ไม่สำเร็จ";
+            $message = "แก้ไขสินค้าใน Web ไม่สำเร็จ";
         }
         sendNotiToAdmin($message);
         $ret = array();

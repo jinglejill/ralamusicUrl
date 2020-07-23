@@ -14,7 +14,7 @@
     $lineAdminToken = "nYfj6oMyVaJDSg8QQzGivPXDJMPzXwMI837Egr2gZED";
     
     //wordPress
-    $wordPressDB = "mini_2018";
+    $wordPressDB = "mini_2020";
     $testWordPressDB = "test_mini";
     $pointPerBaht = 40;
     $minimumPointSpend = 4000;
@@ -28,8 +28,8 @@
     $url = "https://api.lazada.co.th/rest";
     $appKey = "117625";
     $appSecret = "qYcpF3J7HWqIeGQMnDGq14XRrEMGxHUS";
-    $accessToken = "500008016371jbdirixrC6jCTeMztHmlwHaGQ0FeakuvgOt3q1fea0119aeOn1zc";//start 27 june 8.30
-    $refreshToken = "50001800b37guoiAp4ss986HXDJxZWvk9CFSdsxvGHjQm0iyt1a510ee3yUP0lzb";//expire in 15544206 ประมาณปลายตุลา 2020
+    $accessToken = "50000800605qdIqLf1cbea84bzCkjN3OTAA6fYjpSAWRCehcTfqyzhklKVn6ipKd";//miniTokenStart: 17-07-2020 11:45
+    $refreshToken = "50001800105czGwTp11ba0674igsuDyiLkP3mUggbGYFHxftSEcigu8ssiU8VGrw";//expire in 15544206 ประมาณปลายตุลา 2020
 
     
     
@@ -37,7 +37,7 @@
 //    $url = "https://api.lazada.co.th/rest";
 //    $appKey = "119433";
 //    $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-//    $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+//    $accessToken = "50000600319bSIoacUNFRjijr1QSCay162f4243o1fHwavpHAeDt6r0TH94dvlVr";//ralaTokenStart: 17-07-2020 11:45
 //    $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
 
     
@@ -158,7 +158,7 @@
         
         return $c;
     }
-    
+        
     function JdImageUpload($url,$tmpFileName)
     {
         $currentFolder = getcwd();
@@ -176,6 +176,40 @@
         return $JdUrl;
     }
     
+    function updateSkuStatus($productId,$productStatus,$skuId,$skuStatus)
+    {
+        $c = getApiManager();
+        $c->method = "jingdong.gms.ItemModelGlobalService.updateItemModelSaleStates";
+        $param = array();
+        
+        $skuStatussSet = array();
+        $skuStatuss = array();
+        $skuStatuss["skuId"] = $skuId;
+        $skuStatuss["skuStatus"] = $skuStatus;
+        $skuStatuss["yn"] = 1;
+        $skuStatussSet[] = $skuStatuss;
+        
+        
+        $itemStatus = array();
+        $itemStatus["ip"] = "127.0.0.1";
+        $itemStatus["source"] = "SELF";
+        $itemStatus["opName"] = "erp";
+        $itemStatus["productId"] = $productId;
+        $itemStatus["productStatus"] = $productStatus;
+        $itemStatus["yn"] = 1;
+        $itemStatus["skuStatussSet"] = $skuStatussSet;
+        
+                
+        $param["itemStatus"] = $itemStatus;
+        $c->param_json = json_encode($param);
+        $resp = $c->call();
+        writeToLog("updateSkuStatus result:" . $resp);
+        
+        $openapi_data = json_decode($resp)->openapi_data;
+        $success = json_decode($openapi_data)->success;
+        return $success;
+    }
+    
     function getJdBrands($categoryId)
     {
         $c = getApiManager();
@@ -189,7 +223,6 @@
         $openapi_data = json_decode($resp)->openapi_data;
         $data = json_decode($openapi_data)->data;
         
-//        writeToLog(json_encode($data->brands));
         return $data->brands;
     }
     
@@ -237,7 +270,23 @@
         
         writeToLog("insertJdProduct result:" . $resp);
         $openapi_data = json_decode($resp)->openapi_data;
-        return json_decode($openapi_data);
+        $code = json_decode($openapi_data)->code;
+        $productId = json_decode($openapi_data)->data;
+        
+        if($code == 200)
+        {
+            $ret = getJdProduct($productId);
+            $skuId = $ret->skuList[0]->skuId;
+            $retUpdate = updateSkuStatus($productId,1,$skuId,1);
+            
+            return array("productId"=>$productId,"skuId"=>$skuId);
+        }
+        else
+        {
+            return null;
+        }
+        
+        return null;
     }
     
     function hasJdProduct($sku)
@@ -1434,7 +1483,7 @@
                 return;
             }
             
-            if(globalDBName == "RALAMUSIC" || globalDBName == "RALAMUSICTEST")
+            if($globalDBName == "RALAMUSIC" || $globalDBName == "RALAMUSICTEST")
             {
                 $variations = getAllVariationsShopeeInApp($searchSku);
             }
@@ -3306,7 +3355,8 @@
             }
             mysqli_free_result($result);
             
-            writeToLog("query sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            $rowCount = sizeof($resultArray);
+            writeToLog("query: row count = $rowCount, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
             return $resultArray;
         }
         else

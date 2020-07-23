@@ -6,9 +6,37 @@
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
     
-
+    
+    $salePrice = 2690.0;
+    echo number_format($salePrice, 2, '.', ',');
+    exit();
+//    SELECT *  FROM `wp_kpcode_url_posts` WHERE `kpcode_post_name` LIKE 'slugtest';
+//    DELETE from wp_kpcode_url_posts where id in (11901,11902);
+//    insert INTO wp_kpcode_url_posts (kpcode_post_id,kpcode_post_name,kpcode_type) values(19995,'testja','posts');
+    
+//    $productId = 9074566;
+//    $productStatus = 1;
+//    $skuId = 9074567;
+//    $skuStatus = 1;
+//
+//    $ret = updateSkuStatus($productId,$productStatus,$skuId,$skuStatus);
+////    $ret = getJdProduct($productId);
+//
+//
+//    echo json_encode($ret);
+//    exit();
+//    $sku = $_GET["sku"];
+//    $variations = getAllVariationsShopee($sku);
+//    echo json_encode($variations);
+//    exit();
     
     
+//    $orders = getPendingOrdersLazada();
+//    echo json_encode($orders);
+    
+//    $orders = getPendingOrdersJd();
+//    echo json_encode($orders);
+//    exit();
     
     
 //    $ret = getJdProduct(2428150);
@@ -62,7 +90,7 @@
     
     
     
-//    $skuId = 8768597;
+//    $skuId = 9074924;
 //    $c = getApiManager();
 //    $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
 //    $c->param_json = '{"skuId":"' . $skuId . '","locale":"th"}';
@@ -71,7 +99,7 @@
 //    writeToLog("delete product jd result:" . $resp);
 //    echo $resp;
 //    exit();
-    
+//
     
     
 //    $openapi_data = json_decode($resp)->openapi_data;
@@ -154,8 +182,8 @@
 //    }
 //    exit();
 
-//    $mainProductQuantity = 8;
-//    $sku = "Vic-Firth-PAD6";
+//    $mainProductQuantity = 3;
+//    $sku = "Daddario-PWPS10-Pin-Black";
 //
 //
 //    //update product in lazada
@@ -173,7 +201,7 @@
 //    //        mysqli_close($con);
 //            $failMarketplace[] = "JD";
 //        }
-//    
+//
 //    exit();
 
     

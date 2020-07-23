@@ -8,7 +8,7 @@
     $url = "https://api.lazada.co.th/rest";
     $appKey = "119433";
     $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-    $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
+    $accessToken = "50000600319bSIoacUNFRjijr1QSCay162f4243o1fHwavpHAeDt6r0TH94dvlVr";//ralaTokenStart: 17-07-2020 11:45
     $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
 
 
@@ -30,12 +30,12 @@
     $file_contents = str_replace($accessToken,$newAccessToken,$file_contents);
     $file_contents = str_replace($refreshToken,$newRefreshToken,$file_contents);
     
-    //tokenStart: 19/06/2020 07:20
-    $regEx = "/tokenStart: [\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}/";
+    //ralaTokenStart: 19/06/2020 07:20
+    $regEx = "/ralaTokenStart: [\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}/";
     preg_match_all($regEx,$file_contents,$m);
     $founds = $m[0];
     $currentDateTime = date("d-m-Y H:i");
-    $tokenComment = "tokenStart: ".$currentDateTime;
+    $tokenComment = "ralaTokenStart: ".$currentDateTime;
 //    echo sizeof($founds);
 //    exit();
     for($i=0; $i<sizeof($founds); $i++)

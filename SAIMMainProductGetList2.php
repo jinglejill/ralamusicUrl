@@ -108,31 +108,7 @@
 //    writeToLog("product page list:".json_encode($productPage, JSON_UNESCAPED_UNICODE));
     //*****************************
     
-    
-//    $variations = getAllSkuShopee();
 
-    function hasShopeeProductOneTimeFeed($sku,$variations)
-    {
-        for($i=0; $i<sizeof($variations); $i++)
-        {
-            $variation = $variations[$i];
-            if($variation["variation_id"] == 0)
-            {
-                if($variation["item_sku"] == $sku)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                if($variation["variation_sku"] == $sku)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     
     //set has sku in various channel
     for($i=0; $i<sizeof($productPage); $i++)
@@ -141,20 +117,16 @@
         $sku = $product->Sku;
 
         //hasLazadaProduct
-//        $hasProduct = hasLazadaProduct($sku);
         $hasProduct = hasLazadaProductInApp($sku);
         $product->LazadaExist = $hasProduct?1:0;
         
         
         //hasShopeeProduct
-//        $hasProduct = hasShopeeProductOneTimeFeed($sku,$variations);
-//        $hasProduct = hasShopeeProduct($sku);
         $hasProduct = hasShopeeProductInApp($sku);
         $product->ShopeeExist = $hasProduct?1:0;
 
 
         //hasJdProduct
-//        $hasProductJd = hasJdProduct($sku);
         $hasProduct = hasJdProductInApp($sku);
         $product->JdExist = $hasProduct?1:0;
      

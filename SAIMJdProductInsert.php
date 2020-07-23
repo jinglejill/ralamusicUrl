@@ -131,7 +131,7 @@
     $sku0["outerId"] = $sku;
     $sku0["jdPrice"] = $price;
     $sku0["stockNum"] = $stock;
-    $sku0["skuStatus"] = 0;
+//    $sku0["skuStatus"] = 1;
     $sku0["productCode"] = $sku;
     $sku0["upcCode"] = $sku;
     $sku0["length"] = strval($packageLength*10);
@@ -288,11 +288,11 @@
     {
         $result = insertJdProduct($paramBody);
         
-        if($result->code == "200")
+        if($result)
         {
-            $productId = $result->data;
-            $jdProduct = getJdProduct($productId);
-            $skuId = $jdProduct->skuList[0]->skuId;
+            $productId = $result["productId"];//$result->data;
+//            $jdProduct = getJdProduct($productId);
+            $skuId = $result["skuId"];//$jdProduct->skuList[0]->skuId;
             
             
             //insert into shopeeProduct

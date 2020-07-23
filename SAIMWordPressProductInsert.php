@@ -39,7 +39,13 @@
     $brand = $product[0]->Brand;
 //    $model = $lazadaProduct->attributes->Model;
     $model = str_ireplace($brand."-","",$sku);
-
+    $video = $lazadaProduct->attributes->video;
+    $commonTabTitle = str_replace("-"," ",$sku);
+    
+    $formatSalePrice = number_format($salePrice, 2, '.', ',');
+    $formatPrice = number_format($price, 2, '.', ',');
+    $metaDesc = $title . " ราคาน่าฟัง " . $formatSalePrice . " บ. จากราคาปกติ " . $formatPrice. " บ.";
+    
     //tag*****
     $tagList = array();
     $tagList[] = $brand . " " . $model;
@@ -54,8 +60,8 @@
     
     $post = array(
         'post_author' => 253,
-        'post_content' => '',
-        'post_status' => "pending",
+        'post_content' => $content,
+        'post_status' => "publish",
         'post_title' => $title,
         'post_parent' => '',
         'post_type' => "product",
@@ -99,6 +105,12 @@
     update_post_meta( $post_id, '_manage_stock', "no" );
     update_post_meta( $post_id, '_backorders', "no" );
     update_post_meta( $post_id, '_stock', "" );
+    update_post_meta( $post_id, '_basel_product_video', "$video" );
+    update_post_meta( $post_id, 'common_tab_tab_custom_title', "$commonTabTitle" );
+    update_post_meta( $post_id, 'common_tab', $content );
+    update_post_meta( $post_id, '_yoast_wpseo_metadesc', $metaDesc );
+    
+    wp_update_post( array('ID' => $post_id, 'post_excerpt' => $content ) );
     
     
     if($product[0]->MainImage != "")
@@ -136,6 +148,7 @@
     }
     
     echo json_encode(array("success"=>true));
+    writeToLog("query commit, file: " . basename(__FILE__));
     exit();
 
     
@@ -147,7 +160,8 @@
     /**
      * Attach images to product (feature/ gallery)
      */
-    function attach_product_thumbnail($post_id, $url, $flag){
+    function attach_product_thumbnail($post_id, $url, $flag)
+    {
 
         /*
          * If allow_url_fopen is enable in php.ini then use this
@@ -236,6 +250,6 @@
         }
             
     }
-    
+
     
 ?>

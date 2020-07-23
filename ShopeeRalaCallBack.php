@@ -1,13 +1,13 @@
 <?php
     include_once("dbConnect.php");
-    setConnectionValue("RALAMUSICTEST");
+    setConnectionValue("RALAMUSIC");
     writeToLog("file: " . basename(__FILE__));
     
     
     $json_str = file_get_contents('php://input');
     writeToLog("shopee rala callback json: " . $json_str);
-    sendNotiToAdmin("shopee order coming!");
-    
+//    sendNotiToAdmin("shopee order coming!");
+//    exit();
     
     // Check connection
     if (mysqli_connect_errno())
