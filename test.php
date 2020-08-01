@@ -1,15 +1,162 @@
 <?php
 
     include_once('dbConnect.php');
-    setConnectionValue("RALAMUSICTEST");
+    setConnectionValue("RALAMUSIC");
     ini_set("memory_limit","50M");
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
     
+    //shopee getallsku and id
+//    $variations = getAllSkuShopee();
     
-    $salePrice = 2690.0;
-    echo number_format($salePrice, 2, '.', ',');
+    
+    
+////  shopee find itemID
+//    $sku = $_GET["sku"];
+//    $variations = getAllVariationsShopee($sku);
+//    writeToLog("all variations:" . json_encode($variations));
+//    if(sizeof($variations) > 0)
+//    {
+//        $variation = $variations[0];
+//        $itemID = $variation["item_id"];
+//        $variationID = $variation["variation_id"];
+//        echo $itemID;
+////        $quantity = getStockShopee($itemID,$variationID);
+////        return $quantity;
+//    }
+//    exit();
+    
+    
+//    //jd get product detail by productId
+//    $productId = $_GET["productId"];
+//    $c2 = getApiManager();
+//    $c2->method = "com.productQueryApiService.queryProductById";
+//    $c2->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+//    $resp2 = $c2->call();
+//    $openapi_data2 = json_decode($resp2)->openapi_data;
+//    //    echo $openapi_data;
+//    $data2 = json_decode($openapi_data2)->data;
+////    echo $resp2;
+//    echo json_encode($data2);
+//    exit();
+    
+    
+    
+//    //jd search by sku
+//    //get productid
+//    $sku = $_GET["sku"];
+//    $c = getApiManager();
+//    $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+//    $param = array();
+//    $outerId = array();
+//    $outerId["outerId"] = $sku;
+//    $param["searchSkusByOuterIdParam"] = $outerId;
+////    echo json_encode($param);
+////    exit();
+//    $c->param_json = json_encode($param);
+//    $resp = $c->call();
+//
+//    echo $resp;
+//    writeToLog("get product jd skuId result:" . $resp);
+//    $openapi_data = json_decode($resp)->openapi_data;
+//    $objs = json_decode($openapi_data)->objs;
+//
+//    exit();
+
+
+
+    
+    
+    //prepare for delete selected sku in jd and shopee
+    $variations = getAllSkuShopee();
+    
+    $sql = "SELECT Sku FROM `mainproducttest`";
+    $selectedRow = getSelectedRow($sql);
+//    for($i=3; $i<sizeof($selectedRow); $i++)
+    for($i=20; $i<40; $i++)
+    {
+        $sku = $selectedRow[$i]["Sku"];
+        writeToLog("delete [i,sku]:[$i,$sku]");
+        
+        //get productid
+//        $sku = $_GET["sku"];
+        $c = getApiManager();
+        $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+        $param = array();
+        $outerId = array();
+        $outerId["outerId"] = $sku;
+        $param["searchSkusByOuterIdParam"] = $outerId;
+    //    echo json_encode($param);
+    //    exit();
+        $c->param_json = json_encode($param);
+        $resp = $c->call();
+        
+    //    echo $resp;
+        writeToLog("get product jd skuId result:" . $resp);
+        $openapi_data = json_decode($resp)->openapi_data;
+        $objs = json_decode($openapi_data)->objs;
+         
+        
+        $productSkuIds = array();
+        for($j=0; $j<sizeof($objs); $j++)
+        {
+            $productSkuId = array();
+            $productSkuId["productId"] = json_decode($objs[$j])->productId;
+            $productSkuId["skuId"] = json_decode($objs[$j])->skuId;
+            $productSkuIds[] = $productSkuId;
+            
+            
+            //jd delete by product id
+            $skuId = $productSkuId["skuId"];
+            $c = getApiManager();
+            $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
+            $c->param_json = '{"skuId":"' . $skuId . '","locale":"th"}';
+            $resp = $c->call();
+
+            $openapi_data = json_decode($resp)->openapi_data;
+            $code = json_decode($openapi_data)->code;
+            if($code != 200)
+            {
+                echo "[i,sku]:[$i,$sku] delete jd fail";
+            }
+            writeToLog("delete sku jd result:" . $resp);
+        }
+        
+        
+        
+        
+        
+        
+        
+        //shopee delete product by id
+        for($j=0; $j<sizeof($variations); $j++)
+        {
+            $variation = $variations[$j];
+            if($variation["item_sku"] == $sku)
+            {
+                $itemID = $variation["item_id"];
+                
+                //delete by id
+                $ret = deleteShopeeItemByItemID($itemID);
+                if(!$ret)
+                {
+                    echo "[i,sku]:[$i,$sku] delete shopee fail";
+                }
+                
+//                break;
+            }
+        }
+    }
+    
+
+    
+//    echo json_encode($productSkuIds);
+    
     exit();
+    
+   
+    
+    
 //    SELECT *  FROM `wp_kpcode_url_posts` WHERE `kpcode_post_name` LIKE 'slugtest';
 //    DELETE from wp_kpcode_url_posts where id in (11901,11902);
 //    insert INTO wp_kpcode_url_posts (kpcode_post_id,kpcode_post_name,kpcode_type) values(19995,'testja','posts');
@@ -90,15 +237,19 @@
     
     
     
-//    $skuId = 9074924;
-//    $c = getApiManager();
-//    $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
-//    $c->param_json = '{"skuId":"' . $skuId . '","locale":"th"}';
-//    $resp = $c->call();
+    
+//    Echoslap-VC201-US 7844318159 9311081
+//    Kirlin-Y-362PR-0.3M 6744318638 9311185
+//    Presonus-Eris-HD9 5644314361 9311305
+//    Echoslap-GFX-TG 6144314454 9311307
+//    Echoslap-GFX-TB 5744318953 9311300
 //
-//    writeToLog("delete product jd result:" . $resp);
-//    echo $resp;
-//    exit();
+//    The-One-KBTO-TOM1BK 5444307843 9310803
+//    The-One-KBTO-TOM1WH 5844306732 9310791
+//    Echoslap-VC201-MEX 4844312820 9310824
+//    Echoslap-VC201-UK 6544311303 9310813
+    
+    
 //
     
     

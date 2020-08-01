@@ -176,6 +176,20 @@
         return $JdUrl;
     }
     
+    function getJdProductByProductId($productId)
+    {
+        $c = getApiManager();
+        $c->method = "com.productQueryApiService.queryProductById";
+        $c->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+        $resp = $c->call();
+        $openapi_data = json_decode($resp)->openapi_data;
+        $data = json_decode($openapi_data)->data;
+    //    echo $resp;
+//        echo json_encode($data);
+        writeToLog("getJdProductByProductId result:" . $resp);
+        return $data;
+    }
+    
     function updateSkuStatus($productId,$productStatus,$skuId,$skuStatus)
     {
         $c = getApiManager();
@@ -255,6 +269,63 @@
         }
        
         return $orders;
+    }
+    
+    function insertJdProductCurl($param)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.minimalist.co.th/saim/SAIMJdProductInsert.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($param,JSON_UNESCAPED_UNICODE);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("wordpress product insert result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
     }
     
     function insertJdProduct($data)
@@ -507,6 +578,140 @@
         $shopeeOrderList = executeQueryArray($sql);
         
         return sizeof($shopeeOrderList);
+    }
+        
+    function insertShopeeProductCurl($param)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.minimalist.co.th/saim/SAIMShopeeProductInsert2.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($param,JSON_UNESCAPED_UNICODE);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("shopee product insert result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
+    }
+    
+    function deleteShopeeItemByItemID($itemID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/delete";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("delete shopee by ItemID result: " . $result);
+        
+        $resultObj = json_decode($result);
+        return $resultObj->item_id > 0;
     }
     
     function updateShopeeStock($itemID,$stock)
@@ -952,7 +1157,9 @@
             writeToLog( "Curl Errno returned $curl_errno");
         }
         
-        writeToLog("get shopee attributes: " . ($result != null));
+        
+//        writeToLog("get shopee attributes: " . ($result != null));
+        writeToLog("get shopee attributes result: " . ($result));
         return json_decode($result)->attributes;
     }
     
@@ -2577,7 +2784,7 @@
         }
     }
     
-    function insertWebProduct($payload)
+    function insertWebProductCurl($param)
     {
         global $contentType;
         
@@ -2591,12 +2798,69 @@
         
         
         //url
-        $url = "http://www.ralamusic.com/saim/SAIMWordPressProductInsert.php";
+        $url = "http://www.minimalist.co.th/saim/SAIMWebProductInsert.php";
         curl_setopt($ch, CURLOPT_URL, $url);
         
         
         //payload
-        $payload = json_encode($payload,JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($param,JSON_UNESCAPED_UNICODE);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("wordpress product insert result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
+    }
+    
+    function insertWebProduct($param)
+    {
+        global $contentType;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "http://www.ralamusic.com/SAIM/SAIMWordPressProductInsert.php";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($param,JSON_UNESCAPED_UNICODE);
         writeToLog("payload:" . $payload);
         
         
@@ -2648,7 +2912,7 @@
         
         
         //url
-        $url = "http://www.ralamusic.com/saim/SAIMHasWebProductGet.php";
+        $url = "http://www.ralamusic.com/SAIM/SAIMHasWebProductGet.php";
         curl_setopt($ch, CURLOPT_URL, $url);
         
         
@@ -3260,7 +3524,7 @@
         
         $resp = $c->execute($request, $accessToken);
         $respObject = json_decode($resp);
-        
+        writeToLog("getLazadaProduct:" . $resp);
         
         if(($respObject->data) != null)
         {
@@ -3549,7 +3813,7 @@
             else if( $dbName == "RALAMUSICWEB")
             {
                 //web
-                $wordPressDB = "ralamusi_2018a";
+                $wordPressDB = "ralamusi_2020";
                 
                 
                 //LAZADA
@@ -3575,9 +3839,9 @@
                 $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
                 
                 
-                $dbName = "ralamusi_2018a";
-                $dbUser = "ralamusi_2018a";
-                $dbPassword = "rala*2018";
+                $dbName = "ralamusi_2020";
+                $dbUser = "ralamusi_2020";
+                $dbPassword = "4p8GzaN8j9";
                 $host = "localhost";
 //                $host = "ralamusic.com";
             }
@@ -3886,6 +4150,7 @@
     
     function writeToLogFromParentFolder($message)
     {
+        
         global $globalDBName;
         $mday = getdate()["mday"];
         $day = sprintf("%02d", $mday);
@@ -3909,6 +4174,7 @@
     
     function writeToLog($message)
     {
+        $message = "pid: ".getmypid().", ".$message;
         global $globalDBName;
         $mday = getdate()["mday"];
         $day = sprintf("%02d", $mday);

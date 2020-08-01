@@ -16,6 +16,7 @@
     writeToLog("post json: " . $json_str);
    
     
+    
     // Set autocommit to off
     mysqli_autocommit($con,FALSE);
     writeToLog("set auto commit to off");

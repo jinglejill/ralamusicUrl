@@ -28,23 +28,41 @@
     
     $sku = $product[0]->Sku;
     $title = $product[0]->Name;//name
-    $content = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;
     $price = floatval($product[0]->Price);//skus[0]->price
-    $salePrice = $lazadaProduct->skus[0]->special_price;
+    $formatPrice = number_format($price, 2, '.', ',');
+    
     $stock = intval($product[0]->Quantity);//skus[0]->quantity
-    $packageWeight = intval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
-    $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
-    $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
-    $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
     $brand = $product[0]->Brand;
-//    $model = $lazadaProduct->attributes->Model;
     $model = str_ireplace($brand."-","",$sku);
-    $video = $lazadaProduct->attributes->video;
     $commonTabTitle = str_replace("-"," ",$sku);
     
+    
+    $salePrice = $lazadaProduct->special_price;
     $formatSalePrice = number_format($salePrice, 2, '.', ',');
-    $formatPrice = number_format($price, 2, '.', ',');
+    
+    $content = $lazadaProduct->short_description?$lazadaProduct->short_description:$lazadaProduct->name;
+    $contentEn = $lazadaProduct->short_description_en;
+    $video = $lazadaProduct->video;
+    $packageWeight = intval($lazadaProduct->package_weight);
+    $packageLength = intval($lazadaProduct->package_length);
+    $packageWidth = intval($lazadaProduct->package_width);
+    $packageHeight = intval($lazadaProduct->package_height);    
     $metaDesc = $title . " ราคาน่าฟัง " . $formatSalePrice . " บ. จากราคาปกติ " . $formatPrice. " บ.";
+    
+    
+//    $salePrice = $lazadaProduct->skus[0]->special_price;
+//    $content = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;
+//    $contentEn = $product[0]->short_description_en;
+//    $video = $lazadaProduct->attributes->video;
+//    $packageWeight = intval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
+//    $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
+//    $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
+//    $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
+    
+    
+    
+    
+    
     
     //tag*****
     $tagList = array();
@@ -65,7 +83,9 @@
         'post_title' => $title,
         'post_parent' => '',
         'post_type' => "product",
+        'post_name' => $sku
     );
+    writeToLog("wordpress post:".json_encode($post));
 
     //Create post
     $post_id = wp_insert_post( $post, $wp_error );
@@ -107,11 +127,14 @@
     update_post_meta( $post_id, '_stock', "" );
     update_post_meta( $post_id, '_basel_product_video', "$video" );
     update_post_meta( $post_id, 'common_tab_tab_custom_title', "$commonTabTitle" );
-    update_post_meta( $post_id, 'common_tab', $content );
+    update_post_meta( $post_id, 'common_tab', $contentEn );
     update_post_meta( $post_id, '_yoast_wpseo_metadesc', $metaDesc );
     
     wp_update_post( array('ID' => $post_id, 'post_excerpt' => $content ) );
     
+//    //set product slug
+//    $_product = wc_get_product( $post_id );
+//    $_product->set_slug('abc.php');
     
     if($product[0]->MainImage != "")
     {

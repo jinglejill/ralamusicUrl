@@ -18,7 +18,7 @@
     {
         $c = getApiManager();
         $c->method = "com.productQueryApiService.queryProducts";
-        $c->param_json = '{"queryProductParam":{"saleState":"-1","pageNum":"5","page":"'.$j.'","locale":"th_TH"}}';
+        $c->param_json = '{"queryProductParam":{"saleState":"-1","pageNum":"10","page":"'.$j.'","locale":"th_TH"}}';//-1:all, 10:deleted
         $resp = $c->call();
         //    echo $resp;
         $openapi_data = json_decode($resp)->openapi_data;

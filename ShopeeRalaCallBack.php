@@ -186,4 +186,5 @@
 
 
     writeToLog("end of callback");
+    exit();
 ?>

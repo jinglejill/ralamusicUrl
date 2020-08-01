@@ -8,6 +8,7 @@
     $storeName = json_decode($json_str,true)["storeName"];
     $sku = json_decode($json_str,true)["sku"];
     $insert = json_decode($json_str,true)["insert"];
+    $lazadaProduct = json_decode($json_str,true)["lazadaProduct"];
     $modifiedUser = json_decode($json_str,true)["modifiedUser"];
  
     
@@ -29,9 +30,52 @@
     writeToLog("set auto commit to off");
     
   
-    
-    $lazadaProduct = getLazadaProduct($sku);
+    if(!$lazadaProduct)
+    {
+//        $fromApp = true;
+        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
+        $lazadaProductList = executeQueryArray($sql);
+        writeToLog("lazada product list: ".json_encode($lazadaProductList));
+        if(sizeof($lazadaProductList) == 0)
+        {
+            $lazadaProductApi = getLazadaProduct($sku);
+            if($lazadaProductApi)
+            {
+                $lazadaProduct = (object)array();
+                $lazadaProduct->PrimaryCategory = mysqli_real_escape_string($con,$lazadaProductApi->primary_category);
+                $lazadaProduct->name = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name);
+                $lazadaProduct->name_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name_en);
+                $lazadaProduct->short_description = mysqli_real_escape_string($con,$lazadaProductApi->attributes->short_description);
+                $lazadaProduct->short_description_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->description_en);
+                $lazadaProduct->video = mysqli_real_escape_string($con,$lazadaProductApi->attributes->video);
+                $lazadaProduct->brand = mysqli_real_escape_string($con,$lazadaProductApi->attributes->brand);
+                $lazadaProduct->SellerSku = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->SellerSku);
+                $lazadaProduct->quantity = $lazadaProductApi->skus[0]->quantity;
+                $lazadaProduct->price = $lazadaProductApi->skus[0]->price;
+                $lazadaProduct->special_price = $lazadaProductApi->skus[0]->special_price;
+                $lazadaProduct->package_weight = $lazadaProductApi->skus[0]->package_weight;
+                $lazadaProduct->package_length = $lazadaProductApi->skus[0]->package_length;
+                $lazadaProduct->package_width = $lazadaProductApi->skus[0]->package_width;
+                $lazadaProduct->package_height = $lazadaProductApi->skus[0]->package_height;
+                $lazadaProduct->MainImage = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[0]);
+                $lazadaProduct->Image2 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[1]);
+                $lazadaProduct->Image3 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[2]);
+                $lazadaProduct->Image4 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[3]);
+                $lazadaProduct->Image5 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[4]);
+                $lazadaProduct->Image6 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[5]);
+                $lazadaProduct->Image7 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[6]);
+                $lazadaProduct->Image8 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[7]);
+            }
+        }
+        else
+        {
+            $lazadaProduct = $lazadaProductList[0];
+        }
+    }
     writeToLog("source lazada:". json_encode($lazadaProduct));
+    
+    
+//    if(sizeof($lazadaProductList) == 0)
     if(!$lazadaProduct)
     {
         if($insert)
@@ -76,12 +120,20 @@
     
     if($insert)
     {
-        $payload = array();
+        $param = array();
         unset($product[0]->ShortDescription);
-        $lazadaProduct->attributes->short_description = str_replace("\n","",$lazadaProduct->attributes->short_description);
-        $payload["lazadaProduct"] = $lazadaProduct;
-        $payload["product"] = $product;
-        $result = insertWebProduct($payload);
+//        if($fromApp)
+//        {
+//            $lazadaProduct->attributes->short_description = str_replace("\n","",$lazadaProduct->attributes->short_description);
+//        }
+//        else
+        {
+            $lazadaProduct->short_description = str_replace("\n","",$lazadaProduct->short_description);
+//            $lazadaProduct["attributes"]["short_description"] = str_replace("\n","",$lazadaProduct["attributes"]["short_description"]);
+        }
+        $param["lazadaProduct"] = $lazadaProduct;
+        $param["product"] = $product;
+        $result = insertWebProduct($param);
 //        $result = insertJdProduct($paramBody);
         
         if(!$result)
