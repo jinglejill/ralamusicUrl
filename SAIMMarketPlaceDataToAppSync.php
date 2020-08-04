@@ -1,26 +1,75 @@
 <?php
-
+//    //test
+//    header('Access-Control-Allow-Origin: *');
+//    header('Access-Control-Allow-Methods: GET, POST');
+//    header('Access-Control-Allow-Headers: Content-Type, Accept');
+ 
+    
+    
     include_once('dbConnect.php');
-//    setConnectionValue("MINIMALIST");
+    
     set_time_limit(1200);
   
-  
+    
+    
+    
+    
     $json_str = file_get_contents('php://input');
     $skus = json_decode($json_str)->skus;
     $storeName = json_decode($json_str)->storeName;
-
     
     
+//    $skus = $_POST["skus"];
+//    $storeName = $_POST["storeName"];
+    
+    
+    if(!$storeName)
+    {
+        $storeName = "RALAMUSIC";
+    }
+    if(!$modifiedUser)
+    {
+        $modifiedUser = "bot";
+    }
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $data["modifiedUser"]);
     writeToLog("post json: " . $json_str);
-   
+//    printAllPost();
+    
+    
+    
+    
+    
+//    writeToLog("skus:".json_encode($skus));
+    
     
     
     // Set autocommit to off
-    mysqli_autocommit($con,FALSE);
-    writeToLog("set auto commit to off");
+//    mysqli_autocommit($con,FALSE);
+//    writeToLog("set auto commit to off");
 
+    
+    
+    if($skus)
+    {
+//        $skus = explode(",",$skus);//post
+        
+        
+        $skuList = array();
+        for($i=0; $i<sizeof($skus); $i++)
+        {
+            $sku = (object)array();
+            $sku->Sku = trim($skus[$i]);
+            $skuList[] = $sku;
+        }
+    }
+    else
+    {
+        $sql = "select SellerSku as Sku from lazadaproducttemp where SellerSku not in (select sku from mainproduct)";
+        $skuList = executeQueryArray($sql);
+    }
+    
+    
     
     $insertSuccess = 0;
     $updateSuccess = 0;
@@ -31,32 +80,72 @@
     $insertFailShopee = array();
     $insertFailJd = array();
     $variations = getAllSkuShopee();
-    for($i=0; $i<sizeof($skus); $i++)
+    for($i=0; $i<sizeof($skuList); $i++)
     {
-        $sku = $skus[$i];
-        
+//        break;//test
+        $sku = $skuList[$i]->Sku;
+
         
         //main from lazada
         writeToLog("get product lazada sku:" . $sku);
-        $ret = getLazadaProduct($sku);
-        writeToLog("get product lazada sku ret:" . ($ret != null));
-        if($ret)
+        $lazadaProduct = null;
+        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
+        $lazadaProductList = executeQueryArray($sql);
+        writeToLog("lazada product list: ".json_encode($lazadaProductList));
+        if(sizeof($lazadaProductList) == 0)
         {
-            $name = mysqli_real_escape_string($con,$ret->attributes->name);
-            $primaryCategory = mysqli_real_escape_string($con,$ret->primary_category);
-            $brand = mysqli_real_escape_string($con,$ret->attributes->brand);
-            $sellerSku = mysqli_real_escape_string($con,$ret->skus[0]->SellerSku);
-            $quantity = $ret->skus[0]->quantity;
-            $specialPrice = $ret->skus[0]->special_price;
-            $price = $ret->skus[0]->price;
-            $mainImage = mysqli_real_escape_string($con,$ret->skus[0]->Images[0]);
-            $image2 = mysqli_real_escape_string($con,$ret->skus[0]->Images[1]);
-            $image3 = mysqli_real_escape_string($con,$ret->skus[0]->Images[2]);
-            $image4 = mysqli_real_escape_string($con,$ret->skus[0]->Images[3]);
-            $image5 = mysqli_real_escape_string($con,$ret->skus[0]->Images[4]);
-            $image6 = mysqli_real_escape_string($con,$ret->skus[0]->Images[5]);
-            $image7 = mysqli_real_escape_string($con,$ret->skus[0]->Images[6]);
-            $image8 = mysqli_real_escape_string($con,$ret->skus[0]->Images[7]);
+            $lazadaProductApi = getLazadaProduct($sku);
+            if($lazadaProductApi)
+            {
+                $lazadaProduct = (object)array();
+                $lazadaProduct->PrimaryCategory = $lazadaProductApi->primary_category;
+                $lazadaProduct->name = $lazadaProductApi->attributes->name;
+                $lazadaProduct->name_en = $lazadaProductApi->attributes->name_en;
+                $lazadaProduct->short_description = $lazadaProductApi->attributes->short_description;
+                $lazadaProduct->short_description_en = $lazadaProductApi->attributes->description_en;
+                $lazadaProduct->video = $lazadaProductApi->attributes->video;
+                $lazadaProduct->brand = $lazadaProductApi->attributes->brand;
+                $lazadaProduct->SellerSku = $lazadaProductApi->skus[0]->SellerSku;
+                $lazadaProduct->quantity = $lazadaProductApi->skus[0]->quantity;
+                $lazadaProduct->price = $lazadaProductApi->skus[0]->price;
+                $lazadaProduct->special_price = $lazadaProductApi->skus[0]->special_price;
+                $lazadaProduct->package_weight = $lazadaProductApi->skus[0]->package_weight;
+                $lazadaProduct->package_length = $lazadaProductApi->skus[0]->package_length;
+                $lazadaProduct->package_width = $lazadaProductApi->skus[0]->package_width;
+                $lazadaProduct->package_height = $lazadaProductApi->skus[0]->package_height;
+                $lazadaProduct->MainImage = $lazadaProductApi->skus[0]->Images[0];
+                $lazadaProduct->Image2 = $lazadaProductApi->skus[0]->Images[1];
+                $lazadaProduct->Image3 = $lazadaProductApi->skus[0]->Images[2];
+                $lazadaProduct->Image4 = $lazadaProductApi->skus[0]->Images[3];
+                $lazadaProduct->Image5 = $lazadaProductApi->skus[0]->Images[4];
+                $lazadaProduct->Image6 = $lazadaProductApi->skus[0]->Images[5];
+                $lazadaProduct->Image7 = $lazadaProductApi->skus[0]->Images[6];
+                $lazadaProduct->Image8 = $lazadaProductApi->skus[0]->Images[7];
+            }
+        }
+        else
+        {
+            $lazadaProduct = $lazadaProductList[0];
+        }
+
+        
+        if($lazadaProduct)
+        {            
+            $primaryCategory = $lazadaProduct->PrimaryCategory;
+            $name = mysqli_real_escape_string($con,$lazadaProduct->name);
+            $brand = mysqli_real_escape_string($con,$lazadaProduct->brand);
+            $sellerSku = mysqli_real_escape_string($con,$lazadaProduct->SellerSku);
+            $quantity = $lazadaProduct->quantity;
+            $price = $lazadaProduct->price;
+            $specialPrice = $lazadaProduct->special_price;
+            $mainImage = mysqli_real_escape_string($con,$lazadaProduct->MainImage);
+            $image2 = mysqli_real_escape_string($con,$lazadaProduct->Image2);
+            $image3 = mysqli_real_escape_string($con,$lazadaProduct->Image3);
+            $image4 = mysqli_real_escape_string($con,$lazadaProduct->Image4);
+            $image5 = mysqli_real_escape_string($con,$lazadaProduct->Image5);
+            $image6 = mysqli_real_escape_string($con,$lazadaProduct->Image6);
+            $image7 = mysqli_real_escape_string($con,$lazadaProduct->Image7);
+            $image8 = mysqli_real_escape_string($con,$lazadaProduct->Image8);
             $modifiedUser = "bot";
             
             
@@ -96,24 +185,31 @@
             $ret = hasLazadaProductInApp($sku);
             if(!$ret)
             {
-                $sql = "insert into lazadaProduct (Name,Sku,Price,MainImage,Quantity,ModifiedUser) values( '$name','$sellerSku','$price','$mainImage','$quantity','$modifiedUser')";
+                $sql = "insert into lazadaProduct (Sku,ModifiedUser) values( '$sellerSku','$modifiedUser')";
                 $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
                 if($ret != "")
                 {
                     $insertFailLazada[] = $sku;
                 }
             }
-            else
-            {
-                $sql = "update lazadaProduct set Name = '$name', sku = '$sku', price = '$price', mainImage = '$mainImage', quantity = '$quantity', modifiedUser = '$modifiedUser' where sku = '$sku'";
-                $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
-                if($ret != "")
-                {
-                    $updateFailLazada[] = $sku;
-                }
-            }
+//            else
+//            {
+//                $sql = "update lazadaProduct set Name = '$name', sku = '$sku', price = '$price', mainImage = '$mainImage', quantity = '$quantity', modifiedUser = '$modifiedUser' where sku = '$sku'";
+//                $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
+//                if($ret != "")
+//                {
+//                    $updateFailLazada[] = $sku;
+//                }
+//            }
         }
-        
+        else
+        {
+            $message = "sync data, get lazada product fail [i,sku]: [$i,$sku]";
+            sendNotiToAdmin($message);
+            writeToLog($message);
+            
+            continue;
+        }
         
         
         //shopee
@@ -129,12 +225,12 @@
             $variationSku = mysqli_real_escape_string($con,$ret["variation_sku"]);
             $quantity = 0;
             $modifiedUser = "bot";
-            
-            
+
+
             $ret = hasShopeeProductInApp($sku);
             if(!$ret)
             {
-                $sql = "insert into shopeeProduct (`Sku`, `ItemID`, `ItemSku`, `VariationID`, `VariationSku`, `Quantity`, `ModifiedUser`) values( '$itemSku','$itemID','$itemSku','$variaionID','$variationSku','$quantity','$modifiedUser')";
+                $sql = "insert into shopeeProduct (`Sku`, `ItemID`, `ItemSku`, `VariationID`, `VariationSku`, `ModifiedUser`) values( '$itemSku','$itemID','$itemSku','$variaionID','$variationSku','$modifiedUser')";
                 $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
                 if($ret != "")
                 {
@@ -142,27 +238,64 @@
                 }
             }
         }
-        
-        
+        else
+        {
+            //add product in shopee web
+            //add shopee product in app
+            $param = array();
+            $param["storeName"] = $storeName;
+            $param["sku"] = $sku;
+            $param["insert"] = true;
+            $param["lazadaProduct"] = $lazadaProduct;
+            $param["modifiedUser"] = $modifiedUser;
+
+            $result = insertShopeeProductCurl($param);
+            if(!$result)
+            {
+                //insert fail
+                $message = "add shopee product fail [i,sku]: [$i,$sku]";
+                sendNotiToAdmin($message);
+                writeToLog($message);
+            }
+        }
+
+
         //JD
         writeToLog("get product JD sku:" . $sku);
         $ret = getJdProductSkuIds($sku);
         writeToLog("get product JD sku ret:" . ($ret != null));
         if(sizeof($ret)>0)
         {
+            //check if sizeof(skuList) > 0
+            for($j=0; $j<sizeof($ret); $j++)
+            {
+                $productSkuId = $ret[0];
+                $productId = $productSkuId["productId"];
+                $data = getJdProductByProductId($productId);
+                if(sizeof($data->skuList)>0)
+                {
+                    $hasJdSku = true;
+                    break;
+                }
+            }
+        }
+
+
+        if($hasJdSku)
+        {
             $productSkuId = $ret[0];
             $productId = $productSkuId["productId"];
             $skuId = $productSkuId["skuId"];
-            
+
             $upcCode = "";
             $outId = "";
             $modifiedUser = "bot";
-            
-            
+
+
             $ret = hasJdProductInApp($sku);
             if(!$ret)
             {
-                $sql = "insert into jdProduct (`Sku`, `ProductId`, `SkuId`, `UpcCode`, `OuterId`, `ModifiedUser`) values('$sku','$productId','$skuId','$upcCode','$outerId','$modifiedUser')";
+                $sql = "insert into jdProduct (`Sku`, `ProductId`, `SkuId`, `ModifiedUser`) values('$sku','$productId','$skuId','$modifiedUser')";
                 $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
                 if($ret != "")
                 {
@@ -170,9 +303,72 @@
                 }
             }
         }
+        else
+        {
+            //add product in jd web
+            //add jd product in app
+            $param = array();
+            $param["storeName"] = $storeName;
+            $param["sku"] = $sku;
+            $param["insert"] = true;
+            $param["lazadaProduct"] = $lazadaProduct;
+            $param["modifiedUser"] = $modifiedUser;
+
+            $result = insertJdProductCurl($param);
+            if(!$result)
+            {
+                //insert fail
+                $message = "add jd product fail [i,sku]: [$i,$sku]";
+                sendNotiToAdmin($message);
+                writeToLog($message);
+            }
+        }
+
+
+        //web
+        writeToLog("get product web sku:" . $sku);
+        $ret = hasWebProduct($sku);
+        writeToLog("get product web sku ret:" . $ret);
+
+        if(!$ret)
+        {
+            //add product in web
+            $param = array();
+            $param["storeName"] = $storeName;
+            $param["sku"] = $sku;
+            $param["insert"] = true;
+            $param["lazadaProduct"] = $lazadaProduct;
+            $param["modifiedUser"] = $modifiedUser;
+
+            $result = insertWebProductCurl($param);
+            if(!$result)
+            {
+                //insert fail
+                $message = "add web product fail [i,sku]: [$i,$sku]";
+                sendNotiToAdmin($message);
+                writeToLog($message);
+            }
+        }
+        
+        
+        
+//        if($i == 1)
+//        {
+//            break;//test
+//        }
+        if($i > -1)//ทีละ 20
+        {
+            break;
+        }
     }
     
-    if(sizeof($skus) == $insertSuccess+$updateSuccess)
+    //test
+//    sleep(40);
+    
+    
+    
+    $sizeInsert = sizeof($skus)>20?20:sizeof($skus);//ทีละ 20
+    if($sizeInsert == $insertSuccess+$updateSuccess)
     {
         $success = true;
         $message = "**สำเร็จ**";
@@ -230,9 +426,12 @@
     
     
     
-    mysqli_commit($con);
+    
+    
+//    mysqli_commit($con);
     mysqli_close($con);
     echo json_encode(array("success"=>$success,"message"=>$message));
+    writeToLog(json_encode(array("success"=>$success,"message"=>$message), JSON_UNESCAPED_UNICODE));
     writeToLog("query commit, file: " . basename(__FILE__));
     exit();
     

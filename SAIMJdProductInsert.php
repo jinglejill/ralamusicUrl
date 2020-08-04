@@ -11,13 +11,7 @@
     $lazadaProduct = json_decode($json_str)->lazadaProduct;
     $modifiedUser = json_decode($json_str)->modifiedUser;
     
-//    $storeName = json_decode($json_str,true)["storeName"];
-//    $sku = json_decode($json_str,true)["sku"];
-//    $insert = json_decode($json_str,true)["insert"];
-//    $lazadaProduct = json_decode($json_str,true)["lazadaProduct"];
-//    $modifiedUser = json_decode($json_str,true)["modifiedUser"];
- 
-    
+
     
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
@@ -31,6 +25,7 @@
         echo "Failed to connect to MySQL: " . mysqli_connect_error();
     }
     
+    
     // Set autocommit to off
     mysqli_autocommit($con,FALSE);
     writeToLog("set auto commit to off");
@@ -38,7 +33,6 @@
   
     if(!$lazadaProduct)
     {
-//        $fromApp = true;
         $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
         $lazadaProductList = executeQueryArray($sql);
         writeToLog("lazada product list: ".json_encode($lazadaProductList));
@@ -48,14 +42,14 @@
             if($lazadaProductApi)
             {
                 $lazadaProduct = (object)array();
-                $lazadaProduct->PrimaryCategory = mysqli_real_escape_string($con,$lazadaProductApi->primary_category);
-                $lazadaProduct->name = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name);
-                $lazadaProduct->name_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name_en);
-                $lazadaProduct->short_description = mysqli_real_escape_string($con,$lazadaProductApi->attributes->short_description);
-                $lazadaProduct->short_description_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->description_en);
-                $lazadaProduct->video = mysqli_real_escape_string($con,$lazadaProductApi->attributes->video);
-                $lazadaProduct->brand = mysqli_real_escape_string($con,$lazadaProductApi->attributes->brand);
-                $lazadaProduct->SellerSku = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->SellerSku);
+                $lazadaProduct->PrimaryCategory = $lazadaProductApi->primary_category;
+                $lazadaProduct->name = $lazadaProductApi->attributes->name;
+                $lazadaProduct->name_en = $lazadaProductApi->attributes->name_en;
+                $lazadaProduct->short_description = $lazadaProductApi->attributes->short_description;
+                $lazadaProduct->short_description_en = $lazadaProductApi->attributes->description_en;
+                $lazadaProduct->video = $lazadaProductApi->attributes->video;
+                $lazadaProduct->brand = $lazadaProductApi->attributes->brand;
+                $lazadaProduct->SellerSku = $lazadaProductApi->skus[0]->SellerSku;
                 $lazadaProduct->quantity = $lazadaProductApi->skus[0]->quantity;
                 $lazadaProduct->price = $lazadaProductApi->skus[0]->price;
                 $lazadaProduct->special_price = $lazadaProductApi->skus[0]->special_price;
@@ -63,14 +57,14 @@
                 $lazadaProduct->package_length = $lazadaProductApi->skus[0]->package_length;
                 $lazadaProduct->package_width = $lazadaProductApi->skus[0]->package_width;
                 $lazadaProduct->package_height = $lazadaProductApi->skus[0]->package_height;
-                $lazadaProduct->MainImage = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[0]);
-                $lazadaProduct->Image2 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[1]);
-                $lazadaProduct->Image3 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[2]);
-                $lazadaProduct->Image4 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[3]);
-                $lazadaProduct->Image5 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[4]);
-                $lazadaProduct->Image6 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[5]);
-                $lazadaProduct->Image7 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[6]);
-                $lazadaProduct->Image8 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[7]);
+                $lazadaProduct->MainImage = $lazadaProductApi->skus[0]->Images[0];
+                $lazadaProduct->Image2 = $lazadaProductApi->skus[0]->Images[1];
+                $lazadaProduct->Image3 = $lazadaProductApi->skus[0]->Images[2];
+                $lazadaProduct->Image4 = $lazadaProductApi->skus[0]->Images[3];
+                $lazadaProduct->Image5 = $lazadaProductApi->skus[0]->Images[4];
+                $lazadaProduct->Image6 = $lazadaProductApi->skus[0]->Images[5];
+                $lazadaProduct->Image7 = $lazadaProductApi->skus[0]->Images[6];
+                $lazadaProduct->Image8 = $lazadaProductApi->skus[0]->Images[7];
             }
         }
         else
@@ -81,7 +75,6 @@
     writeToLog("source lazada:". json_encode($lazadaProduct));
     
     
-//    if(sizeof($lazadaProductList) == 0)
     if(!$lazadaProduct)
     {
         if($insert)
@@ -119,7 +112,6 @@
             for($j=0; $j<sizeof($brands); $j++)
             {
                 $brand = $brands[$j];
-//                writeToLog("stripos:".$brand->name.",".$productBrand);
                 if(stripos($brand->name, $productBrand) !== false)
                 {
                     $jdBrandID = $brand->brandId;
@@ -153,26 +145,9 @@
     $stock = intval($product[0]->Quantity);//skus[0]->quantity
     
     
-//    if($fromApp)
-//    {
-//        $enName = $lazadaProduct->attributes->name_en?$lazadaProduct->attributes->name_en:"";
-//        $appDescription = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;
-//        $pcDescription = $appDescription;
-//        $packageWeight = intval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
-//        $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
-//        $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
-//        $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
-//    }
-//    else
+
     {
-//        $enName = $lazadaProduct["name_en"];
-//        $appDescription = $lazadaProduct["short_description"]?$lazadaProduct["short_description"]:$lazadaProduct["name"];
-//        $pcDescription = $appDescription;
-//        $packageWeight = intval($lazadaProduct["package_weight"]);
-//        $packageLength = intval($lazadaProduct["package_length"]);
-//        $packageWidth = intval($lazadaProduct["package_width"]);
-//        $packageHeight = intval($lazadaProduct["package_height"]);
-        
+     
         
         $enName = $lazadaProduct->name_en;
         $appDescription = $lazadaProduct->short_description?$lazadaProduct->short_description:$lazadaProduct->name;
@@ -182,14 +157,6 @@
         $packageWidth = intval($lazadaProduct->package_width);
         $packageHeight = intval($lazadaProduct->package_height);
         
-        
-//        $enName = $lazadaProduct["attributes"]["name_en"]?$lazadaProduct["attributes"]["name_en"]:"";
-//        $appDescription = $lazadaProduct["attributes"]["short_description"]?$lazadaProduct["attributes"]["short_description"]:$lazadaProduct["attributes"]["name"];
-//        $pcDescription = $appDescription;
-//        $packageWeight = intval($lazadaProduct["skus"][0]["package_weight"]);//package_weight parseInt
-//        $packageLength = intval($lazadaProduct["skus"][0]["package_length"]);//package_length parseInt
-//        $packageWidth = intval($lazadaProduct["skus"][0]["package_width"]);//package_width parseInt
-//        $packageHeight = intval($lazadaProduct["skus"][0]["package_height"]);//package_height parseInt
     }
     
     $saleAttrs = array();
@@ -369,9 +336,8 @@
         
         if($result)
         {
-            $productId = $result["productId"];//$result->data;
-//            $jdProduct = getJdProduct($productId);
-            $skuId = $result["skuId"];//$jdProduct->skuList[0]->skuId;
+            $productId = $result["productId"];
+            $skuId = $result["skuId"];
             
             
             //insert into shopeeProduct
@@ -404,107 +370,6 @@
             exit();
         }
     }
-//    else
-//    {
-//        //update*********************************************************
-//        //updateItem,
-//        //updateItemImg,updatePrice,updateStock
-//
-//        $sql = "select * from shopeeProduct where sku = '$sku'";
-//        $shopeeProduct = executeQueryArray($sql);
-//        $itemID = $shopeeProduct[0]->ItemID;
-//
-//        $shopeeItem = getItemShopee($itemID);
-//
-//
-//
-//        $status = $shopeeItem->status;//"UNLIST";//NORMAL, UNLIST
-//        $daysToShip = $shopeeItem->days_to_ship;
-//        $isPreOrder = $shopeeItem->is_pre_order;
-//        $condition = $shopeeItem->condition;
-//        $sizeChart = $shopeeItem->size_chart;
-//        $logistics = $shopeeItem->logistics;
-//
-//
-//        $paramBody["item_id"] = intval($itemID);
-//        unset($paramBody["price"]);
-//        unset($paramBody["stock"]);
-//        unset($paramBody["images"]);
-//
-//
-//        $result = updateShopeeProduct($paramBody);
-//        $obj = json_decode($result);
-//
-//        if($obj->item_id)
-//        {
-//            //update success
-//
-//            $failData = array();
-//            $result = updateShopeeImages($itemID,$images);
-//            if(!$result->item)
-//            {
-//                $fail = 1;
-//                $failData[] = "รูปภาพ";
-//            }
-//
-//            $result = updateShopeePrice($itemID,$price);
-//            if(!$result->item)
-//            {
-//                $fail = 1;
-//                $failData[] = "ราคา";
-//            }
-//
-//            $result = updateShopeeStock($itemID,$quantity);
-//            if(!$result->item)
-//            {
-//                $fail = 1;
-//                $failData[] = "จำนวน";
-//            }
-//
-//
-//            //update fail
-//            for($i=0; $i<sizeof($failData); $i++)
-//            {
-//                if($i==0)
-//                {
-//                    $failMessage = $failData[$i];
-//                }
-//                else
-//                {
-//                    $failMessage .= ", " . $failData[$i];
-//                }
-//            }
-//
-//            $message = "แก้ไข" . $failMessage . " ใน Shopee ไม่สำเร็จ";
-//            sendNotiToAdmin($message);
-//
-//
-//            $ret = array();
-//            $ret["success"] = false;
-//            $ret["message"] = $message;
-//            mysqli_rollback($con);
-//            mysqli_close($con);
-//
-//            echo json_encode($ret);
-//            exit();
-//        }
-//        else
-//        {
-//            //update fail
-//            $message = "แก้ไขสินค้าใน Shopee ไม่สำเร็จ";
-//            sendNotiToAdmin($message);
-//
-//
-//            $ret = array();
-//            $ret["success"] = false;
-//            $ret["message"] = $message;
-//            mysqli_rollback($con);
-//            mysqli_close($con);
-//
-//            echo json_encode($ret);
-//            exit();
-//        }
-//    }
         
     
     mysqli_commit($con);

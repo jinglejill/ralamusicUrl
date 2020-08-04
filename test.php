@@ -1,10 +1,32 @@
 <?php
 
     include_once('dbConnect.php');
-    setConnectionValue("RALAMUSIC");
+    setConnectionValue("RALAMUSICTEST");
     ini_set("memory_limit","50M");
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
+    
+//    $sku = $_GET["sku"];
+//
+//
+//    //get from db
+//    $sql = "select * from lazadaproducttemp where sellersku = '$sku'";
+//    $ret = executeQueryArray($sql);
+//    echo $ret[0]->short_description;
+//
+//    echo "<br><br>";
+//
+//
+//    //get from api
+//    $ret = getLazadaProduct($sku);
+//    echo $ret->attributes->short_description;
+//
+//
+//
+//    exit();
+    
+    
+    
     
     //shopee getallsku and id
 //    $variations = getAllSkuShopee();
@@ -27,41 +49,41 @@
 //    exit();
     
     
-//    //jd get product detail by productId
-//    $productId = $_GET["productId"];
-//    $c2 = getApiManager();
-//    $c2->method = "com.productQueryApiService.queryProductById";
-//    $c2->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
-//    $resp2 = $c2->call();
-//    $openapi_data2 = json_decode($resp2)->openapi_data;
-//    //    echo $openapi_data;
-//    $data2 = json_decode($openapi_data2)->data;
-////    echo $resp2;
-//    echo json_encode($data2);
+    //jd get product detail by productId
+    $productId = $_GET["productId"];
+    $c2 = getApiManager();
+    $c2->method = "com.productQueryApiService.queryProductById";
+    $c2->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+    $resp2 = $c2->call();
+    $openapi_data2 = json_decode($resp2)->openapi_data;
+    //    echo $openapi_data;
+    $data2 = json_decode($openapi_data2)->data;
+//    echo $resp2;
+    echo json_encode($data2);
+    exit();
+    
+    
+    
+    //jd search by sku
+    //get productid
+    $sku = $_GET["sku"];
+    $c = getApiManager();
+    $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+    $param = array();
+    $outerId = array();
+    $outerId["outerId"] = $sku;
+    $param["searchSkusByOuterIdParam"] = $outerId;
+//    echo json_encode($param);
 //    exit();
-    
-    
-    
-//    //jd search by sku
-//    //get productid
-//    $sku = $_GET["sku"];
-//    $c = getApiManager();
-//    $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
-//    $param = array();
-//    $outerId = array();
-//    $outerId["outerId"] = $sku;
-//    $param["searchSkusByOuterIdParam"] = $outerId;
-////    echo json_encode($param);
-////    exit();
-//    $c->param_json = json_encode($param);
-//    $resp = $c->call();
-//
-//    echo $resp;
-//    writeToLog("get product jd skuId result:" . $resp);
-//    $openapi_data = json_decode($resp)->openapi_data;
-//    $objs = json_decode($openapi_data)->objs;
-//
-//    exit();
+    $c->param_json = json_encode($param);
+    $resp = $c->call();
+
+    echo $resp;
+    writeToLog("get product jd skuId result:" . $resp);
+    $openapi_data = json_decode($resp)->openapi_data;
+    $objs = json_decode($openapi_data)->objs;
+
+    exit();
 
 
 

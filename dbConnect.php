@@ -281,7 +281,7 @@
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+//        curl_setopt($ch, CURLOPT_FAILONERROR, true);
         
         
         //url
@@ -321,7 +321,7 @@
         }
         
         
-        writeToLog("wordpress product insert result:" . $result);
+        writeToLog("jd product insert result:" . $result);
         $obj = json_decode($result);
         
         
@@ -1159,7 +1159,7 @@
         
         
 //        writeToLog("get shopee attributes: " . ($result != null));
-        writeToLog("get shopee attributes result: " . ($result));
+//        writeToLog("get shopee attributes result: " . ($result));
         return json_decode($result)->attributes;
     }
     
@@ -2794,7 +2794,7 @@
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+//        curl_setopt($ch, CURLOPT_FAILONERROR, true);
         
         
         //url
@@ -2834,7 +2834,7 @@
         }
         
         
-        writeToLog("wordpress product insert result:" . $result);
+        writeToLog("web product insert result:" . $result);
         $obj = json_decode($result);
         
         
