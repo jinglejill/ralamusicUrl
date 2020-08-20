@@ -85,14 +85,18 @@
         'post_type' => "product",
         'post_name' => $sku
     );
-    writeToLog("wordpress post:".json_encode($post));
 
     //Create post
     $post_id = wp_insert_post( $post, $wp_error );
     if($post_id == 0)
     {
+        writeToLog("wordpress insert post fail, sku: ".$sku);
         echo json_encode(array("success"=>false));
         exit();
+    }
+    else
+    {
+        writeToLog("wordpress insert post success, sku: ".$sku);
     }
     if(sizeof($webCategoryNameList)>0)
     {

@@ -5,6 +5,7 @@
     //conection variable
     $con;
     $con2;
+    $modifiedUser;
     $globalDBName="SAIM";
     $dbUser = "FFD";
     $appImageUrl = "https://minimalist.co.th/saim";
@@ -28,8 +29,8 @@
     $url = "https://api.lazada.co.th/rest";
     $appKey = "117625";
     $appSecret = "qYcpF3J7HWqIeGQMnDGq14XRrEMGxHUS";
-    $accessToken = "50000800605qdIqLf1cbea84bzCkjN3OTAA6fYjpSAWRCehcTfqyzhklKVn6ipKd";//miniTokenStart: 17-07-2020 11:45
-    $refreshToken = "50001800105czGwTp11ba0674igsuDyiLkP3mUggbGYFHxftSEcigu8ssiU8VGrw";//expire in 15544206 ประมาณปลายตุลา 2020
+    $accessToken = "50000800201yc121a32b9dTobjvNDQEJnOXupEf6IUHKPhxqG8hhv8pzuRX6Bd6e";//miniTokenStart: 16-08-2020 02:04
+    $refreshToken = "50001800101cz148ac247GwTpigsuDyiLkP3mUggbGYFHxftSEcigu8ssiU8VGrw";//expire in 15544206 ประมาณปลายตุลา 2020
 
     
     
@@ -37,8 +38,8 @@
 //    $url = "https://api.lazada.co.th/rest";
 //    $appKey = "119433";
 //    $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-//    $accessToken = "50000600319bSIoacUNFRjijr1QSCay162f4243o1fHwavpHAeDt6r0TH94dvlVr";//ralaTokenStart: 17-07-2020 11:45
-//    $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+//    $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+//    $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
 
     
     //shopee variable minimalist
@@ -78,7 +79,10 @@
 //    $accessTokenJd = "64514eb4d73290d0c9974b648058adec";
 //    $serverUrl = "http://open.jd.co.th/api";
 //
-
+    
+    $salt = "FvTivqTqZXsgLLx1v3P8TGRyVHaSOB1pvfm02wvGadj7RLHV8GrfxaZ84oGA8RsKdNRpxdAojXYg9iAj";
+    
+    
     function cors()
     {
         writeToLog("cors");
@@ -170,7 +174,7 @@
         $c->param_file = $contents;
         $resp = $c->call4BigData();
         
-        
+        writeToLog("JdImageUpload result: " . $resp);
         $openapi_data = json_decode($resp)->openapi_data;
         $JdUrl = json_decode($openapi_data)->data;
         return $JdUrl;
@@ -3620,7 +3624,7 @@
             mysqli_free_result($result);
             
             $rowCount = sizeof($resultArray);
-            writeToLog("query: row count = $rowCount, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            writeToLog("query: row count = $rowCount, sql: " . $sql . ", modified user: " . $modifiedUser);
             return $resultArray;
         }
         else
@@ -3756,8 +3760,8 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
-                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+                $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
                 
                 
                 //shopee
@@ -3790,8 +3794,8 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
-                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+                $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
                 
                 
                 //shopee
@@ -3876,7 +3880,7 @@
         $res = mysqli_query($con,$sql);        
         if(!$res)
         {
-            $error = "query fail, sql: " . $sql . ", modified user: " . $user . " error: " . mysqli_error($con);
+            $error = "query fail, sql: " . $sql . ", modified user: " . $modifiedUser . " error: " . mysqli_error($con);
             writeToLog($error);
             
             
@@ -3887,7 +3891,7 @@
         }
         else
         {
-            writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $modifiedUser);
         }
         return "";
     }
@@ -4082,12 +4086,12 @@
         }
         if(sizeof($resultArray) == 0)
         {
-            $error = "query: selected row count = 0, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"];
+            $error = "query: selected row count = 0, sql: " . $sql . ", modified user: " . $modifiedUser;
             writeToLog($error);
         }
         else
         {
-            writeToLog("query success, sql: " . $sql . ", modified user: " . $_POST["modifiedUser"]);
+            writeToLog("query success, sql: " . $sql . ", modified user: " . $modifiedUser);
         }
         
         return $resultArray;
@@ -4487,5 +4491,68 @@
             $pass[] = $alphabet[$n];
         }
         return implode($pass); //turn the array into a string
+    }
+
+    function sendEmail($toAddress,$subject,$body)
+    {
+        require './phpmailermaster/PHPMailerAutoload.php';
+        $mail = new PHPMailer;
+//        writeToLog("phpmailer");
+        //$mail->SMTPDebug = 3;                               // Enable verbose debug output
+        
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'mail.ralamusic.com';//'cpanel02mh.bkk1.cloud.z.com';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication // if not need put false
+        $mail->Username = 'app@ralamusic.com';                 // SMTP username
+        $mail->Password = 'Ralamusic12';                           // SMTP password
+        
+//        $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted // if nedd
+//        $mail->Port = 465;                                    // TCP port to connect to // if nedd
+        
+        $mail->From = 'app@ralamusic.com'; // mail form user mail auth smtp
+        $mail->FromName = 'RALA MUSIC APP';//$_POST['dbName'];
+        $mail->addAddress($toAddress); // Add a recipient
+        //$mail->addAddress('ellen@example.com'); // if nedd
+        //$mail->addReplyTo('info@example.com', 'Information'); // if nedd
+        //$mail->addCC('cc@example.com'); // if nedd
+        //$mail->addBCC('bcc@example.com'); // if nedd
+        
+        $mail->WordWrap = 50;                                 // Set word wrap to 50 characters
+        //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments // if nedd
+        //$mail->addAttachment('http://minimalist.co.th/imageupload/34664/minimalistLogoReceipt.gif', 'logo.gif');    // Optional name // if nedd
+//        $mail->AddEmbeddedImage('minimalistLogoReceipt.jpg', 'logo', 'minimalistLogoReceipt.jpg');
+        $mail->isHTML(true);                                  // Set email format to HTML // if format mail html // if no put false
+        
+        $mail->Subject = $subject; // text subject
+        $mail->Body    = $body; // body
+        
+        //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients'; // if nedd
+//        writeToLog("before send()");
+        if(!$mail->send())
+        { // check send mail true/false
+            echo 'Message could not be sent.'; // message if send mail not complete
+            echo 'Mailer Error: ' . $mail->ErrorInfo; // message error
+            $response = array('success' => false, 'message' => 'Mailer Error: ' . $mail->ErrorInfo);
+            
+            $error = "send email fail, Mailer Error: " . $mail->ErrorInfo . ", modified user: " . $user;
+            writeToLog($error);
+        }
+        else
+        {
+            //    echo 'Message has been sent'; // message if send mail complete
+            $response = array('success' => true);
+        }
+        return $response;
+    }
+    
+    function generateRandomString($length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 ?>

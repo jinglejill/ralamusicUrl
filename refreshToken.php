@@ -8,8 +8,8 @@
     $url = "https://api.lazada.co.th/rest";
     $appKey = "119433";
     $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-    $accessToken = "50000600319bSIoacUNFRjijr1QSCay162f4243o1fHwavpHAeDt6r0TH94dvlVr";//ralaTokenStart: 17-07-2020 11:45
-    $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+    $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+    $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
 
 
     $c = new LazopClient($url,$appKey,$appSecret);

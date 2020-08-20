@@ -12,14 +12,7 @@
     $modifiedUser = json_decode($json_str)->modifiedUser;
     
     
-//    $storeName = json_decode($json_str,true)["storeName"];
-//    $sku = json_decode($json_str,true)["sku"];
-//    $insert = json_decode($json_str,true)["insert"];
-//    $lazadaProduct = json_decode($json_str,true)["lazadaProduct"];
-//    $modifiedUser = json_decode($json_str,true)["modifiedUser"];
- 
-    
-    
+
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
     writeToLog("post json: " . $json_str);
@@ -40,7 +33,6 @@
   
     if(!$lazadaProduct)
     {
-//        $fromApp = true;
         $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
         $lazadaProductList = executeQueryArray($sql);
         writeToLog("lazada product list: ".json_encode($lazadaProductList));
@@ -50,14 +42,14 @@
             if($lazadaProductApi)
             {
                 $lazadaProduct = (object)array();
-                $lazadaProduct->PrimaryCategory = mysqli_real_escape_string($con,$lazadaProductApi->primary_category);
-                $lazadaProduct->name = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name);
-                $lazadaProduct->name_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->name_en);
-                $lazadaProduct->short_description = mysqli_real_escape_string($con,$lazadaProductApi->attributes->short_description);
-                $lazadaProduct->short_description_en = mysqli_real_escape_string($con,$lazadaProductApi->attributes->description_en);
-                $lazadaProduct->video = mysqli_real_escape_string($con,$lazadaProductApi->attributes->video);
-                $lazadaProduct->brand = mysqli_real_escape_string($con,$lazadaProductApi->attributes->brand);
-                $lazadaProduct->SellerSku = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->SellerSku);
+                $lazadaProduct->PrimaryCategory = $lazadaProductApi->primary_category;
+                $lazadaProduct->name = $lazadaProductApi->attributes->name;
+                $lazadaProduct->name_en = $lazadaProductApi->attributes->name_en;
+                $lazadaProduct->short_description = $lazadaProductApi->attributes->short_description;
+                $lazadaProduct->short_description_en = $lazadaProductApi->attributes->description_en;
+                $lazadaProduct->video = $lazadaProductApi->attributes->video;
+                $lazadaProduct->brand = $lazadaProductApi->attributes->brand;
+                $lazadaProduct->SellerSku = $lazadaProductApi->skus[0]->SellerSku;
                 $lazadaProduct->quantity = $lazadaProductApi->skus[0]->quantity;
                 $lazadaProduct->price = $lazadaProductApi->skus[0]->price;
                 $lazadaProduct->special_price = $lazadaProductApi->skus[0]->special_price;
@@ -65,14 +57,14 @@
                 $lazadaProduct->package_length = $lazadaProductApi->skus[0]->package_length;
                 $lazadaProduct->package_width = $lazadaProductApi->skus[0]->package_width;
                 $lazadaProduct->package_height = $lazadaProductApi->skus[0]->package_height;
-                $lazadaProduct->MainImage = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[0]);
-                $lazadaProduct->Image2 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[1]);
-                $lazadaProduct->Image3 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[2]);
-                $lazadaProduct->Image4 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[3]);
-                $lazadaProduct->Image5 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[4]);
-                $lazadaProduct->Image6 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[5]);
-                $lazadaProduct->Image7 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[6]);
-                $lazadaProduct->Image8 = mysqli_real_escape_string($con,$lazadaProductApi->skus[0]->Images[7]);
+                $lazadaProduct->MainImage = $lazadaProductApi->skus[0]->Images[0];
+                $lazadaProduct->Image2 = $lazadaProductApi->skus[0]->Images[1];
+                $lazadaProduct->Image3 = $lazadaProductApi->skus[0]->Images[2];
+                $lazadaProduct->Image4 = $lazadaProductApi->skus[0]->Images[3];
+                $lazadaProduct->Image5 = $lazadaProductApi->skus[0]->Images[4];
+                $lazadaProduct->Image6 = $lazadaProductApi->skus[0]->Images[5];
+                $lazadaProduct->Image7 = $lazadaProductApi->skus[0]->Images[6];
+                $lazadaProduct->Image8 = $lazadaProductApi->skus[0]->Images[7];
             }
         }
         else
@@ -83,7 +75,6 @@
     writeToLog("source lazada:". json_encode($lazadaProduct));
     
     
-//    if(sizeof($lazadaProductList) == 0)
     if(!$lazadaProduct)
     {
         if($insert)
@@ -148,12 +139,50 @@
                 break;
             }
         }
+        
         if(!$foundAttribute)
         {
-            $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-            $attributesProduct[] = $attribute1;
-        }
-        
+            for($k=0; $k<sizeof($selectedRow); $k++)
+            {
+                $shopeeCategoryID = $selectedRow[$k]["ShopeeCategoryID"];
+                $attributes = getShopeeAttributes(intval($shopeeCategoryID));
+                for($i=0; $i<sizeof($attributes); $i++)//rala ส่วนมากมี 1 attribute_id ***บางอันเป็น 0 ด้วยซ้ำ
+                {
+                    $attribute = $attributes[$i];
+                    
+                    $foundAttribute = false;
+                    
+                    for($j=0; $j<sizeof($attribute->options); $j++)
+                    {
+                        $option = $attribute->options[$j];
+                        
+                        $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
+                        $attributesProduct[] = $attribute1;
+                        $foundAttribute = true;
+                        break;
+                    }
+                    
+                    if($foundAttribute)
+                    {
+                        break;
+                    }
+                }
+                
+                if($foundAttribute)
+                {
+                    break;
+                }
+            }
+            
+            if(!$foundAttribute)
+            {
+                $shopeeCategoryID = $defaultCategoryID;
+                
+                
+                $attribute1 = array("attributes_id"=>$defaultAttributeID,"value"=>$defaultAttributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
+                $attributesProduct[] = $attribute1;
+            }
+        }        
     }
     else
     {
@@ -180,33 +209,11 @@
     
     
     //*****lazada data
-//    if($fromApp)
-//    {
-//        $description = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;//short_description parse html tag out (<ul>,<li>,\r,\t)
-//        $description = str_replace('<li>','- ',$description);
-//        $description = strip_tags($description);
-//        $salePrice = floatval($lazadaProduct->skus[0]->special_price);
-//        $weight = floatval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
-//        $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
-//        $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
-//        $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
-//    }
-//    else
+
     {
-//        writeToLog("short_description:".$lazadaProduct["attributes"]["short_description"]);
-        
-//        $description = $lazadaProduct["short_description"]?$lazadaProduct["short_description"]:$lazadaProduct["name"];
-//        $description = str_replace('<li>','- ',$description);
-//        $description = strip_tags($description);
-//        $salePrice = floatval($lazadaProduct["special_price"]);
-//        $weight = floatval($lazadaProduct["package_weight"])>20?20:floatval($lazadaProduct["package_weight"]);
-//        $packageLength = floatval($lazadaProduct["package_length"]);
-//        $packageWidth = floatval($lazadaProduct["package_width"]);
-//        $packageHeight = floatval($lazadaProduct["package_height"]);
-        
+
         $description = $lazadaProduct->short_description?$lazadaProduct->short_description:$lazadaProduct->name;
         $description = strip_tags($description);
-        
         
         //format description
         $string = $description;
@@ -226,8 +233,7 @@
         $replacement = '';
         $description = preg_replace($pattern, $replacement, $string);
         
-        
-        
+    
         
         $salePrice = floatval($lazadaProduct->special_price);
         $weight = floatval($lazadaProduct->package_weight)>20?20:floatval($lazadaProduct->package_weight);
@@ -235,14 +241,7 @@
         $packageWidth = floatval($lazadaProduct->package_width);
         $packageHeight = floatval($lazadaProduct->package_height);
         
-//        $description = $lazadaProduct["attributes"]["short_description"]?$lazadaProduct["attributes"]["short_description"]:$lazadaProduct["attributes"]["name"];//short_description parse html tag out (<ul>,<li>,\r,\t)
-//        $description = str_replace('<li>','- ',$description);
-//        $description = strip_tags($description);
-//        $salePrice = floatval($lazadaProduct["skus"][0]["special_price"]);
-//        $weight = floatval($lazadaProduct["skus"][0]["package_weight"]);//package_weight parseInt
-//        $packageLength = intval($lazadaProduct["skus"][0]["package_length"]);//package_length parseInt
-//        $packageWidth = intval($lazadaProduct["skus"][0]["package_width"]);//package_width parseInt
-//        $packageHeight = intval($lazadaProduct["skus"][0]["package_height"]);//package_height parseInt
+
     }
     //*****lazada data
     
@@ -353,12 +352,12 @@
     $paramBody["stock"] = $stock;
     $paramBody["item_sku"] = $itemSku;
     $paramBody["weight"] = $weight;
-    if(floatval($lazadaProduct->package_length)+floatval($lazadaProduct->package_width)+floatval($lazadaProduct->package_height) <= 180)
-    {
-        $paramBody["package_length"] = $packageLength;
-        $paramBody["package_width"] = $packageWidth;
-        $paramBody["package_height"] = $packageHeight;
-    }
+//    if(floatval($lazadaProduct->package_length)+floatval($lazadaProduct->package_width)+floatval($lazadaProduct->package_height) <= 180)
+//    {
+//        $paramBody["package_length"] = $packageLength;
+//        $paramBody["package_width"] = $packageWidth;
+//        $paramBody["package_height"] = $packageHeight;
+//    }
     $paramBody["status"] = $status;
     $paramBody["days_to_ship"] = $daysToShip;
     $paramBody["is_pre_order"] = $isPreOrder;
@@ -529,14 +528,6 @@
     exit();
     
 
-    //        1315 Stationery, Books & Music
-    //        21712 Music
-    //        24922 Music & Media
-    //        24923 other music & media
-    //        24932 other musical instruments
-    //        24941 Music accessories
-    //        23668 Music
-    
 ?>
 
 

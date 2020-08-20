@@ -6,11 +6,17 @@
     $json_str = file_get_contents('php://input');
 //    $skus = json_decode($json_str)->skus;
     $storeName = json_decode($json_str)->storeName;
-
+    $modifiedUser = json_decode($json_str)->modifiedUser;
+    if(!$storeName)
+    {
+        $storeName = "RALAMUSIC";
+        $modifiedUser = "";
+    }
+    
     
     
     setConnectionValue($storeName);
-    writeToLog("file: " . basename(__FILE__) . ", user: " . $data["modifiedUser"]);
+    writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
     writeToLog("post json: " . $json_str);
    
     
@@ -31,6 +37,7 @@
     
     //lazada
     $orders = getPendingOrdersLazada();
+    writeToLog("size of orders: " . sizeof($orders));
     $pendingOrderCount = sizeof($orders);
     if($pendingOrderCount > 0)
     {

@@ -10,9 +10,10 @@
     $searchText = json_decode($json_str)->searchText;
     $outOfStock = json_decode($json_str)->outOfStock;
     $outOfStockCondition = $outOfStock?" and quantity=0":"";
+    $modifiedUser = "";//json_decode($json_str)->modifiedUser;
     
     setConnectionValue($storeName);
-    writeToLog("file: " . basename(__FILE__) . ", user: " . $data["modifiedUser"]);
+    writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
     writeToLog("post json: " . $json_str);
     writeToLog("userAgent: ".$_SERVER['HTTP_USER_AGENT']);
     printAllGet();
@@ -33,7 +34,7 @@
     
     
     //*****************************
-    $sql = "select false Animating, Name, Quantity, Sku, MainImage, SpecialPrice from mainproduct where status = 'active' $outOfStockCondition order by modifiedDate desc, sku";
+    $sql = "select false Animating, Name, Quantity, Sku, MainImage, SpecialPrice, ModifiedDate from mainproduct where status = 'active' $outOfStockCondition order by modifiedDate desc, sku";
     $allProducts = executeQueryArray($sql);
     
     
@@ -138,14 +139,14 @@
     
     
     $data = array("products"=>$productPage);
-    writeToLog("mainProductGetList: " . $data );
+    writeToLog("mainProductGetList: " . json_encode($data) );
     echo json_encode($data);
     
     
     //-----
     mysqli_commit($con);
     mysqli_close($con);
-    writeToLog("query commit, file: " . basename(__FILE__) . ", user: " . $_POST["modifiedUser"]);
+    writeToLog("query commit, file: " . basename(__FILE__) . ", user: " . $modifiedUser);
     
     
     exit();

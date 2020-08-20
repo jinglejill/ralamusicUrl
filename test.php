@@ -6,6 +6,63 @@
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
     
+    
+    $password = 'Ralamusic12';
+//    echo "";
+//    $hashPassword = hash('SHA256',"Rrrr12FvTivqTqZXsgLLx1v3P8TGRyVHaSOB1pvfm02wvGadj7RLHV8GrfxaZ84oGA8RsKdNRpxdAojXYg9iAj");
+    $hashPassword = hash('SHA256',$password.$salt);
+//    echo $password.$salt;
+    echo $hashPassword;
+    exit();
+    
+    
+    $dbName = 'dddd';
+    $username = 'jjjj';
+    $codeReset = 'cccc';
+    $content = file_get_contents('./SAIMEmailTemplateResetPassword.php');
+    $content = str_replace("#DBNAME#",$dbName,$content);
+    $content = str_replace("#USERNAME#",$username,$content);
+    $content = str_replace("#CODERESET#",$codeReset,$content);
+    echo $content;
+    exit();
+    
+    
+    $result = sendEmail('jinglejill@hotmail.com','test subject','abc');
+    echo json_encode($result);
+    exit();
+    
+//    $sku = "On-Stage-RS7500-w/MSA7500CB";
+//    $url = "https://th-live.slatic.net/p/bb599ef2556c889c2f63aca0aacfabab.jpg";
+//    $tmpFileName = str_replace("/","\/",$sku)."-".$index.".jpg";
+//    $tmpFileName = $sku."-".$index.".jpg";
+//    $currentFolder = getcwd();
+//    copy($url, "./tmp/$tmpFileName");
+//    $contents = $currentFolder."\\tmp\\$tmpFileName";
+//    $c = getApiManagerBigData();
+//    $c->method = "jingdong.common.image.UploadFile";
+//    $c->param_json = "";
+//    $c->param_file = $contents;
+//    $resp = $c->call4BigData();
+//
+//    writeToLog("JdImageUpload result: " . $resp);
+//    echo "JdImageUpload result: " . $resp;
+//    $openapi_data = json_decode($resp)->openapi_data;
+//    $JdUrl = json_decode($openapi_data)->data;
+//    echo "<br>".$jdUrl;
+////    return $JdUrl;
+//    exit();
+    
+    
+//    error_reporting(E_ALL);
+//    ini_set('display_errors', 0);
+    
+    
+//    $password = "Ralamusic12";
+//    $password = hash('sha256', "$password$salt");
+//    echo $password;
+//    echo $_SERVER['HTTP_USER_AGENT'];
+    
+    exit();
 //    $sku = $_GET["sku"];
 //
 //

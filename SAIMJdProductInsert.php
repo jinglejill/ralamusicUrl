@@ -196,7 +196,7 @@
     if($product[0]->MainImage != "")
     {
         $index = 1;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->MainImage,$tmpFileName);
         
         
@@ -218,7 +218,7 @@
     if($product[0]->Image2 != "")
     {
         $index = 2;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image2,$tmpFileName);
         
         $image = array();
@@ -230,7 +230,7 @@
     if($product[0]->Image3 != "")
     {
         $index = 3;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image3,$tmpFileName);
         
         $image = array();
@@ -242,7 +242,7 @@
     if($product[0]->Image4 != "")
     {
         $index = 4;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image4,$tmpFileName);
         
         $image = array();
@@ -254,7 +254,7 @@
     if($product[0]->Image5 != "")
     {
         $index = 5;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image5,$tmpFileName);
         
         $image = array();
@@ -266,7 +266,7 @@
     if($product[0]->Image6 != "")
     {
         $index = 6;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image6,$tmpFileName);
         
         $image = array();
@@ -278,7 +278,7 @@
     if($product[0]->Image7 != "")
     {
         $index = 7;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image7,$tmpFileName);
         
         $image = array();
@@ -290,7 +290,7 @@
     if($product[0]->Image8 != "")
     {
         $index = 8;
-        $tmpFileName = $sku."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
         $jdImageUrl = JdImageUpload($product[0]->Image8,$tmpFileName);
         
         $image = array();
