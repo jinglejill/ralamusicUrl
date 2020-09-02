@@ -72,7 +72,7 @@
             $lazadaProduct = $lazadaProductList[0];
         }
     }
-    writeToLog("source lazada:". json_encode($lazadaProduct));
+    writeToLog("source lazada:". json_encode($lazadaProduct, JSON_UNESCAPED_UNICODE));
     
     
     if(!$lazadaProduct)

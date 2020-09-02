@@ -5,7 +5,7 @@
     //conection variable
     $con;
     $con2;
-    $modifiedUser;
+    $modifiedUser="bot";
     $globalDBName="SAIM";
     $dbUser = "FFD";
     $appImageUrl = "https://minimalist.co.th/saim";
@@ -1654,6 +1654,123 @@
     }
     
     //in case of multiple link of the same sku
+    function updateStockToAllSkuInOrder2($orderObj)
+    {
+        global $globalDBName;
+        
+        $fail = 0;
+        $updateItems = array();
+        $updateVariations = array();
+        $items = $orderObj->orders[0]->items;
+        for($i=0; $i<sizeof($items); $i++)
+        {
+            $item = $items[$i];
+            $itemID = $item->item_id;
+            $variationID = $item->variation_id;
+            $itemSku = $item->item_sku;
+            $variationSku = $item->variation_sku;
+            if(strpos($itemSku, "middleton") !== false && strlen($itemSku) > 9)
+            {
+                continue;
+            }
+            
+            //for both case with/without variation
+            writeToLog("itemID:" . $itemID . ", variationID:".$variationID);
+            $quantity = getStockShopee($itemID,$variationID);
+            writeToLog("quantity:" . $quantity);
+            if($variationID != "")
+            {
+                writeToLog("variationSku:" . $variationSku);
+                $searchSku = $variationSku;
+            }
+            else
+            {
+                writeToLog("itemSku:" . $itemSku);
+                $searchSku = $itemSku;
+            }
+            
+            if($searchSku == "")
+            {
+                return;
+            }
+            
+//            if($globalDBName == "RALAMUSIC" || $globalDBName == "RALAMUSICTEST")
+//            {
+//                $variations = getAllVariationsShopeeInApp($searchSku);
+//            }
+//            else
+//            {
+//                $variations = getAllVariationsShopee($searchSku);
+//            }
+            
+            $sql = "select * from (select Sku from stocksharing where stocksharinggroupID in (select stocksharinggroupID from stocksharing where sku = '$searchSku') UNION select '$searchSku' as Sku)a order by Sku";
+            $selectedRow = getSelectedRow($sql);
+            for($j=0; $j<sizeof($selectedRow); $j++)
+            {
+                $searchSku = $selectedRow[$j]["Sku"];
+                
+                
+                $variations = getAllVariationsShopeeInApp($searchSku);
+                
+                
+                
+                writeToLog("all variations:" . json_encode($variations));
+                if(sizeof($variations) > 5)//เพื่อกันไม่ให้ update stock กรณีค้นหา variations ผิด และออกมามากเกิน
+                {
+                    return;
+                }
+                for($j=0; $j<sizeof($variations); $j++)
+                {
+                    $variation = $variations[$j];
+                    $stock = 0;
+                    $stock += $quantity;
+                    
+                    if($variation["item_id"]==$itemID && $variation["variation_id"]==$variationID)
+                    {
+                        continue;
+                    }
+                    
+                    //update stock
+                    $updateVariation = array();
+                    $updateVariation["item_id"] = $variation["item_id"];
+                    $updateVariation["variation_id"] = $variation["variation_id"];
+                    $updateVariation["stock"] = $stock;
+                    
+                    if($variation["variation_id"] > 0)
+                    {
+                        $updateVariations[] = $updateVariation;
+                    }
+                    else
+                    {
+                        $updateItems[] = $updateVariation;
+                    }
+                }
+            }
+            
+        }
+        
+        writeToLog( "update items:" . json_encode($updateItems));
+        writeToLog( "update variations:" . json_encode($updateVariations));
+        if(sizeof($updateItems)>0)
+        {
+            $ret = updateStockBatchShopee($updateItems,"items");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        if(sizeof($updateVariations)>0)
+        {
+            $ret = updateStockBatchShopee($updateVariations,"vars");
+            if(!$ret)
+            {
+                $fail++;
+            }
+        }
+        
+        return $fail == 0;
+    }
+    
     function updateStockToAllSkuInOrder($orderObj)
     {
         global $globalDBName;
@@ -3614,6 +3731,7 @@
     function executeQueryArray($sql)
     {
         global $con;
+        global $modifiedUser;
 
         if ($result = mysqli_query($con, $sql)) {
             $resultArray = array();
@@ -3877,6 +3995,7 @@
     }
     function doQueryTask($con,$sql,$user)
     {
+        global $modifiedUser;
         $res = mysqli_query($con,$sql);        
         if(!$res)
         {
@@ -4071,12 +4190,14 @@
     
     function getSelectedRow($sql)
     {
-        global $con;        
+        global $con;
+        global $modifiedUser;
+        
+        
+        $resultArray = array();
+        $tempArray = array();
         if ($result = mysqli_query($con, $sql))
-        {
-            $resultArray = array();
-            $tempArray = array();
-            
+        {            
             while($row = mysqli_fetch_array($result))
             {
                 $tempArray = $row;

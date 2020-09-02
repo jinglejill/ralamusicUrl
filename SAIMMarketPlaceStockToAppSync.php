@@ -55,8 +55,7 @@
                     $orderItem = $order->items[$j];
                     $sku = $orderItem->sku;
                     $quantity = 1;
-//                    echo $sku;
-//                    exit();
+
 
                     $sql = "select * from mainproduct where sku = '$sku'";
                     $selectedRow = getSelectedRow($sql);
@@ -199,8 +198,7 @@
                     $orderItem = $order->skus[$j];
                     $sku = $orderItem->sellerSkuId;
                     $quantity = 1;
-                    //                     echo $sku;
-                    //                     exit();
+                    
 
                     $sql = "select * from mainproduct where sku = '$sku'";
                     $selectedRow = getSelectedRow($sql);

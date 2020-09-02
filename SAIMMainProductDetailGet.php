@@ -77,6 +77,13 @@
         $product->WebExist = $hasProduct?1:0;
     }
     
+    
+    
+//    $sql = "select Sku,mainproduct.MainImage from stocksharing left join mainproduct on stocksharing.sku = mainproduct.Sku where StockSharingGroupID in (SELECT StockSharingGroupID FROM `stocksharing` WHERE sku = '$sku')";
+//    $stockSharingList = executeQueryArray($sql);
+//    $product->StockSharingList = $stockSharingList;
+    
+    
     $result = array("product"=>$product, "success"=>true);
     writeToLog("mainProductDetailGet result: ".json_encode($result));
     echo json_encode($result);

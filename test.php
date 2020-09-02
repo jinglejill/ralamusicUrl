@@ -6,30 +6,9 @@
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
     
-    
-    $password = 'Ralamusic12';
-//    echo "";
-//    $hashPassword = hash('SHA256',"Rrrr12FvTivqTqZXsgLLx1v3P8TGRyVHaSOB1pvfm02wvGadj7RLHV8GrfxaZ84oGA8RsKdNRpxdAojXYg9iAj");
-    $hashPassword = hash('SHA256',$password.$salt);
-//    echo $password.$salt;
-    echo $hashPassword;
-    exit();
-    
-    
-    $dbName = 'dddd';
-    $username = 'jjjj';
-    $codeReset = 'cccc';
-    $content = file_get_contents('./SAIMEmailTemplateResetPassword.php');
-    $content = str_replace("#DBNAME#",$dbName,$content);
-    $content = str_replace("#USERNAME#",$username,$content);
-    $content = str_replace("#CODERESET#",$codeReset,$content);
-    echo $content;
-    exit();
-    
-    
-    $result = sendEmail('jinglejill@hotmail.com','test subject','abc');
-    echo json_encode($result);
-    exit();
+//    SELECT postcustomer.Telephone, sum(PayPrice) sales FROM `receipt`left join receiptproductitem on Receipt.ReceiptID = receiptproductitem.ReceiptID LEFT JOIN itemtrackingno on receiptproductitem.ReceiptProductItemID = itemtrackingno.ReceiptProductItemID LEFT JOIN postcustomer ON itemtrackingno.PostCustomerID = postcustomer.PostCustomerID GROUP by postcustomer.Telephone ORDER BY sales desc
+  
+    //update `categorymappingweb` LEFT JOIN mainproduct on categorymappingweb.Sku = mainproduct.Sku set categorymappingweb.LazadaCategoryID = mainproduct.PrimaryCategory WHERE CategoryMappingWebID >100 and CategoryMappingWebID <=500
     
 //    $sku = "On-Stage-RS7500-w/MSA7500CB";
 //    $url = "https://th-live.slatic.net/p/bb599ef2556c889c2f63aca0aacfabab.jpg";
@@ -62,7 +41,7 @@
 //    echo $password;
 //    echo $_SERVER['HTTP_USER_AGENT'];
     
-    exit();
+    
 //    $sku = $_GET["sku"];
 //
 //
@@ -106,132 +85,132 @@
 //    exit();
     
     
-    //jd get product detail by productId
-    $productId = $_GET["productId"];
-    $c2 = getApiManager();
-    $c2->method = "com.productQueryApiService.queryProductById";
-    $c2->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
-    $resp2 = $c2->call();
-    $openapi_data2 = json_decode($resp2)->openapi_data;
-    //    echo $openapi_data;
-    $data2 = json_decode($openapi_data2)->data;
-//    echo $resp2;
-    echo json_encode($data2);
-    exit();
-    
-    
-    
-    //jd search by sku
-    //get productid
-    $sku = $_GET["sku"];
-    $c = getApiManager();
-    $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
-    $param = array();
-    $outerId = array();
-    $outerId["outerId"] = $sku;
-    $param["searchSkusByOuterIdParam"] = $outerId;
-//    echo json_encode($param);
+//    //jd get product detail by productId
+//    $productId = $_GET["productId"];
+//    $c2 = getApiManager();
+//    $c2->method = "com.productQueryApiService.queryProductById";
+//    $c2->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+//    $resp2 = $c2->call();
+//    $openapi_data2 = json_decode($resp2)->openapi_data;
+//    //    echo $openapi_data;
+//    $data2 = json_decode($openapi_data2)->data;
+////    echo $resp2;
+//    echo json_encode($data2);
 //    exit();
-    $c->param_json = json_encode($param);
-    $resp = $c->call();
-
-    echo $resp;
-    writeToLog("get product jd skuId result:" . $resp);
-    $openapi_data = json_decode($resp)->openapi_data;
-    $objs = json_decode($openapi_data)->objs;
-
-    exit();
-
-
-
+//
     
     
-    //prepare for delete selected sku in jd and shopee
-    $variations = getAllSkuShopee();
-    
-    $sql = "SELECT Sku FROM `mainproducttest`";
-    $selectedRow = getSelectedRow($sql);
-//    for($i=3; $i<sizeof($selectedRow); $i++)
-    for($i=20; $i<40; $i++)
-    {
-        $sku = $selectedRow[$i]["Sku"];
-        writeToLog("delete [i,sku]:[$i,$sku]");
-        
-        //get productid
-//        $sku = $_GET["sku"];
-        $c = getApiManager();
-        $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
-        $param = array();
-        $outerId = array();
-        $outerId["outerId"] = $sku;
-        $param["searchSkusByOuterIdParam"] = $outerId;
-    //    echo json_encode($param);
-    //    exit();
-        $c->param_json = json_encode($param);
-        $resp = $c->call();
-        
-    //    echo $resp;
-        writeToLog("get product jd skuId result:" . $resp);
-        $openapi_data = json_decode($resp)->openapi_data;
-        $objs = json_decode($openapi_data)->objs;
-         
-        
-        $productSkuIds = array();
-        for($j=0; $j<sizeof($objs); $j++)
-        {
-            $productSkuId = array();
-            $productSkuId["productId"] = json_decode($objs[$j])->productId;
-            $productSkuId["skuId"] = json_decode($objs[$j])->skuId;
-            $productSkuIds[] = $productSkuId;
-            
-            
-            //jd delete by product id
-            $skuId = $productSkuId["skuId"];
-            $c = getApiManager();
-            $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
-            $c->param_json = '{"skuId":"' . $skuId . '","locale":"th"}';
-            $resp = $c->call();
-
-            $openapi_data = json_decode($resp)->openapi_data;
-            $code = json_decode($openapi_data)->code;
-            if($code != 200)
-            {
-                echo "[i,sku]:[$i,$sku] delete jd fail";
-            }
-            writeToLog("delete sku jd result:" . $resp);
-        }
-        
-        
-        
-        
-        
-        
-        
-        //shopee delete product by id
-        for($j=0; $j<sizeof($variations); $j++)
-        {
-            $variation = $variations[$j];
-            if($variation["item_sku"] == $sku)
-            {
-                $itemID = $variation["item_id"];
-                
-                //delete by id
-                $ret = deleteShopeeItemByItemID($itemID);
-                if(!$ret)
-                {
-                    echo "[i,sku]:[$i,$sku] delete shopee fail";
-                }
-                
-//                break;
-            }
-        }
-    }
-    
-
-    
-//    echo json_encode($productSkuIds);
-    
-    exit();
+//    //jd search by sku
+//    //get productid
+//    $sku = $_GET["sku"];
+//    $c = getApiManager();
+//    $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+//    $param = array();
+//    $outerId = array();
+//    $outerId["outerId"] = $sku;
+//    $param["searchSkusByOuterIdParam"] = $outerId;
+////    echo json_encode($param);
+////    exit();
+//    $c->param_json = json_encode($param);
+//    $resp = $c->call();
+//
+//    echo $resp;
+//    writeToLog("get product jd skuId result:" . $resp);
+//    $openapi_data = json_decode($resp)->openapi_data;
+//    $objs = json_decode($openapi_data)->objs;
+//
+//    exit();
+//
+//
+//
+//
+//
+//    //prepare for delete selected sku in jd and shopee
+//    $variations = getAllSkuShopee();
+//
+//    $sql = "SELECT Sku FROM `mainproducttest`";
+//    $selectedRow = getSelectedRow($sql);
+////    for($i=3; $i<sizeof($selectedRow); $i++)
+//    for($i=20; $i<40; $i++)
+//    {
+//        $sku = $selectedRow[$i]["Sku"];
+//        writeToLog("delete [i,sku]:[$i,$sku]");
+//
+//        //get productid
+////        $sku = $_GET["sku"];
+//        $c = getApiManager();
+//        $c->method = "jingdong.gms.ItemModelGlobalService.searchSkusByOuterId";
+//        $param = array();
+//        $outerId = array();
+//        $outerId["outerId"] = $sku;
+//        $param["searchSkusByOuterIdParam"] = $outerId;
+//    //    echo json_encode($param);
+//    //    exit();
+//        $c->param_json = json_encode($param);
+//        $resp = $c->call();
+//
+//    //    echo $resp;
+//        writeToLog("get product jd skuId result:" . $resp);
+//        $openapi_data = json_decode($resp)->openapi_data;
+//        $objs = json_decode($openapi_data)->objs;
+//
+//
+//        $productSkuIds = array();
+//        for($j=0; $j<sizeof($objs); $j++)
+//        {
+//            $productSkuId = array();
+//            $productSkuId["productId"] = json_decode($objs[$j])->productId;
+//            $productSkuId["skuId"] = json_decode($objs[$j])->skuId;
+//            $productSkuIds[] = $productSkuId;
+//
+//
+//            //jd delete by product id
+//            $skuId = $productSkuId["skuId"];
+//            $c = getApiManager();
+//            $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
+//            $c->param_json = '{"skuId":"' . $skuId . '","locale":"th"}';
+//            $resp = $c->call();
+//
+//            $openapi_data = json_decode($resp)->openapi_data;
+//            $code = json_decode($openapi_data)->code;
+//            if($code != 200)
+//            {
+//                echo "[i,sku]:[$i,$sku] delete jd fail";
+//            }
+//            writeToLog("delete sku jd result:" . $resp);
+//        }
+//
+//
+//
+//
+//
+//
+//
+//        //shopee delete product by id
+//        for($j=0; $j<sizeof($variations); $j++)
+//        {
+//            $variation = $variations[$j];
+//            if($variation["item_sku"] == $sku)
+//            {
+//                $itemID = $variation["item_id"];
+//
+//                //delete by id
+//                $ret = deleteShopeeItemByItemID($itemID);
+//                if(!$ret)
+//                {
+//                    echo "[i,sku]:[$i,$sku] delete shopee fail";
+//                }
+//
+////                break;
+//            }
+//        }
+//    }
+//
+//
+//
+////    echo json_encode($productSkuIds);
+//
+//    exit();
     
    
     

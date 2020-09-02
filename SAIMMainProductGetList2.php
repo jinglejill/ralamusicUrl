@@ -10,13 +10,34 @@
     $searchText = json_decode($json_str)->searchText;
     $outOfStock = json_decode($json_str)->outOfStock;
     $outOfStockCondition = $outOfStock?" and quantity=0":"";
-    $modifiedUser = "";//json_decode($json_str)->modifiedUser;
+    $modifiedUser = json_decode($json_str)->modifiedUser;
     
+
+    if(!$storeName)
+    {
+        $storeName = $_POST["storeName"];
+        $page = $_POST["page"];
+        $limit = $_POST["limit"];
+        $searchText = $_POST["searchText"];
+        $outOfStock = $_POST["outOfStock"];
+        $outOfStockCondition = $outOfStock?" and quantity=0":"";
+        $modifiedUser = $_POST["modifiedUser"];
+    }
+    
+    
+
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
-    writeToLog("post json: " . $json_str);
+    if(!$storeName)
+    {
+        printAllPost();
+    }
+    else
+    {
+        writeToLog("post json: " . $json_str);
+    }
     writeToLog("userAgent: ".$_SERVER['HTTP_USER_AGENT']);
-    printAllGet();
+//    printAllGet();
     
     
     
@@ -49,6 +70,7 @@
         for($i=0; $i<sizeof($allProducts); $i++)
         {
             $product = $allProducts[$i];
+            $product->Found = 0;
             $productName = $product->Name;
             $sku = $product->Sku;
             for($k=0; $k<sizeof($searchArray); $k++)

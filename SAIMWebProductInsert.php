@@ -1,15 +1,9 @@
 <?php
     include_once('dbConnect.php');
-    
+    set_time_limit(300);
     
     $json_str = file_get_contents('php://input');
 
-
-//    $storeName = json_decode($json_str,true)["storeName"];
-//    $sku = json_decode($json_str,true)["sku"];
-//    $insert = json_decode($json_str,true)["insert"];
-//    $lazadaProduct = json_decode($json_str,true)["lazadaProduct"];
-//    $modifiedUser = json_decode($json_str,true)["modifiedUser"];
     
     
     $storeName = json_decode($json_str)->storeName;
@@ -77,7 +71,7 @@
             $lazadaProduct = $lazadaProductList[0];
         }
     }
-    writeToLog("source lazada:". json_encode($lazadaProduct));
+    writeToLog("source lazada:". json_encode($lazadaProduct, JSON_UNESCAPED_UNICODE));
     
     
     if(!$lazadaProduct)
@@ -120,7 +114,8 @@
             }
         }
     }
-        
+    $product[0]->WebCategoryNameList = $webCategoryNameList;
+    
     
     if($insert)
     {
