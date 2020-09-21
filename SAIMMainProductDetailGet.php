@@ -8,6 +8,7 @@
     $sku = json_decode($json_str)->sku;
  
     
+    
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $data["modifiedUser"]);
     writeToLog("post json: " . $json_str);
@@ -22,6 +23,7 @@
     }
     
     
+    $sku = mysqli_real_escape_string($con,$sku);
     $sql = "select Brand, Sku, Quantity, Price, Cost, Remark, Name, MainImage, Image2, Image3, Image4, Image5, Image6, Image7, Image8 from MainProduct where sku = '$sku'";
     $products = executeQueryArray($sql);
     $product = $products[0];

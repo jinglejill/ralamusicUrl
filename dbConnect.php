@@ -1,10 +1,9 @@
 <?php
-    include_once "./lazada/LazopSdk.php";
-    include_once "./jdOpenApi.php";
+    include "./lazada/LazopSdk.php";
+    include "./jdOpenApi.php";
     
     //conection variable
     $con;
-    $con2;
     $modifiedUser="bot";
     $globalDBName="SAIM";
     $dbUser = "FFD";
@@ -38,7 +37,7 @@
 //    $url = "https://api.lazada.co.th/rest";
 //    $appKey = "119433";
 //    $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-//    $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+//    $accessToken = "50000801a14kMPspe8DFUhLUVc1594f978hHviwmyToiamtQhxo3qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
 //    $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
 
     
@@ -377,6 +376,54 @@
         return sizeof($objs)>0;
     }
     
+    function getNormalOrUnListProductsJD($sku)
+    {
+        $skuVariations = getJdProductSkuIds($sku);
+        
+        $jdProducts = array();
+        if($skuVariations)
+        {
+            for($i=0; $i<sizeof($skuVariations); $i++)
+            {
+                $variation = $skuVariations[$i];
+                $productId = $variation->productId;
+                $skuId = $variation->skuId;
+                
+                $jdProduct = getJdProduct($productId);
+                for($j=0; $j<sizeof($jdProduct->skuList); $j++)
+                {
+                    $jdSku = $jdProduct->skuList[$j];
+                    if($jdSku->outerId == $sku && $jdSku->skuStatus != 10)
+                    {
+                        $jdProducts[] = $skuVariations[$i];
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if(sizeof($jdProducts)>0)
+        {
+            return $jdProducts;
+        }
+        return null;
+        
+    }
+    
+    function hasItemJd($productId,$skuId)
+    {
+        $jdProduct = getJdProduct($productId);
+        for($j=0; $j<sizeof($jdProduct->skuList); $j++)
+        {
+            $jdSku = $jdProduct->skuList[$j];
+            if($jdSku->outerId == $sku && $jdSku->skuStatus != 10)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     function getJdProductSkuIds($sku)
     {
         writeToLog("sku:".$sku);
@@ -501,7 +548,7 @@
     {
         $c = getApiManager();
         $c->method = "com.productQueryApiService.queryProductById";
-        $c->param_json = '{"productId":"' . $productId . '","locale":"th_TH"}';
+        $c->param_json = '{"productId":"' . $productId . '","locale":"en_US"}';
         $resp = $c->call();
         writeToLog("get jd product result:".$resp);
         
@@ -513,28 +560,28 @@
     
     function hasLazadaProductInRala($sku)
     {
-        $sql = "select * from lazadaProduct where SellerSku = '$sku'";
+        $sql = "select Sku from lazadaProduct where SellerSku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasShopeeProductInRala($sku)
     {
-        $sql = "select * from shopeeProduct where sku = '$sku'";
+        $sql = "select Sku from shopeeProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasJdProductInRala($sku)
     {
-        $sql = "select * from jdProduct where sku = '$sku'";
+        $sql = "select Sku from jdProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasMainProduct($sku)
     {
-        $sql = "select * from mainProduct where Sku = '$sku'";
+        $sql = "select Sku from mainProduct where Sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
@@ -542,35 +589,35 @@
     function hasLazadaProductInApp($sku)
     {
 //        $sql = "select * from lazadaProduct where SellerSku = '$sku'";
-        $sql = "select * from lazadaProduct where Sku = '$sku'";
+        $sql = "select Sku from lazadaProduct where Sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasShopeeProductInApp($sku)
     {
-        $sql = "select * from shopeeProduct where sku = '$sku'";
+        $sql = "select Sku from shopeeProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasJdProductInApp($sku)
     {
-        $sql = "select * from jdProduct where sku = '$sku'";
+        $sql = "select Sku from jdProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function hasWebProductInApp($sku)
     {
-        $sql = "select * from webProduct where sku = '$sku'";
+        $sql = "select Sku from webProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
     
     function lazadaOrderExist($orderNo)
     {
-        $sql = "select * from lazadaOrder where orderNo = '$orderNo'";
+        $sql = "select Sku from lazadaOrder where orderNo = '$orderNo'";
         $lazadaOrderList = executeQueryArray($sql);
         
         return sizeof($lazadaOrderList);
@@ -578,7 +625,7 @@
     
     function shopeeOrderExist($orderSn)
     {
-        $sql = "select * from shopeeOrder where orderNo = '$orderSn'";
+        $sql = "select Sku from shopeeOrder where orderNo = '$orderSn'";
         $shopeeOrderList = executeQueryArray($sql);
         
         return sizeof($shopeeOrderList);
@@ -2450,6 +2497,51 @@
         return null;
     }
     
+    function getShopeeProducts($variaions,$sku)
+    {
+        $skuVariations = array();
+        for($i=0; $i<sizeof($variaions); $i++)
+        {
+            $variation = $variaions[$i];
+            $itemSku = $variation["item_sku"];
+            if($itemSku == $sku)
+            {
+                $skuVariations[] = $variation;
+            }
+        }
+        
+        if(sizeof($skuVariations)>0)
+        {
+            return $skuVariations;
+        }
+        
+        return null;
+    }
+    
+    function getNormalOrUnListProducts($skuVariations)
+    {
+        $shopeeProducts = array();
+        if($skuVariations)
+        {
+            for($i=0; $i<sizeof($skuVariations); $i++)
+            {
+                $variation = $skuVariations[$i];
+                $itemID = $variation["item_id"];
+                $shopeeItem = getItemShopee($itemID);
+                if($shopeeItem->status != "DELETED")
+                {
+                    $shopeeProducts[] = $variation;
+                }
+            }
+        }
+        
+        if(sizeof($shopeeProducts)>0)
+        {
+            return $shopeeProducts;
+        }
+        return null;
+    }
+    
 //    function updateStockQuantityShopee($sku,$quantity)
 //    {
 //        global $host;
@@ -2764,9 +2856,20 @@
             }
             else if(sizeof($obj->batch_result->failures)>0)
             {
-                //notify
-                $message = "shopee update stock fail";
-                sendNotiToAdmin($message);
+                
+//                if($obj->batch_result->failures[0]->error_description == 'this item is not allowed to edit')
+//                {
+//                    writeToLog("this item is not allowed to edit");
+//                    sendNotiToAdmin("this item is not allowed to edit [itemID, variationID]:"."[".$obj->batch_result->failures[0]->item_id.",".$obj->batch_result->failures[0]->variation_id."]" );
+//                }
+//                else
+                {
+                    //notify
+                    $message = "shopee update stock fail";
+                    sendNotiToAdmin($message);
+                }
+                
+//                writeToLog("obj->batch_result->failures size > 0");
             }
             
             writeToLog( "curl result:".$result);
@@ -3527,7 +3630,6 @@
         }
         return true;
     }
-    
     function updateStockQuantityLazada($sku,$quantity)
     {
         global $url;
@@ -3562,11 +3664,25 @@
 //        }
         else
         {
-            writeToLog("lazada update stock fail:".json_encode($respObject->detail));
-            //notify
-            $message = "lazada update stock fail:".json_encode($respObject->detail);
-            sendNotiToAdmin($message);
-            return false;
+            $lazadaMessage = $respObject->detail[0]->message;
+            if(strpos($lazadaMessage, "Negative sellable stock over sale. Negative. Reserved stock ") !== false )
+            {
+                writeToLog("failed because of reserved stock");
+                $lazadaMessage = str_replace('Negative sellable stock over sale. Negative. Reserved stock ','',$lazadaMessage);
+                writeToLog("lazada message : " . $lazadaMessage);
+                $dataList = explode(" ",$lazadaMessage);
+                $reservedStock = $dataList[0];
+                
+                return updateStockQuantityLazada($sku,intval($reservedStock));
+            }
+            else
+            {
+                writeToLog("lazada update stock fail:".json_encode($respObject->detail));
+                //notify
+                $message = "lazada update stock fail:".json_encode($respObject->detail);
+                sendNotiToAdmin($message);
+                return false;
+            }
         }
     }
     
@@ -3723,7 +3839,7 @@
         }
         else
         {
-            echo "executeMultiQueryArray fail:" . $sql;
+            writeToLog("executeMultiQueryArray fail:" . $sql);
         }
         return "";
     }
@@ -3747,7 +3863,7 @@
         }
         else
         {
-            echo "executeQueryArray fail:" . $sql;
+            writeToLog( "executeQueryArray fail:" . $sql);
         }
         return null;
     }
@@ -3837,7 +3953,6 @@
     function setConnectionValue($dbName)
     {
         global $con;
-        global $con2;
         global $globalDBName;
         global $wordPressDB;
         $host = "localhost";
@@ -3878,7 +3993,7 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+                $accessToken = "50000801a14kMPspe8DFUhLUVc1594f978hHviwmyToiamtQhxo3qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
                 $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
                 
                 
@@ -3974,7 +4089,6 @@
         
         // Create connection
         $con=mysqli_connect($host,$dbUser,$dbPassword,$dbName);
-        $con2=mysqli_connect($host,$dbUser,$dbPassword,$dbName);
 
         
         $timeZone = mysqli_query($con,"SET SESSION time_zone = '+07:00'");

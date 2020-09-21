@@ -1,10 +1,111 @@
 <?php
 
     include_once('dbConnect.php');
-    setConnectionValue("RALAMUSICTEST");
+    setConnectionValue("RALAMUSIC");
     ini_set("memory_limit","50M");
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
+    
+    
+    
+    
+//    $shareSku = 'Mantic-GT-1DC-N-Full-SET';
+//    $sql = "select * from shopeeProduct where sku = '$shareSku'";
+//    $shopeeProductsInApp = executeQueryArray($sql);
+//    echo json_encode($shopeeProductsInApp);
+//    
+//    $shopeeProductInApp = $shopeeProductsInApp[0];
+//    echo "<br>",$shopeeProductInApp->ItemID;
+////    $shopeeItem = getItemShopee($shopeeProductInApp->ItemID);
+//    exit();
+        
+        
+//select * from shopeeproduct where itemid = 0
+    
+//    //update every sku that share the same pool of stock
+//    $sql = "select * from jdproducttemp";
+//    $jdProductList = executeQueryArray($sql);
+//
+//    for($j=0; $j<sizeof($jdProductList); $j++)
+//    {
+//
+//    }
+//    $sku = $_GET['sku'];
+//    echo json_encode(getLazadaProduct($sku));
+//    exit();
+//
+//
+//    $quantity = $_GET['quantity'];
+//    echo updateStockQuantityShopeeInApp($sku,$quantity);
+    
+    
+    
+//    $sku = $_GET['sku'];
+//
+//    echo json_encode(getJdProductSkuIds($sku));
+//    exit();
+//
+//
+//    $productId = $_GET['productId'];
+//    echo json_encode(getJdProduct($productId));
+//    exit();
+//
+    
+    
+//    $sku = $_GET['sku'];
+//    echo json_encode(getAllVariationsShopee($sku));
+    $itemID = $_GET['itemID'];
+    echo json_encode(getItemShopee($itemID));
+    exit();
+//    UPDATE `lazadaproduct` SET `Name`='',`Description`='',`ShortDescription`='',`Quantity`=0,`Price`=0,`Video`='',`MainImage`='',`Image2`='',`Image3`='',`Image4`='',`Image5`='',`Image6`='',`Image7`='',`Image8`='',`PackageWeight`=0,`PackageWidth`=0,`PackageHeight`=0,`PackageLength`=0 WHERE 1
+    
+    
+//    UPDATE `jdproduct` set `UpcCode`='',`OuterId`=''
+//    UPDATE `shopeeproduct` set `ItemSku`='' WHERE 1
+//    ALTER TABLE `mainproduct` ADD INDEX(`Sku`);
+//    ALTER TABLE `lazadaproduct` ADD INDEX(`Sku`);
+//    ALTER TABLE `shopeeproduct` ADD INDEX(`Sku`);
+//    ALTER TABLE `jdproduct` ADD INDEX(`Sku`);
+//
+//    ALTER TABLE `categorymapping` ADD INDEX(`LazadaCategoryID`);
+//    ALTER TABLE `categorymapping` ADD INDEX(`ShopeeCategoryID`);
+//    ALTER TABLE `categorymappingjd` ADD INDEX(`LazadaCategoryID`);
+//    ALTER TABLE `categorymappingjd` ADD INDEX(`JdCategoryID`);
+//
+//    ALTER TABLE `forgotpassword` ADD INDEX(`CodeReset`);
+//    ALTER TABLE `forgotpassword` ADD INDEX(`Status`);
+//    ALTER TABLE `jdorder` ADD INDEX(`OrderNo`);
+//    ALTER TABLE `lazadaorder` ADD INDEX(`OrderNo`);
+//    ALTER TABLE `rolemenu` ADD INDEX(`RoleID`);
+//    ALTER TABLE `rolemenu` ADD INDEX(`MenuID`);
+//    ALTER TABLE `shopeeorder` ADD INDEX(`OrderNo`);
+//    ALTER TABLE `stocksharing` ADD INDEX(`StockSharingGroupID`);
+//    ALTER TABLE `stocksharing` ADD INDEX(`Sku`);
+//    ALTER TABLE `useraccount` ADD INDEX(`Username`);
+//    ALTER TABLE `useraccount` ADD INDEX(`Email`);
+//    ALTER TABLE `useraccount` ADD INDEX(`Active`);
+//    ALTER TABLE `userrole` ADD INDEX(`UserAccountID`);
+//    ALTER TABLE `userrole` ADD INDEX(`RoleID`);
+//
+    
+    
+    //SELECT date_format(receiptdate,'%Y'), count(*) FROM `receipt` left join receiptproductitem on receipt.ReceiptID = receiptproductitem.ReceiptID WHERE EventID in (248,266) group by date_format(receiptdate,'%Y')
+    
+//    $sql = "select Sku from stocksharing";
+//    $selectedRow = getSelectedRow($sql);
+//    for($i=0; $i<sizeof($selectedRow); $i++)
+//    {
+//        $sku = $selectedRow[$i]["Sku"];
+//        $sql = "select * from shopeeorder where ShopeeOrder like '%$sku%' where shopeeOrderID betwenn 1128 and 1269";
+//        $selectedRow2 = getSelectedRow($sql);
+//
+//        if(sizeof($selectedRow2)>0)
+//        {
+//            echo "<br>". $sku;
+//        }
+//    }
+//
+//    exit();
     
 //    SELECT postcustomer.Telephone, sum(PayPrice) sales FROM `receipt`left join receiptproductitem on Receipt.ReceiptID = receiptproductitem.ReceiptID LEFT JOIN itemtrackingno on receiptproductitem.ReceiptProductItemID = itemtrackingno.ReceiptProductItemID LEFT JOIN postcustomer ON itemtrackingno.PostCustomerID = postcustomer.PostCustomerID GROUP by postcustomer.Telephone ORDER BY sales desc
   

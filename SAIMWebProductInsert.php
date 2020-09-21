@@ -12,6 +12,7 @@
     $lazadaProduct = json_decode($json_str)->lazadaProduct;
     $modifiedUser = json_decode($json_str)->modifiedUser;
     
+    $sku = mysqli_real_escape_string($con,$sku);
     
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);

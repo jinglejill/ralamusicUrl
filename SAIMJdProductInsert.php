@@ -11,7 +11,8 @@
     $lazadaProduct = json_decode($json_str)->lazadaProduct;
     $modifiedUser = json_decode($json_str)->modifiedUser;
     
-
+    
+    
     
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
@@ -31,9 +32,12 @@
     writeToLog("set auto commit to off");
     
   
+    $skuEscape = mysqli_real_escape_string($con,$sku);
+//    $sku = mysqli_real_escape_string($con,$sku);
     if(!$lazadaProduct)
     {
-        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
+//        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
+        $sql = "select * from lazadaProductTemp where SellerSku = '$skuEscape'";
         $lazadaProductList = executeQueryArray($sql);
         writeToLog("lazada product list: ".json_encode($lazadaProductList));
         if(sizeof($lazadaProductList) == 0)
@@ -95,7 +99,8 @@
         exit();
     }
     
-    $sql = "select * from mainproduct where sku = '$sku'";
+//    $sql = "select * from mainproduct where sku = '$sku'";
+    $sql = "select * from mainproduct where sku = '$skuEscape'";
     $product = executeQueryArray($sql);
     $primaryCategory = $product[0]->PrimaryCategory;
     $productBrand = $product[0]->Brand;
@@ -139,6 +144,7 @@
     $categoryId = intval($jdCategoryID);
     $brandId = intval($jdBrandID);
     $thName = $product[0]->Name;//name
+    $thName = mysqli_real_escape_string($con,$thName);
     $thName = iconv_substr($thName, 0, 120,'UTF-8');
     $afterSales = "";//"Warranty by Seller - 2 Weeks";
     $price = floatval($product[0]->Price);//skus[0]->price
@@ -327,7 +333,8 @@
     
     $paramBody["skuList"] = $skuList;
     $paramBody["imageList"] = $imageList;
-    $paramBody["locale"] = "th_TH";
+    $paramBody["locale"] = "en_US";
+//    $paramBody["locale"] = "th_TH";
     $paramBody["vat"] = true;
     
     if($insert)
@@ -341,7 +348,8 @@
             
             
             //insert into shopeeProduct
-            $sql = "insert into jdProduct (sku,productId,skuId,modifiedUser) values('$sku',$productId,$skuId,'$modifiedUser')";
+//            $sql = "insert into jdProduct (sku,productId,skuId,modifiedUser) values('$sku',$productId,$skuId,'$modifiedUser')";
+            $sql = "insert into jdProduct (sku,productId,skuId,modifiedUser) values('$skuEscape',$productId,$skuId,'$modifiedUser')";
             $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
             if($ret != "")
             {
