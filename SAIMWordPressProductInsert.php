@@ -41,7 +41,7 @@
     $commonTabTitle = str_replace("-"," ",$sku);
     
     
-    $salePrice = $lazadaProduct->special_price;
+    $salePrice = floatval($lazadaProduct->special_price);
     $formatSalePrice = number_format($salePrice, 2, '.', ',');
     
     $content = $lazadaProduct->short_description?$lazadaProduct->short_description:$lazadaProduct->name;
@@ -118,7 +118,7 @@
     update_post_meta( $post_id, '_product_attributes', array());
     update_post_meta( $post_id, '_sale_price_dates_from', "" );
     update_post_meta( $post_id, '_sale_price_dates_to', "" );
-    update_post_meta( $post_id, '_price', $price );
+    update_post_meta( $post_id, '_price', $salePrice );
     update_post_meta( $post_id, '_sold_individually', "" );
     update_post_meta( $post_id, '_manage_stock', "no" );
     update_post_meta( $post_id, '_backorders', "no" );
@@ -131,39 +131,39 @@
     wp_update_post( array('ID' => $post_id, 'post_excerpt' => $content ) );
     
 
-    
+    $imageName = preg_replace("/[^\w\-\.]/", '',$sku);
     if($product[0]->MainImage != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->MainImage, 0);
-        attach_product_thumbnail($post_id, $product[0]->MainImage, 1);
+        attach_product_thumbnail($post_id, $product[0]->MainImage, 0, $imageName);
+        attach_product_thumbnail($post_id, $product[0]->MainImage, 1, $imageName.'_1');
     }
     if($product[0]->Image2 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image2, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image2, 1, $imageName.'_2');
     }
     if($product[0]->Image3 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image3, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image3, 1, $imageName.'_3');
     }
     if($product[0]->Image4 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image4, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image4, 1, $imageName.'_4');
     }
     if($product[0]->Image5 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image5, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image5, 1, $imageName.'_5');
     }
     if($product[0]->Image6 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image6, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image6, 1, $imageName.'_6');
     }
     if($product[0]->Image7 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image7, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image7, 1, $imageName.'_7');
     }
     if($product[0]->Image8 != "")
     {
-        attach_product_thumbnail($post_id, $product[0]->Image8, 1);
+        attach_product_thumbnail($post_id, $product[0]->Image8, 1, $imageName.'_8');
     }
     
 //    mysqli_commit($con);
@@ -182,7 +182,7 @@
     /**
      * Attach images to product (feature/ gallery)
      */
-    function attach_product_thumbnail($post_id, $url, $flag)
+    function attach_product_thumbnail($post_id, $url, $flag, $imageName)
     {
 
         /*
@@ -191,31 +191,24 @@
         $image_url = $url;
         $url_array = explode('/',$url);
         $image_name = $url_array[count($url_array)-1];
+        $dataList = explode('.',$image_name);
+        $image_ext = $dataList[count($dataList)-1];
         $image_data = file_get_contents($image_url); // Get image data
-
-      /*
-       * If allow_url_fopen is not enable in php.ini then use this
-       */
-
-
-      // $image_url = $url;
-      // $url_array = explode('/',$url);
-      // $image_name = $url_array[count($url_array)-1];
-
-      // $ch = curl_init();
-      // curl_setopt ($ch, CURLOPT_URL, $image_url);
-
-      // // Getting binary data
-      // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      // curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-
-      // $image_data = curl_exec($ch);
-      // curl_close($ch);
+        for($i=0; $i<10; $i++)
+        {
+            if(!$image_data)
+            {
+                $image_data = file_get_contents($image_url);
+            }
+            else
+            {
+                break;
+            }
+        }
 
 
-
-      $upload_dir = wp_upload_dir(); // Set upload folder
-        $unique_file_name = wp_unique_filename( $upload_dir['path'], $image_name ); //    Generate unique name
+        $upload_dir = wp_upload_dir(); // Set upload folder
+        $unique_file_name = wp_unique_filename( $upload_dir['path'], $imageName.'.'.$image_ext ); //    Generate unique name
         $filename = basename( $unique_file_name ); // Create image file name
 
         // Check folder permission and define file location
@@ -224,10 +217,6 @@
         } else {
             $file = $upload_dir['basedir'] . '/' . $filename;
         }
-
-
-
-
 
 
 

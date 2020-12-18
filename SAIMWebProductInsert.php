@@ -12,7 +12,7 @@
     $lazadaProduct = json_decode($json_str)->lazadaProduct;
     $modifiedUser = json_decode($json_str)->modifiedUser;
     
-    $sku = mysqli_real_escape_string($con,$sku);
+    
     
     setConnectionValue($storeName);
     writeToLog("file: " . basename(__FILE__) . ", user: " . $modifiedUser);
@@ -31,12 +31,13 @@
     writeToLog("set auto commit to off");
     
   
+    $escapeSku = mysqli_real_escape_string($con,$sku);
     if(!$lazadaProduct)
     {
-        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
-        $lazadaProductList = executeQueryArray($sql);
-        writeToLog("lazada product list: ".json_encode($lazadaProductList));
-        if(sizeof($lazadaProductList) == 0)
+//        $sql = "select * from lazadaProductTemp where SellerSku = '$escapeSku'";
+//        $lazadaProductList = executeQueryArray($sql);
+//        writeToLog("lazada product list: ".json_encode($lazadaProductList));
+//        if(sizeof($lazadaProductList) == 0)
         {
             $lazadaProductApi = getLazadaProduct($sku);
             if($lazadaProductApi)
@@ -67,10 +68,10 @@
                 $lazadaProduct->Image8 = $lazadaProductApi->skus[0]->Images[7];
             }
         }
-        else
-        {
-            $lazadaProduct = $lazadaProductList[0];
-        }
+//        else
+//        {
+//            $lazadaProduct = $lazadaProductList[0];
+//        }
     }
     writeToLog("source lazada:". json_encode($lazadaProduct, JSON_UNESCAPED_UNICODE));
     
@@ -95,7 +96,7 @@
         exit();
     }
     
-    $sql = "select * from mainproduct where sku = '$sku'";
+    $sql = "select * from mainproduct where sku = '$escapeSku'";
     $product = executeQueryArray($sql);
     $primaryCategory = $product[0]->PrimaryCategory;
 
@@ -115,7 +116,7 @@
             }
         }
     }
-    $product[0]->WebCategoryNameList = $webCategoryNameList;
+//    $product[0]->WebCategoryNameList = $webCategoryNameList;
     
     
     if($insert)

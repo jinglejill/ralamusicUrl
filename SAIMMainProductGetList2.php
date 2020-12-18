@@ -37,7 +37,6 @@
         writeToLog("post json: " . $json_str);
     }
     writeToLog("userAgent: ".$_SERVER['HTTP_USER_AGENT']);
-//    printAllGet();
     
     
     
@@ -55,17 +54,9 @@
     
     
     //*****************************
-//    $sql = "select false Animating, Name, Quantity, Sku, MainImage, SpecialPrice, ModifiedDate from mainproduct where status = 'active' $outOfStockCondition order by modifiedDate desc, sku";
-//    $allProducts = executeQueryArray($sql);
-    
-    
+
     //search process
     $search = trim($searchText);
-//    $searchMatch = '"' . $search . '" ' . $search;
-//    $searchMatch = $search;
-    
-//    $search = str_replace("-"," ",$search);
-//    $sql = "select false Animating, Name, Quantity, Sku, MainImage, SpecialPrice, ModifiedDate from mainproduct where status = 'active' $outOfStockCondition order by modifiedDate desc, sku";
     if($search == '')
     {
         $sql = "select false Animating, c.* from (select @row:=@row+1 as RowNum, b.* from (select Name, Quantity, Sku, MainImage, SpecialPrice FROM `mainproduct` WHERE STATUS = 'active' $outOfStockCondition order by ModifiedDate desc, Sku)b, (select @row:=0)t)c where c.RowNum > ($page-1)*$limit limit $limit";
@@ -82,77 +73,7 @@
             $productPage = executeQueryArray($sql);
         }
     }
-    
-    
-    
-//    if($search != "")
-//    {
-//        $search = str_replace("-"," ",$search);
-//        $searchArray = explode(" ",$search);
-//        $searchArray[] = trim($searchText);
-//        $productFoundList = array();
-//        for($i=0; $i<sizeof($allProducts); $i++)
-//        {
-//            $product = $allProducts[$i];
-//            $product->Found = 0;
-//            $productName = $product->Name;
-//            $sku = $product->Sku;
-//            for($k=0; $k<sizeof($searchArray); $k++)
-//            {
-//                $searchItem = $searchArray[$k];
-//                if($searchItem == "")
-//                {
-//                    continue;
-//                }
-//                if(stripos($productName, $searchItem) !== false)
-//                {
-//                    $product->Found = $product->Found?$product->Found+1:1;
-//                }
-//                if(stripos($sku, $searchItem) !== false)
-//                {
-//                    $product->Found = $product->Found?$product->Found+1:1;
-//                }
-//                if($sku == $searchItem)
-//                {
-//                    $product->Found = $product->Found?$product->Found+10:1;
-//                }
-//            }
-//            if($product->Found > 0)
-//            {
-//                $productFoundList[] = $product;
-//            }
-//        }
-//
-//
-//        //sort by found,modifiedDate, sku
-//        usort($productFoundList, function($a, $b) {
-//            $retval = $b->Found <=> $a->Found;
-//            if ($retval == 0)
-//            {
-//                $retval = $b->ModifiedDate <=> $a->ModifiedDate;
-//                if($retval == 0)
-//                {
-//                    return $a->Sku <=> $b->Sku;
-//                }
-//            }
-//            return $retval;
-//        });
-//    }
-//    else
-//    {
-//        $productFoundList = $allProducts;
-//    }
-//    writeToLog("product found list:".json_encode($productFoundList, JSON_UNESCAPED_UNICODE ));
-    
-    
-//    //return product for page
-//    $productPage = array();
-//    $offset = ($page-1)*$limit;
-//    for($i=$offset; $i<$page*$limit && $i<sizeof($productFoundList); $i++)
-//    {
-//        $productPage[] = $productFoundList[$i];
-//    }
-//    writeToLog("product page list:".json_encode($productPage, JSON_UNESCAPED_UNICODE));
+
     //*****************************
     
 

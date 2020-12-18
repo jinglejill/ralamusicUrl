@@ -1,260 +1,58 @@
-{
-        //insert*********************************************************
-        $lazadaProduct = getLazadaProduct($sku);
-        
-        
-        $sql = "select * from mainproduct where sku = '$sku'";
-        $product = executeQueryArray($sql);
-        $primaryCategory = $product[0]->PrimaryCategory;
-//        echo json_encode($product);
-//        exit();
-        
-        $sql = "select * from categoryMapping where lazadaCategoryID = '$primaryCategory'";
-        $selectedRow = getSelectedRow($sql);
-        $attributesProduct = array();//id, value(options)
-        if(sizeof($selectedRow) > 0)
-        {
-            $shopeeCategoryID = $selectedRow[0]["ShopeeCategoryID"];
-            $attributes = getShopeeAttributes(intval($shopeeCategoryID));
-//            echo json_encode($attributes);
-//            exit();
-            
-            for($i=0; $i<sizeof($attributes); $i++)//rala ส่วนมากมี 1 attribute_id
-            {
-                $attribute = $attributes[$i];
-                
-                $foundAttribute = false;
-                for($j=0; $j<sizeof($attribute->options); $j++)
-                {
-                    $option = $attribute->options[$j];
-                    if(strpos($option, $lazadaProduct->attributes->brand) !== false)
-                    {
-                        $foundAttribute = true;
-                        $attributeValue = $option;
-                        break;
-                    }
-                }
-                
-                if($foundAttribute)
-                {
-                    $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                    $attributesProduct[] = $attribute1;
-                }
-                else
-                {
-                    $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                    $attributesProduct[] = $attribute1;
-                }
-            }
-        }
-        else
-        {
-            $shopeeCategoryID = $defaultCategoryID;
-            
-            
-            $attribute1 = array("attributes_id"=>$defaultAttributeID,"value"=>$defaultAttributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-            $attributesProduct[] = $attribute1;
-        }
-
-        
-        //sku 3531-1575336982582-0
-        
-        
-        
-        
-        $categoryId = intval($shopeeCategoryID);
-        $name = $product[0]->Name;//name
-        $description = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;//short_description parse html tag out (<ul>,<li>,\r,\t)
-        $description = str_replace('<ul>','',$description);
-        $description = str_replace('<li>','',$description);
-        $description = str_replace('\r','',$description);
-        $description = str_replace('\t','',$description);
-        $price = floatval($product[0]->Price);//skus[0]->price
-        $stock = intval($product[0]->Quantity);//skus[0]->quantity
-        $itemSku = $product[0]->Sku;//skus[0]->SellerSku
-        $weight = intval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
-        $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
-        $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
-        $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
-        $status = "UNLIST";//NORMAL, UNLIST
-        $daysToShip = 2;
-        $isPreOrder = false;
-        $condition = "NEW";
-        $sizeChart = "";
-        $images = array();//url skus[0]->Images
-        
-        if($product[0]->MainImage != "")
-        {
-            $image1 = array("url"=>$product[0]->MainImage);
-            $images[] = $image1;
-        }
-        if($product[0]->Image2 != "")
-        {
-            $image2 = array("url"=>$product[0]->Image2);
-            $images[] = $image2;
-        }
-        if($product[0]->Image3 != "")
-        {
-            $image3 = array("url"=>$product[0]->Image3);
-            $images[] = $image3;
-        }
-        if($product[0]->Image4 != "")
-        {
-            $image4 = array("url"=>$product[0]->Image4);
-            $images[] = $image4;
-        }
-        if($product[0]->Image5 != "")
-        {
-            $image5 = array("url"=>$product[0]->Image5);
-            $images[] = $image5;
-        }
-        if($product[0]->Image6 != "")
-        {
-            $image6 = array("url"=>$product[0]->Image6);
-            $images[] = $image6;
-        }
-        if($product[0]->Image7 != "")
-        {
-            $image7 = array("url"=>$product[0]->Image7);
-            $images[] = $image7;
-        }
-        if($product[0]->Image8 != "")
-        {
-            $image8 = array("url"=>$product[0]->Image8);
-            $images[] = $image8;
-        }
-        
-        
-        $logistics = array();//logisticId, enabled
-        $logistic = array("logistic_id"=>70021,"enabled"=>true,"estimated_shipping_fee"=>39,"is_free"=>true,"logistic_name"=>"Kerry");
-        $logistics[] = $logistic;
-   
-       
-    //    $variations = array();
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
 
 
+<strong>ADVANCED ACCESSPORT LITE (2nd Gen)</strong><br>
+<br>
+DESCRIPTION<br>
+Hi-Res Audio Certified | What does it mean?<br>
+ADVANCED Accessport Lite (2nd Gen) DAC amplifier is certified by the prestigious Japan Audio Society (JAS) to produce frequency over 40,000Hz making it an essential part of high resolution audio (96kHz/24-bit) listening experience.<br>
+<br>
+Upgraded 2nd Gen Internals<br>
+Virtually all aspects of ADVANCED Accessport Lite (2nd Gen) has been improved compared to its first generation predecessor.&nbsp; The background white-noise is eliminated.&nbsp; It outputs higher volume while drawing less power.&nbsp; It features more flexible and softer cable for easier carry and higher durability.<br>
+<br>
+High-resolution 24-bit Lossless Audio<br>
+ADVANCED Accessport Lite (2nd Gen) provides stunning, high-resolution, 24-bit / 96kHz audio for your smartphones through any pair of headphones / earphones. The built-in, dedicated DAC and amplifier bring the intensive audio processing required to properly render the lossless audio right to the palm of your hand.<br>
+<br>
+Power up your Headphones<br>
+The Accessport Lite (2nd Gen) provides enough power to drive headphones with impedance up to 300ohm with a clean, noise-free amplification.<br>
+<br>
+Maintain Call Function<br>
+Full call-functionality via in-line remote controls from your earphones using the certified components.<br>
+<br>
+No Battery Required<br>
+The Accessport Lite (2nd Gen) draws power directly from the smartphone at a ultra-low 12mW and does not require a separate battery.<br>
+<br>
+<strong>SPECIFICATION</strong>
+<ul>
+    <li>Chipset<span style="white-space: pre;"> </span>2nd Gen MCU with proprietary firmware</li>
+    <li>Audio depth<span style="white-space: pre;"> </span>Up to 24-bit / 96,000hz</li>
+    <li>Signal-to-noise ratio<span style="white-space: pre;"> </span>100dB @ 1kHz / 0dB</li>
+    <li>Power output<span style="white-space: pre;"> </span>12mW</li>
+    <li>Amplification<span style="white-space: pre;"> </span>Up to 300ohm</li>
+    <li>Output terminal<span style="white-space: pre;"> </span>3.5mm / 4-pole</li>
+    <li>Input terminal<span style="white-space: pre;"> </span>USB-C</li>
+</ul>
+<br>
+<strong>COMPATIBILITY</strong>
 
-
-
-        //create curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
-
-
-        //url
-        $url = "https://partner.shopeemobile.com/api/v1/item/add";
-        curl_setopt($ch, CURLOPT_URL, $url);
-
-
-        //param
-        $date = new DateTime();
-        $timestamp = $date->getTimestamp();
-
-
-        //payload
-        $paramBody = array();
-        $paramBody["partner_id"] = $partnerID;
-        $paramBody["shopid"] = $shopID;
-        $paramBody["timestamp"] = $timestamp;
-        $paramBody["category_id"] = $categoryId;
-        $paramBody["name"] = $name;
-        $paramBody["description"] = $description;
-        $paramBody["price"] = $price;
-        $paramBody["stock"] = $stock;
-        $paramBody["item_sku"] = $itemSku;
-        $paramBody["weight"] = $weight;
-        $paramBody["package_length"] = $packageLength;
-        $paramBody["package_width"] = $packageWidth;
-        $paramBody["package_height"] = $packageHeight;
-        $paramBody["status"] = $status;
-        $paramBody["days_to_ship"] = $daysToShip;
-        $paramBody["is_pre_order"] = $isPreOrder;
-        $paramBody["condition"] = $condition;
-        $paramBody["size_chart"] = $sizeChart;
-        $paramBody["images"] = $images;
-        $paramBody["logistics"] = $logistics;
-        $paramBody["attributes"] = $attributesProduct;
-    //    $paramBody["variations"] = $variations;
-
-//        echo json_encode($paramBody);
-//        exit();
-
-        $payload = json_encode($paramBody);
-        writeToLog("payload:" . $payload);
-
-
-        $contentLength = strlen($payload);
-        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
-
-
-        //header
-        $header = array();
-        $header[] = 'Host:' . $host;
-        $header[] = 'Content-Type:' . $contentType;
-        $header[] = 'Content-Length:' . $contentLength;
-        $header[] = 'Authorization:' . $authorization;
-        $header[] = 'charset:' . $charSet;
-        writeToLog("header:" . json_encode($header));
-
-
-        //set header and payload
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-
-    //    echo "test ";
-    //    exit();
-
-        //exec curl
-        $result = curl_exec($ch);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_errno = curl_errno($ch);
-        if ($http_status==503)
-        {
-            writeToLog( "HTTP Status == 503)");
-        }
-
-        if ($result === false)
-        {
-            print_r('Curl error: ' . curl_error($ch));
-            writeToLog( "Curl Errno returned $curl_errno");
-        }
-
-
-        writeToLog("add shopee item result: " . $result);
-//        echo $result;
-        $obj = json_decode($result);
-        if($obj->item_id)
-        {
-            $itemID = $obj->item_id;
-            //insert into shopeeProduct
-            $sql = "insert into shopeeProduct (itemID,sku,modifiedUser) values('$itemID','$sku','$modifiedUser')";
-            $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
-            if($ret != "")
-            {
-                $message = "เพิ่ม Shopee sku ในแอปไม่สำเร็จ";
-                sendNotiToAdmin($message);
-                $ret["message"] = $message;
-                mysqli_close($con);
-
-                echo json_encode($ret);
-                exit();
-            }
-        }
-        else
-        {
-            //insert fail
-            $message = "เพิ่มสินค้าใน Shopee ไม่สำเร็จ";
-            sendNotiToAdmin($message);
-            
-            
-            $ret["message"] = $message;
-            mysqli_rollback($con);
-            mysqli_close($con);
-            
-            echo json_encode($ret);
-            exit();
-        }
-    }
+<ul>
+    <li>Apple iPad Pro 2018 10.9" / 12.9"</li>
+    <li>MacBook Pro 2016+ MacBook 2015+<span style="white-space: pre;"> </span>MacBook Air 2018+</li>
+    <li>Asus Zenfone 6 Zenfone 5Z Zenfone 5Q<span style="white-space: pre;"> </span>Zenfone 5 Zenfone 4 Selfie Pro Zenfone 4 Pro Zenfone 4 ZenPad 3 8.0 ZenPad 3S 10 B9440U U310U Zenbook U3</li>
+    <li>Dell XPS 13-9360<span style="white-space: pre;"> </span>XPS 15-9560 Latitude 7370</li>
+    <li>Google Pixel 3 / 3XL<span style="white-space: pre;"> </span>Pixel 2 / 2XL Pixel / XL* HP</li>
+    <li>EliteBook 1030 G1<span style="white-space: pre;"> </span>EliteBook Folio G1 Spectre Notebook<span style="white-space: pre;"> </span>Spectre X360 13-W0XX</li>
+    <li>HTC U12+<span style="white-space: pre;"> </span>U11</li>
+    <li>Huawei Mate 9*<span style="white-space: pre;"> </span>Mate 10 Mate 10 Pro<span style="white-space: pre;"> </span>Matebook E Matebook X<span style="white-space: pre;"> </span>P20 P20 Pro**</li>
+    <li>Lenovo Xiaoxin Air 13 Pro<span style="white-space: pre;"> </span>Yoga 900</li>
+    <li>LG V50<span style="white-space: pre;"> </span>G8 G5</li>
+    <li>Microsoft Surface Book</li>
+    <li>Nokia 9 Pureview<span style="white-space: pre;"> </span>8 Sirocco</li>
+    <li>OnePlus 7 Pro<span style="white-space: pre;"> </span>6T</li>
+    <li>Samsung Galaxy Note10* / Note10+*<span style="white-space: pre;"> </span>Galaxy Note 9* / Note 9+* Galaxy S10e* / S10* / S10+*<span style="white-space: pre;"> </span>Galaxy S9* / S9+* Galaxy S8* / S8+*<span style="white-space: pre;"> </span>Galaxy Book* 900X5M</li>
+    <li>Sony Xperia 10 / 10 Plus<span style="white-space: pre;"> </span>Xperia XZ3 Xperia XZ Premium<span style="white-space: pre;"> </span>Xperia X Compact Xperia XZ2</li>
+</ul>

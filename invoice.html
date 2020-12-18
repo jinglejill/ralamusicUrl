@@ -1,0 +1,718 @@
+<!-- AWB STYLE -->
+<style type="text/css">@media print and (max-width: 100000px) {
+        html, body {
+            width: 210mm;
+        }
+    }
+    @media print and (max-width: 500px) {
+        html, body {
+            width: 100%;
+        }
+    }
+    @media print {
+        .A4 {
+            page-break-inside: avoid;
+        }
+    }
+    .awb-page {
+        font-family: Tahoma;
+    }
+
+    .awb {
+        height: 14cm;
+        width: 10cm;
+        overflow: hidden;
+        font-size: 12px;
+    }
+
+    .awb.kerry {
+        height: 14.85cm;
+    }
+
+    .box {
+        padding: 1px;
+        border: solid 1px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .text {
+        padding: 2px;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    .barcode {
+        overflow: hidden !important;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .barcode img {
+        max-width: 90%;
+        height: 100%;
+    }
+
+    .barcode-100 img {
+        max-width: 100%;
+        height: 100%;
+    }
+
+    .qrcode img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .customer-signature {
+        margin-top: 10px;
+        font-size: 12px;
+    }
+
+    .no-border {
+        border: none !important;
+    }
+
+    .not-fullwidth {
+        width: auto !important;
+    }
+
+    .shipping-address ul, .shipping-address li {
+        display: inline;
+    }
+
+    .hidden-non-BKK, .hidden-BKK {
+        display: none;
+    }
+
+    .show-BKK {
+        display: inline !important;
+    }
+
+    .hidden-non-COD, .hidden-COD {
+        display: none;
+    }
+
+    .show-COD {
+        display: inline !important;
+    }
+    .show-COD.show-Thai.Post_Dropoff {
+        display: none !important;
+    }
+
+    .dtable td {
+        border-bottom: 1px solid #000;
+        height: 30px;
+        padding-left: 10px;
+    }
+
+    .dtable td > * {
+        height: 20px;
+        overflow: hidden;
+    }
+    @media print {
+        body {-webkit-print-color-adjust: exact;}
+    }
+</style>
+<!-- delivery-note style -->
+<style type="text/css">.cut-line {
+        margin-top: 20px;
+        width: 100%;
+        border-top: 1px dashed black;
+    }
+
+    .order-items td, .order-items th {
+        font-size: 10px;
+        font-family: tahoma;
+    }
+</style>
+<div class="awb-page">
+<div class="awb kerry">
+<div class="box left" id="fm-KERPU0006672663" style="text-align:center; width:25.5%; height:1.3cm;"><img id="fm-kerry-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/3e8e601eed0d4760b5eb232bcb3b824c.png" style="display:none;width:100%; height:80%;margin-top:3%;" /> <img id="fm-lex-KERPU0006672663" src="https://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/3caa86db108b4f83b682fd63f3a6da38.png" style="display:none;width:100%; height:75%;margin-top:8%;" /> <img id="fm-tp-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/862b9848c85649b68af6f76f926c3278.png" style="display:none;width:55%; height:80%;margin-top:5%;" /> <img id="fm-thaipost-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/ab5fa5be17d64170a8cf6684d5fcb443.jpeg" style="display:none;width: 94px;height:51px" /> <img id="fm-dhl-KERPU0006672663" src="https://laz-img-cdn.alicdn.com/tfs/TB1tF_tfsLJ8KJjy0FnXXcFDpXa-134-42.png" style="display:none;width:100%; height:100%;" /> <img id="fm-njv-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/224493ff21ed4e38b361ba9637835399.png" style="display:none;width:80%; height:100%;margin-top:2%;" /> <img id="fm-cj-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/cf29596f1ee74d60854e0e3557a7c976.png" style="display:none;width:65%; height:100%;margin-top:0.5%;margin-left:3%;" /> <img id="fm-dhlsc-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/391fd62e43054e19898bf529b0438b46.png" style="display:none;width:100%; height:100%;" /> <img id="fm-lf-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/08525adf29764906975f111ad1f7f9e4.jpg" style="display:none;width:100%; height:50%;margin-top: 10%;" /> <img id="fm-best-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/e873c76beec047b29c17719674d9a8ac.png" style="display:none;width:100%; height:100%;" /> <img id="fm-the-lorry-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/dab51369ec644564aeb94d4b7e81e906.png" style="display:none;width:100%; height:60%;" /> <img id="fm-nim-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/f490b955ba9d484f92c6dda583b6d934.gif" style="display:none;width:100%; height:100%;" /> <img id="fm-deliveree-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/e625cad366c84f889dc54acda7770869.png" style="display:none;width: 100%;margin-top: 4px;height: 75%;" /> <img id="fm-giztix-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/be9563750e3e4085a6a2fcebd336aee9.png" style="display:none;width: 100%;margin-top: 6px;height: 75%;" /> <img id="fm-flash-express-KERPU0006672663" src="https://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/1960cde40b76466f950a267a33d9d717.png" style="display:none;width: 100%;margin-top: 4px;height: 80%;" /> <img id="fm-jt-express-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/58d144a32d924e0092a2a0b3f13da574.png" style="display: none;/* width: 100%; */margin-top: 15px;height: 35%;" /></div>
+<script type="text/javascript">
+            var lastMile3PLs = [];
+            lastMile3PLs['Kerry'] = 'Kerry';
+            lastMile3PLs['Seller Own Delivery'] = 'SOFP_TH';
+            lastMile3PLs['LEX'] = 'LEX TH';
+            lastMile3PLs['LEX dropoff'] = 'LEX TH';
+            lastMile3PLs['TP Thailand'] = 'Thai Parcel';
+            lastMile3PLs['AcommerceTH'] = 'AcommerceTH';
+            lastMile3PLs['AS-FedEx'] = 'AS-FedEx';
+            lastMile3PLs['AS-dhl'] = 'AS-dhl';
+            lastMile3PLs['AS-dhl-2'] = 'AS-dhl';
+            lastMile3PLs['AS-ups'] = 'AS-ups';
+            lastMile3PLs['AS-aramex'] = 'AS-aramex';
+            lastMile3PLs['AS-Kerry-logistics'] = 'AS-Kerry-logistics';
+            lastMile3PLs['Yusen'] = 'Yusen';
+            lastMile3PLs['Kerry(insured)'] = 'Kerry(insured)';
+            lastMile3PLs['LEX+ Kerry'] = 'Kerry';
+            lastMile3PLs['LEX+ Kerry (insured)'] = 'Kerry(insured)';
+            lastMile3PLs['AS-LWE-Express'] = 'AS-LWE-Express';
+            lastMile3PLs['Thai Post_Dropoff'] = 'ThaiPost';
+            lastMile3PLs['LGS-FM40-seller system'] = 'LGS';
+            lastMile3PLs['LEX+Thai Post'] = 'ThaiPost';
+            lastMile3PLs['Kerry_dropoff'] = 'Kerry';
+            lastMile3PLs['TP Thailand_Dropoff'] = 'Thai Parcel';
+            lastMile3PLs['DHLTH'] = 'DHL';
+            lastMile3PLs['LGS-FM01'] = 'LGS';
+            lastMile3PLs['LGS-FM40'] = 'LGS';
+            lastMile3PLs['LGS-FM41'] = 'LGS';
+            lastMile3PLs['LGS-FM42'] = 'LGS';
+            lastMile3PLs['V-cargo'] = 'V-cargo';
+            lastMile3PLs['LEX dropoff'] = 'LEX TH';
+            lastMile3PLs['LGS-FM43'] = 'LGS';
+            lastMile3PLs['Testing 3PL TMS'] = 'AcommerceTH';
+            lastMile3PLs['LEX-dropoff+Kerry'] = 'Kerry';
+            lastMile3PLs['LEX-dropoff+Kerry (insured)'] = 'Kerry(insured)';
+            lastMile3PLs['LEX-dropoff+DHLTH'] = 'DHL';
+            lastMile3PLs['LEX-dropoff+Thai Post'] = 'ThaiPost';
+            lastMile3PLs['LEX-dropoff+TP Thailand'] = 'Thai Parcel';
+            lastMile3PLs['DHLTH_dropoff'] = 'DHL';
+            lastMile3PLs['LGS-FM50'] = 'LGS';
+            lastMile3PLs['SBM'] = 'SBM TH';
+            lastMile3PLs['DHLSC+NJV FM'] = 'NinjaVanTH';
+            lastMile3PLs['DHLSC+NJV LM'] = 'NinjaVanTH';
+            lastMile3PLs['DHLSC+TP Thailand FM'] = 'Thai Parcel';
+            lastMile3PLs['DHLSC+TP Thailand LM'] = 'Thai Parcel';
+            lastMile3PLs['DHLSC+LEX FM'] = 'LEX TH';
+            lastMile3PLs['DHLSC+LEX LM'] = 'LEX TH';
+            lastMile3PLs['DHLSC+Yusen FM'] = 'Yusen';
+            lastMile3PLs['DHLSC+Yusen LM'] = 'Yusen';
+            lastMile3PLs['DHLSC+Vcargo FM'] = 'V-cargo';
+            lastMile3PLs['DHLSC+Vcargo LM'] = 'V-cargo';
+            lastMile3PLs['NJV+TP Thailand FM'] = 'Thai Parcel';
+            lastMile3PLs['NJV+TP Thailand LM'] = 'Thai Parcel';
+            lastMile3PLs['NJV+LEX FM'] = 'LEX TH';
+            lastMile3PLs['NJV+LEX LM'] = 'LEX TH';
+            lastMile3PLs['NJV'] = 'NinjaVanTH';
+            lastMile3PLs['TP Thailand+NJV FM'] = 'NinjaVanTH';
+            lastMile3PLs['TP Thailand+NJV LM'] = 'NinjaVanTH';
+            lastMile3PLs['TP Thailand+LEX FM'] = 'LEX TH';
+            lastMile3PLs['TP Thailand+LEX LM'] = 'LEX TH';
+            lastMile3PLs['AS-Rincos'] = 'AS-Rincos';
+            lastMile3PLs['AS-ECMS'] = 'AS-ECMS';
+            lastMile3PLs['DHLSC+CJGLS FM'] = 'CJGLS';
+            lastMile3PLs['DHLSC+CJGLS LM'] = 'CJGLS';
+            lastMile3PLs['TP Thailand+CJGLS FM'] = 'CJGLS';
+            lastMile3PLs['TP Thailand+CJGLS LM'] = 'CJGLS';
+            lastMile3PLs['CJGLS'] = 'CJGLS';
+            lastMile3PLs['DHLSC'] = 'DHLSC';
+            lastMile3PLs['ThaiPost'] = 'ThaiPost';
+            lastMile3PLs['LGS-SZXABKK18'] = 'LGS';
+            lastMile3PLs['LGS-SZXABKK19'] = 'LGS';
+            lastMile3PLs['AS-india-post-int'] = 'AS-india-post-int';
+            lastMile3PLs['AS-DTDC'] = 'as-data';
+            lastMile3PLs['AS-Delhivery'] = 'as-delhivery';
+            lastMile3PLs['7-Eleven'] = '7-Eleven';
+            lastMile3PLs['DHCLM'] = 'DSCLM';
+            lastMile3PLs['LF'] = 'LF';
+            lastMile3PLs['AS-LOGISTHAI'] = 'AS-LOGISTHAI';
+            lastMile3PLs['Logisthai'] = 'Logisthai';
+            lastMile3PLs['LGS-FM20'] = 'Cainiao';
+            lastMile3PLs['LGS-FM21'] = 'Cainiao';
+            lastMile3PLs['BEST'] = 'Best';
+            lastMile3PLs['The Lorry'] = 'The Lorry';
+            lastMile3PLs['Nim Express'] = 'Nim Express';
+            lastMile3PLs['Deliveree'] = 'Deliveree';
+            lastMile3PLs['Giztix'] = 'Giztix';
+            lastMile3PLs['Flash Express'] = 'Flash Express';
+            lastMile3PLs['J&amp;T TH'] = 'J&T Express Thailand';
+            lastMile3PLs['J&amp;T Bulky TH'] = 'J&T Express Thailand';
+            var lastMile3PL = lastMile3PLs['Kerry'];
+
+            var FM = "Kerry";
+
+
+            if (FM === 'Kerry' || FM === 'Kerry(insured)') {
+                document.getElementById('fm-kerry-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'LEX TH') {
+                document.getElementById('fm-lex-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'Thai Parcel') {
+                document.getElementById('fm-tp-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'ThaiPost') {
+                document.getElementById('fm-thaipost-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'DHL') {
+                document.getElementById('fm-dhl-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'NinjaVanTH') {
+                document.getElementById('fm-njv-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'CJGLS') {
+                document.getElementById('fm-cj-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'DHLSC' || FM === 'DSCLM') {
+                document.getElementById('fm-dhlsc-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'LF') {
+                document.getElementById('fm-lf-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'BEST') {
+                document.getElementById('fm-best-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'The Lorry') {
+                document.getElementById('fm-the-lorry-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'Nim Express') {
+                document.getElementById('fm-nim-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'Deliveree') {
+                document.getElementById('fm-deliveree-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'Giztix') {
+                document.getElementById('fm-gistix-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'Flash Express') {
+                document.getElementById('fm-flash-express-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'J&amp;T Thailand') {
+                document.getElementById('fm-jt-express-KERPU0006672663').style.display = 'inline-block';
+            } else if (FM === 'J&amp;T Bulky TH') {
+                document.getElementById('fm-jt-express-KERPU0006672663').style.display = 'inline-block';
+            }
+        </script>
+
+<div class="box left" id="hop-KERPU0006672663" style="text-align:center;width: 11%;width: 18%;height: 1.3cm;font-size: 30px;line-height: 44px;">&nbsp;</div>
+<script type="text/javascript">
+            var LM = lastMile3PL;
+            var sendername = "Minimalist shoes";
+            var lex = "LEX";
+            var xdw = "XDW";
+            var mwh = "MWH";
+            var dh1 = "DH1";
+            var dh2 = "DH2";
+            var cbw = "CBW";
+            var shippingtype = "Marketplace";
+            var tn = "KERPU0006672663";
+            var czipcode = "10600";
+
+
+            if ((czipcode.startsWith("50000")
+                    ||czipcode.startsWith("50100")
+                    ||czipcode.startsWith("50110")
+                    ||czipcode.startsWith("50120")
+                    ||czipcode.startsWith("50130")
+                    ||czipcode.startsWith("50140")
+                    ||czipcode.startsWith("50150")
+                    ||czipcode.startsWith("50160")
+                    ||czipcode.startsWith("50170")
+                    ||czipcode.startsWith("50180")
+                    ||czipcode.startsWith("50190")
+                    ||czipcode.startsWith("50200")
+                    ||czipcode.startsWith("50210")
+                    ||czipcode.startsWith("50220")
+                    ||czipcode.startsWith("50230")
+                    ||czipcode.startsWith("50240")
+                    ||czipcode.startsWith("50250")
+                    ||czipcode.startsWith("50260")
+                    ||czipcode.startsWith("50270")
+                    ||czipcode.startsWith("50280")
+                    ||czipcode.startsWith("50290")
+                    ||czipcode.startsWith("50300")
+                    ||czipcode.startsWith("50310")
+                    ||czipcode.startsWith("50320")
+                    ||czipcode.startsWith("50330")
+                    ||czipcode.startsWith("50340")
+                    ||czipcode.startsWith("50350")
+                    ||czipcode.startsWith("50360")
+                    ||czipcode.startsWith("51000")
+                    ||czipcode.startsWith("51110")
+                    ||czipcode.startsWith("51120")
+                    ||czipcode.startsWith("51130")
+                    ||czipcode.startsWith("51140")
+                    ||czipcode.startsWith("51150")
+                    ||czipcode.startsWith("51160")
+                    ||czipcode.startsWith("51170")
+                    ||czipcode.startsWith("51180")
+                    ||czipcode.startsWith("52000")
+                    ||czipcode.startsWith("52100")
+                    ||czipcode.startsWith("52110")
+                    ||czipcode.startsWith("52120")
+                    ||czipcode.startsWith("52130")
+                    ||czipcode.startsWith("52140")
+                    ||czipcode.startsWith("52150")
+                    ||czipcode.startsWith("52160")
+                    ||czipcode.startsWith("52170")
+                    ||czipcode.startsWith("52180")
+                    ||czipcode.startsWith("52190")
+                    ||czipcode.startsWith("52210")
+                    ||czipcode.startsWith("52220")
+                    ||czipcode.startsWith("52230")
+                    ||czipcode.startsWith("52240")
+                    ||czipcode.startsWith("53000")
+                    ||czipcode.startsWith("53110")
+                    ||czipcode.startsWith("53120")
+                    ||czipcode.startsWith("53130")
+                    ||czipcode.startsWith("53140")
+                    ||czipcode.startsWith("53150")
+                    ||czipcode.startsWith("53160")
+                    ||czipcode.startsWith("53170")
+                    ||czipcode.startsWith("53180")
+                    ||czipcode.startsWith("53190")
+                    ||czipcode.startsWith("53210")
+                    ||czipcode.startsWith("53220")
+                    ||czipcode.startsWith("53230")
+                    ||czipcode.startsWith("54000")
+                    ||czipcode.startsWith("54110")
+                    ||czipcode.startsWith("54120")
+                    ||czipcode.startsWith("54130")
+                    ||czipcode.startsWith("54140")
+                    ||czipcode.startsWith("54150")
+                    ||czipcode.startsWith("54160")
+                    ||czipcode.startsWith("54170")
+                    ||czipcode.startsWith("55000")
+                    ||czipcode.startsWith("55110")
+                    ||czipcode.startsWith("55120")
+                    ||czipcode.startsWith("55130")
+                    ||czipcode.startsWith("55140")
+                    ||czipcode.startsWith("55150")
+                    ||czipcode.startsWith("55160")
+                    ||czipcode.startsWith("55170")
+                    ||czipcode.startsWith("55180")
+                    ||czipcode.startsWith("55190")
+                    ||czipcode.startsWith("55210")
+                    ||czipcode.startsWith("55220")
+                    ||czipcode.startsWith("56000")
+                    ||czipcode.startsWith("56110")
+                    ||czipcode.startsWith("56120")
+                    ||czipcode.startsWith("56130")
+                    ||czipcode.startsWith("56140")
+                    ||czipcode.startsWith("56150")
+                    ||czipcode.startsWith("56160")
+                    ||czipcode.startsWith("57000")
+                    ||czipcode.startsWith("57100")
+                    ||czipcode.startsWith("57110")
+                    ||czipcode.startsWith("57120")
+                    ||czipcode.startsWith("57130")
+                    ||czipcode.startsWith("57140")
+                    ||czipcode.startsWith("57150")
+                    ||czipcode.startsWith("57160")
+                    ||czipcode.startsWith("57170")
+                    ||czipcode.startsWith("57180")
+                    ||czipcode.startsWith("57190")
+                    ||czipcode.startsWith("57210")
+                    ||czipcode.startsWith("57220")
+                    ||czipcode.startsWith("57230")
+                    ||czipcode.startsWith("57240")
+                    ||czipcode.startsWith("57250")
+                    ||czipcode.startsWith("57260")
+                    ||czipcode.startsWith("57270")
+                    ||czipcode.startsWith("57280")
+                    ||czipcode.startsWith("57290")
+                    ||czipcode.startsWith("57310")
+                    ||czipcode.startsWith("57340")
+                    ||czipcode.startsWith("58000")
+                    ||czipcode.startsWith("58110")
+                    ||czipcode.startsWith("58120")
+                    ||czipcode.startsWith("58130")
+                    ||czipcode.startsWith("58140")
+                    ||czipcode.startsWith("58150")
+                ) && FM === "DHLSC")
+            {
+                document.getElementById("hop-KERPU0006672663").textContent = "CNX";
+            }
+            else if (tn.startsWith("KERDO") || ("Kerry" === "DHLTH_dropoff")) {
+                document.getElementById("hop-KERPU0006672663").textContent = "DOF";
+            }
+            else if (FM === "LEX TH" && LM === "Kerry") {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+            else if (FM === "BEST" && LM === "Best") {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+            else if (tn.startsWith("LEXDO") || FM === "LEX TH" && shippingtype === "Marketplace") {
+                document.getElementById("hop-KERPU0006672663").textContent = "LEX";
+            }
+            else if (FM === "Thai Parcel" && LM === "CJGLS") {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+            else if (FM === "DHLSC" && LM === "CJGLS") {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+            else if (FM === "NinjaVanTH" && LM === "CJGLS") {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+            else if (FM === "Thai Parcel") {
+                document.getElementById("hop-KERPU0006672663").textContent = "XDW";
+            }
+            else if (FM === "DHLSC") {
+                document.getElementById("hop-KERPU0006672663").textContent = "XDW";
+            }
+            else if (FM === "NinjaVanTH") {
+                document.getElementById("hop-KERPU0006672663").textContent = "XDW";
+            } else {
+                document.getElementById("hop-KERPU0006672663").textContent = "MER";
+            }
+        </script>
+
+<div class="box left mock" style="text-align:center;padding: 0;width: 31%;height:1.3cm;line-height: 1.3cm;">
+<p style="font-size: 28px;line-height: 23px;vertical-align: middle;font-weight: bold;margin: 0;display: inline-block;word-break: break-all;">NOP01</p>
+</div>
+
+<div class="box left" id="lm-KERPU0006672663" style="text-align:center; width:25.5%; height:1.3cm;"><img id="lm-kerry-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/3e8e601eed0d4760b5eb232bcb3b824c.png" style="display:none;width:100%; height:80%;margin-top:3%;" /> <img id="lm-lex-KERPU0006672663" src="https://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/3caa86db108b4f83b682fd63f3a6da38.png" style="display:none;width:100%; height:75%;margin-top:8%;" /> <img id="lm-tp-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/862b9848c85649b68af6f76f926c3278.png" style="display:none;width:55%; height:80%;margin-top:5%;" /> <img id="lm-thaipost-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/ab5fa5be17d64170a8cf6684d5fcb443.jpeg" style="display:none;width: 94px;height:51px" /> <img id="lm-dhl-KERPU0006672663" src="https://laz-img-cdn.alicdn.com/tfs/TB1tF_tfsLJ8KJjy0FnXXcFDpXa-134-42.png" style="display:none;width:100%; height:100%;" /> <img id="lm-njv-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/224493ff21ed4e38b361ba9637835399.png" style="display:none;width:80%; height:100%;margin-top:2%;" /> <img id="lm-cj-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/cf29596f1ee74d60854e0e3557a7c976.png" style="display:none;width:65%; height:100%;margin-top:0.5%;margin-left:3%;" /> <img id="lm-dhlsc-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/391fd62e43054e19898bf529b0438b46.png" style="display:none;width:100%; height:100%;" /> <img id="lm-lf-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/08525adf29764906975f111ad1f7f9e4.jpg" style="display:none;width:100%; height:50%;margin-top: 10%;" /> <img id="lm-best-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/e873c76beec047b29c17719674d9a8ac.png" style="display:none;width:100%; height:100%;" /> <img id="lm-the-lorry-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/dab51369ec644564aeb94d4b7e81e906.png" style="display:none;width:90%; height:100%;" /> <img id="lm-nim-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/f490b955ba9d484f92c6dda583b6d934.gif" style="display:none;width:100%; height:100%;" /> <img id="lm-deliveree-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/e625cad366c84f889dc54acda7770869.png" style="display:none;width: 100%;margin-top: 4px;height: 75%;" /> <img id="lm-giztix-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/be9563750e3e4085a6a2fcebd336aee9.png" style="display:none;width: 100%;margin-top: 6px;height: 75%;" /> <img id="lm-flash-express-KERPU0006672663" src="https://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/1960cde40b76466f950a267a33d9d717.png" style="display:none;width: 100%;margin-top: 4px;height: 80%;" /> <img id="lm-jt-express-KERPU0006672663" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/58d144a32d924e0092a2a0b3f13da574.png" style="display: none;/* width: 100%; */margin-top: 15px;height: 35%;" /></div>
+<script type="text/javascript">
+            if (lastMile3PL === 'Kerry' || lastMile3PL === 'Kerry(insured)') {
+                document.getElementById('lm-kerry-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'LEX TH') {
+                document.getElementById('lm-lex-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Thai Parcel') {
+                document.getElementById('lm-tp-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'ThaiPost') {
+                document.getElementById('lm-thaipost-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'DHL') {
+                document.getElementById('lm-dhl-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'NinjaVanTH') {
+                document.getElementById('lm-njv-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'CJGLS') {
+                document.getElementById('lm-cj-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'DHLSC' || lastMile3PL === 'DSCLM') {
+                document.getElementById('lm-dhlsc-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'LF') {
+                document.getElementById('lm-lf-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Best') {
+                document.getElementById('lm-best-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'The Lorry') {
+                document.getElementById('lm-the-lorry-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Nim Express') {
+                document.getElementById('lm-nim-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Deliveree') {
+                document.getElementById('lm-deliveree-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Giztix') {
+                document.getElementById('lm-giztix-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'Flash Express') {
+                document.getElementById('lm-flash-express-KERPU0006672663').style.display = 'inline-block';
+            } else if (lastMile3PL === 'J&T Express Thailand') {
+                document.getElementById('lm-jt-express-KERPU0006672663').style.display = 'inline-block';
+            }
+        </script>
+
+<div class="box clear" style="text-align:center; width:100%; height:3.25cm;">
+<div class="barcode mock" style="height: 101px;margin-top: 4px;" type="code128" width="2"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWUAAABoAQAAAAABF9x8AAAACXBIWXMAACmGAAAphgEi7N+MAAAAEnRFWHRTb2Z0d2FyZQBCYXJjb2RlNEryjnYuAAAAU0lEQVR42u3KsQnAMAxFQUPaD14l4NaQ1QVqDV7FoCaFQJki3bv6WlWOHd22P31Jus2WLs15ItItfHiOOCmvehubzWaz2Ww2m81ms9lsNpv96/4AKBkmjm6ucQYAAAAASUVORK5CYII=' /></div>
+
+<div class="mock" style="text-align:center; font-size:14px; line-height:14px; font-weight: bold;">KERPU0006672663</div>
+</div>
+<!--        <div class="box clear left mock" style="text-align: left; width: 70%; height: 1.5cm; font-size: 53px; line-height: 52px; font-weight: bold; border-right: none;">NOP01</div>--><!--        <div class="box" style="text-align:right; width:30%; height:10.5%; font-size: 22px; line-height: 18px; font-weight: bold; border-left: none;">--><!--            <div>60000</div>--><!--            <div id="shpt-KERPU0006672663">&nbsp;</div>--><!--            <script type="text/javascript">--><!--                var szipcode = "10600";--><!--                var rzipcode = "60000";--><!--                if ( szipcode < 13000  && rzipcode < 13000 ) {--><!--                    document.getElementById('shpt-KERPU0006672663').textContent ='ND';}--><!--                else {--><!--                    document.getElementById('shpt-KERPU0006672663').textContent ='2D';}--><!--            </script>--><!--            <div>1/1</div>--><!--        </div>-->
+
+<div class="box left" style="width:70%; height:3.45cm;border-bottom:0;">
+<table border="0" style="border-collapse: collapse;width: 100%;table-layout: fixed;">
+	<tbody>
+		<tr>
+			<td style="text-align: left;font-size: 13px; border: 0;padding: 5px 0 5px 5px;background-color: #dbdbdb;color: #000000;"><strong style="font-weight: 700;">Print Time:</strong> 17 Dec 2020 09:18</td>
+		</tr>
+		<tr>
+			<td style="border: 0px; text-align: center;font-size: 17px;line-height: 17px;font-weight: bold;">3-KER-E1</td>
+		</tr>
+		<tr>
+			<td style="border: 0px; text-align: center; height: 104px; display: block">
+			<div class="barcode-100" style="height: 95px;"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASMAAABoAQAAAACSs6ubAAAACXBIWXMAACmGAAAphgEi7N+MAAAAEnRFWHRTb2Z0d2FyZQBCYXJjb2RlNEryjnYuAAAATElEQVR42u3KsQkAIRBFQeHSBVs52FSwdcECbOFKWDD9sNrC5S+bYEqmfMV+ltVXJg+Ny26K5mPO8Jr5FRaLxWKxWCwWi8VisVg/1gFj59iBsWN4dAAAAABJRU5ErkJggg==' /></div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div class="box left" style="width:30%; height:3.45cm;padding: 0px;">
+<table border="0" class="dtable" style="border-collapse: collapse;width: 100%;height:3.2cm;table-layout: fixed;">
+	<tbody>
+		<tr>
+			<td style="height: 30px;width: 70px;border-right: solid 1px #000000;text-align: center;padding: 0;">
+			<div style="height: 30px;font-size: 21px;line-height: 30px;font-weight: bold;text-align: center;word-break: break-all;overflow: hidden;">60000</div>
+			</td>
+			<td style="height: 18px;text-align: center;padding: 0;">
+			<div id="shpt-KERPU0006672663" style="height:30px;font-size: 23px;line-height: 30px; font-weight: bold;word-break: break-all;">&nbsp;</div>
+			<script type="text/javascript">
+                            var szipcode = "10600";
+                            var rzipcode = "60000";
+
+                            if (szipcode < 13000 && rzipcode < 13000) {
+                                document.getElementById('shpt-KERPU0006672663').textContent = 'ND';
+                            }
+                            else {
+                                document.getElementById('shpt-KERPU0006672663').textContent = '2D';
+                            }
+                        </script></td>
+		</tr>
+		<tr>
+			<td colspan="2" style="text-align: center;font-weight: bold;height: 42px;font-size: 21px;line-height: 21px;padding: 0px;">
+			<div class="show-Kerry" id="payment-type-KERPU0006672663" style="height: 26px;">
+			<div id="thaipost-no-KERPU0006672663">
+			<div class="hidden-COD show-SIAM_COMMERCIAL_BANK_VA">COD</div>
+
+			<div class="hidden-non-SIAM_COMMERCIAL_BANK_VA">NON COD</div>
+			</div>
+
+			<div id="thaipost-KERPU0006672663" style="font-size:14px;line-height:13px;">
+			<div class="hidden-COD show-SIAM_COMMERCIAL_BANK_VA">เก็บเงินค่าสินค้า e-Parcel</div>
+
+			<div class="hidden-non-SIAM_COMMERCIAL_BANK_VA">นำจ่ายโดยไม่ต้องเก็บเงินสินค้า</div>
+			</div>
+			</div>
+			<script type="text/javascript">
+                            if (lastMile3PL ==='ThaiPost') {
+                                document.getElementById('thaipost-no-KERPU0006672663').style.display = 'none';
+                            } else {
+                                document.getElementById('thaipost-KERPU0006672663').style.display = 'none';
+                            }
+                        </script></td>
+		</tr>
+		<tr>
+			<td colspan="2" style="height: 53px;vertical-align: top;">
+			<div style="font-size: 15px; line-height: 15px; font-weight: bold; text-align: center;word-break: break-all;height: 53px;">
+			<div class="hidden-COD show-SIAM_COMMERCIAL_BANK_VA"><b id="cod-KERPU0006672663">1,960.36 Baht</b>
+			<div class="barcode-100" style="padding-top: 5px;color: #ffffff;">Illegal Barcode Message: 1,960.36</div>
+			</div>
+			<script type="text/javascript">
+                                if (lastMile3PL === 'Kerry' || lastMile3PL === 'Kerry(insured)' || lastMile3PL === 'LEX TH' || lastMile3PL === 'CJGLS' || lastMile3PL === 'Flash Express' || lastMile3PL === 'NinjaVanTH') {
+                                    document.getElementById('cod-KERPU0006672663').style.display = 'none';
+                                }
+                            </script>
+
+			<div class="hidden-non-SIAM_COMMERCIAL_BANK_VA">0</div>
+			</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div class="box left" style="width:70%; height:5.3cm;border-top:0;"><!--            <div class="mock" style="font-size: 63px;line-height: 58px;font-weight: bold; height:1.5cm;">N3-RNAS</div>-->
+<div class="ThaiPost-hidden show-Kerry" id="thaipost1-KERPU0006672663" style="display: inline; font-weight: bold;">&nbsp;</div>
+<script type="text/javascript">
+                if (lastMile3PL === 'ThaiPost') {
+                    document.getElementById('thaipost1-KERPU0006672663').innerHTML = 'กรณีนำจ่ายไม่ได้ กรุณาส่งคืนตามที่อยู่ผู้ส่ง';
+                }
+            </script>
+
+<div style="font-size:12px; line-height:11px;border-top: dotted 1px;"><b>Sender</b>: Minimalist shoes</div>
+
+<div class="shipping-address" style="font-size:11px; line-height:11px;margin-bottom: 5px;">&#3603;&#3633;&#3600;&#3623;&#3619;&#3619;&#3603; &#3585;&#3636;&#3592;&#3585;&#3635;&#3592;&#3634;&#3618; 316-318 &#3606;&#3609;&#3609;&#3648;&#3592;&#3619;&#3636;&#3597;&#3619;&#3633;&#3606; &#3649;&#3586;&#3623;&#3591;&#3588;&#3621;&#3629;&#3591;&#3605;&#3657;&#3609;&#3652;&#3607;&#3619; &#3648;&#3586;&#3605;&#3588;&#3621;&#3629;&#3591;&#3626;&#3634;&#3609; &#3585;&#3619;&#3640;&#3591;&#3648;&#3607;&#3614;&#3617;&#3627;&#3634;&#3609;&#3588;&#3619; 10600</div>
+
+<div style="font-size:13px; line-height:13px;border-top:  dotted 1px;"><b>Receiver</b>: <span class="mock">นลิน อิทธิชัยเจริญ <br />
+<span class="shipping-address">105 &#3617;.12 &#3605;.&#3610;&#3657;&#3634;&#3609;&#3649;&#3585;&#3656;&#3591; &#3629;.&#3648;&#3617;&#3639;&#3629;&#3591; &#3648;&#3617;&#3639;&#3629;&#3591;&#3609;&#3588;&#3619;&#3626;&#3623;&#3619;&#3619;&#3588;&#3660;/ Mueang Nakhon Sawan &#3609;&#3588;&#3619;&#3626;&#3623;&#3619;&#3619;&#3588;&#3660;/ Nakhon Sawan 60000 </span></span>
+
+<p id="address_type-KERPU0006672663" style="display: inline;">&nbsp;</p>
+<span class="mock"><span class="shipping-address"> <script type="text/javascript">
+        if ("HOME" !== "") {
+            if("HOME" === "WORK") {
+                document.getElementById("address_type-KERPU0006672663").textContent = "(OFFICE)";
+            } else {
+                document.getElementById("address_type-KERPU0006672663").textContent = "(HOME)";
+            }
+        }
+    </script> </span></span>
+
+<div style="margin-top: 5px;border-bottom:  dotted 1px;"><b>Phone:</b> 660805639615</div>
+
+<div><span class="mock"><span class="shipping-address" style="font-size: 8px">Lazada Order Number: 345474641158769<span class="barcode" style="height: 40px; width: 255px;display: inline-block;float: right;"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbYAAAAhAQAAAACdZrOSAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAEnRFWHRTb2Z0d2FyZQBCYXJjb2RlNEryjnYuAAAAUklEQVR42mP4///PN4Ebik92V+QY3JNO/TDh5BvF24cTN3y4rd/SzvmWTfg2j3nbjXzFXdUcZnJSOTZt5xN5gXoYRvWN6hvVN6pvVN+ovhGoDwCgF8VNoed+ngAAAABJRU5ErkJggg==' /></span></span></span></div>
+<span class="mock"><span class="shipping-address"> </span></span></div>
+</div>
+
+<div class="box left" style="width:30%; height:5.3cm;">
+<div id="fulfil-type-KERPU0006672663" style="width: 109px;height: 45px;font-size: 17px;text-align: center;line-height: 40px;border-bottom: solid 1px;background-color: #000000;color: #ffffff;font-weight: bold;">&nbsp;</div>
+<script type="text/javascript">
+                if ("" === "LazMall G") {
+                    document.getElementById("fulfil-type-KERPU0006672663").textContent = "";
+                }
+            </script>
+
+<div class="qrcode mock" id="kerry-qr-KERPU0006672663" style="width:90px;height:90px;margin-top: 5px;margin-left: 5px;"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABpCAYAAAA5gg06AAABd0lEQVR42u3dQQ7DMAgEQP//0+0XqpaahYyl3NJGZnJAGMfnnPMKun4ZN/6vLS6QIEGCBAlSMtKN0YVUfd+VuECCBAkSJEjTkKqzts33lccFEiRIkCBBgvR99nSjHAUJEiRIkCBBWoKUXj6CBAkSJEiQHo+UtJ7UlUHGrydBggQJEiRIHUhJHawT14ke12YMCRIkSJCeg5Q+qicyMgiQDEiQIEGaFoSkrChpvldeDkiQIEGCBCkZKSnz6moISSoVQYIECRIkSGuRqn/bFfyk7BgSJEiQIEEah5TecZr0IpSXmSBBggQJEqRkpC1rR+mZHCRIkCBBgjQOKX1MDIwOW0iQIEGCtBZp4p7Z9D24bWUhSJAgQYIEqQMpKQPaXGL5eG6QIEGCBAnSNKT0LOtG5tr1DEiQIEGCBAlScda2+ThVSJAgQYIECVJ4WchxcZAgQYIECdLAk8gmbpuJ+koXJEiQIEGC9G+kLR2sa05KgwQJEiRIkBKQ3mYwYNUKouHdAAAAAElFTkSuQmCC' /></div>
+
+<div class="qrcode mock" id="qr-KERPU0006672663" style="width:90px;height:90px;margin-top: 5px;margin-left: 5px;"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABpCAYAAAA5gg06AAABfUlEQVR42u3dQQoDIRAEQP//6eQDOQiRmR6tgdyyiVi70Kira631Cfr8qt3v7dY//9vWL5AgQYIECVIyUkWdRurCLOkXSJAgQYIEaRpSempLujmO9wskSJAgQYIEqQcpafgIEiRIkCBBghSUntLbBwkSJEiQIF2LlJ6eKq6Nn0+CBAkSJEiQOpAmrmCdmCqfW2YMCRIkSJDmI6XXLStTry5IkCBBgvQOUkXqSEp3FUnueL9AggQJEiRIyUhdoSN9SKlt2AoSJEiQIEFKQUoa1Ui6tqstkCBBggQJ0lNIE1836ZrHuuapgQQJEiRI7yBZcdqHCQkSJEiQII1DSq+Jc0IjYzkkSJAgQYK0gzTx3dCu32ub24IECRIkSJCSkSamtqSdu463BRIkSJAgQZqGlHSgSMWNFTXPBgkSJEiQIEGygKMkCkOCBAkSJEgvId2yj/fxzdshQYIECRKkZKRbAsvEgAYJEiRIkCBFI91yEln6SlfHxUGCBAkSpFFIX5ZGYNUmZs/RAAAAAElFTkSuQmCC' /></div>
+
+<div id="cow-KERPU0006672663" style="padding-top:20px;font-size: 14px;text-align: center;font-weight: bold;">STANDARD</div>
+<script type="text/javascript">
+
+                if (lastMile3PL === 'J&T Express Thailand') {
+                    document.getElementById('cow-KERPU0006672663').textContent = "0.70 KG";
+                }
+            </script></div>
+<script type="text/javascript">
+
+            if (lastMile3PL === 'Kerry' || lastMile3PL === 'Kerry(insured)') {
+                document.getElementById('qr-KERPU0006672663').style.display = 'none'
+            }else {
+                document.getElementById('kerry-qr-KERPU0006672663').style.display = 'none'
+            }
+        </script>
+
+<div class="box left" style="width: 70%;height: 1.5cm;padding: 0px;text-align: center;line-height: 1.5cm;overflow: hidden;">
+<p style="font-size: 31px;font-weight: bold;vertical-align: middle;margin: 0;display: inline-block;word-break: break-all;">N3-RNAS</p>
+</div>
+
+<div class="box left" style="width:30%;height: 1.5cm;padding: 0px;text-align: center;line-height: 1.5cm;background-color: #000000;color: #ffffff;border:1px;overflow: hidden;">
+<p style="font-size: 26px;font-weight: bold;vertical-align: middle;margin: 0;display: inline-block;word-break: break-all;">NOP01</p>
+</div>
+</div>
+</div>
+
+<div class="A4" style="padding-top: 1px;">
+<div class="cut-line" style="position:relative;"><img alt="image" src="http://cdn-cloudprint.cainiao.com/waybill-print/cloudprint-imgs/496d988f51f34b0b863a24a529dc8c7e.png" style="height:20px; position:relative; top:-11px;" />
+<div style="font-size: 10px;position: absolute;top: -20px;left: 40px;">Driver/Rider Copy (สำหรับขนส่ง)</div>
+
+<div style="font-size: 10px; position: absolute; top: 5px; left: 40px;">Customer Copy (สำหรับลูกค้า)</div>
+</div>
+
+<div style="overflow: hidden;">
+<div class="left" style="width:100%;">
+<table border="1" cellpadding="0" cellspacing="0" style="width:100%; table-layout: fixed;">
+	<tbody>
+		<tr>
+			<td style="font-size:10px; width:50%; padding:5px;">วันที่สั่งซื้อ Order date: &nbsp;12 Dec 2020<br />
+			เลขที่สั่งซื้อ Order No.: &nbsp;345474641158769<br />
+			Customer NAME: &nbsp;นลิน อิทธิชัยเจริญ 
+			<div class="shipping-address" style="word-wrap: break-word;">ที่อยู่ ADDRESS: 105 &#3617;.12 &#3605;.&#3610;&#3657;&#3634;&#3609;&#3649;&#3585;&#3656;&#3591; &#3629;.&#3648;&#3617;&#3639;&#3629;&#3591; &#3648;&#3617;&#3639;&#3629;&#3591;&#3609;&#3588;&#3619;&#3626;&#3623;&#3619;&#3619;&#3588;&#3660;/ Mueang Nakhon Sawan &#3609;&#3588;&#3619;&#3626;&#3623;&#3619;&#3619;&#3588;&#3660;/ Nakhon Sawan 60000</div>
+			<br />
+			เบอร์โทรศัพท์ Phone number :&nbsp;660805639615</td>
+			<td style="font-size:10px; width:50%; padding:5px; vertical-align: top;">ชื่อบริษัท Seller Name : Minimalist shoes
+			<div class="shipping-address" style="word-wrap: break-word;">ที่อยู่ Address: 316-318 ถนนเจริญรัถ แขวงคลองต้นไทร เขตคลองสาน กรุงเทพมหานคร 10600</div>
+			<br />
+			<br />
+			<big>วิธีจัดส่ง Payment Type:SIAM_COMMERCIAL_BANK_VA</big></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div class="left" style="width:100%;">
+<table border="1" cellpadding="0" cellspacing="0" style="width:100%">
+	<tbody>
+		<tr>
+			<td style="width: 100%; vertical-align: top; padding: 5px;">
+			<div class="barcode" style="margin: auto; text-align: center;"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbYAAABgAQAAAABZYmpbAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAEnRFWHRTb2Z0d2FyZQBCYXJjb2RlNEryjnYuAAABDUlEQVR42mP4///PN4Ebik92V+QY3JNO/TDh5BvF24cTN3y4rd/SzvmWTfg2j3nbjXzFXdUcZnJSOTZt5xN5gXoYRvWN6hvVN6pvVN+ovlF9o/pG9Y3qG9U3qm9U36i+UX2j+kb1EauPHDCqjxR9P2oe/Dzw+fFzOTs+GT4be6L1fd/z/ue/z3ef39/39/3bm/uJd+eu91//vt5/HaTv9u/7xOvb9vDt39uLt9/fJ/v+ljXx+v6U/cv9fXvm9vv7n8nvnDmfePvW/Y/9vXtv+f39X9/vvhNPvL4F9Q7fG/cyg/RV3yfend/t3tV+/33z+/19T9/XziY+PH/Uffj7/vfh72z8fHJ/bOqpmV4AvZFtKmhwh1YAAAAASUVORK5CYII=' /></div>
+
+			<div style="margin: auto; text-align: center; font-size:8px; line-height:0px;">ORDER NUMBER</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="delivery-note">
+<div style="margin: 5px 0 0 0;border-bottom: none;">
+<div class="container datagrid order-items" style="font-size:10px; font-family:tahoma"><span><table>
+	<thead>
+		<tr>
+		<th>#</th>
+		<th>Product name</th>
+		<th>Seller SKU</th> 
+		<th>Shop SKU</th>
+		<th>Price</th>
+		<th>Paid Price</th>
+		</tr>
+	</thead>
+	<tbody>
+<tr>
+			<td>1</td>
+			<td>Minimalist รองเท้าหนังแกะแท้ 100% รุ่น Middleton (nude) พื้นหนา ซัพพอร์ตดี ไม่ปวดเท้า ไม่ลื่น</td>
+			<td>middletonnude38</td> 
+			<td>257804997_TH-397385866</td>
+			<td class="price-value">2104.00</td>
+			<td class="price-value">2104.00</td>
+		</tr>	</tbody>
+</table></span> <span class="label">Voucher:</span><span>&nbsp;</span><span class="value">-162.23</span><br />
+<span>VAT: 0.00</span><br />
+<span class="label">Total:</span><span>&nbsp;</span><span class="value">1,960.36</span></div>
+</div>
+
+<div style="text-align: center; font-size:9px; font-family:Tahoma;"><span><strong>Lazada acts as an agent in the provision of a sales platform. Specific discounts are regulated by Lazada. For any inquires or issues, please contact us at www.lazada.co.th/contact or visit our help center at www.lazada.co.th/help</strong></span></div>
+<!--    <div style="text-align:center; margin-top: 5px;"><img alt="image" src="https://th-live.slatic.net/cms/3PL/ORF5.png" width="90%" /></div>--></div>
+<!-- /.delivery-note --><!-- /.awb-page --><!-- /AWB -->

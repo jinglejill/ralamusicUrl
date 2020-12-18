@@ -1,8 +1,8 @@
 <?php
 
     include_once('dbConnect.php');
-    setConnectionValue("RALAMUSIC");
-//    setConnectionValue("MINIMALIST");
+//    setConnectionValue("RALAMUSIC");
+    setConnectionValue("MINIMALIST");
     set_time_limit(1200);
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
@@ -26,11 +26,11 @@
     }
     
     
-    for($j=1; $j<=6; $j++)
+    for($j=1; $j<=60; $j++)
     {
         $c = getApiManager();
         $c->method = "com.productQueryApiService.queryProducts";
-        $c->param_json = '{"queryProductParam":{"saleState":"-1","pageNum":"1000","page":"'.$j.'","locale":"th_TH"}}';
+        $c->param_json = '{"queryProductParam":{"saleState":"-1","pageNum":"100","page":"'.$j.'","locale":"en_US"}}';
         $resp = $c->call();
         //    echo $resp;
         $openapi_data = json_decode($resp)->openapi_data;
@@ -38,7 +38,8 @@
         $data = json_decode($openapi_data)->data;
         //            echo json_encode($data->datas);
         //            exit();
-
+//        echo $resp;
+//        exit();
 
 
         for($i=0; $i<sizeof($data->datas); $i++)
@@ -84,7 +85,7 @@
         }
 
         $size += sizeof($data->datas);
-        if(sizeof($data->datas)<1000)
+        if(sizeof($data->datas)<100)
         {
             //truncate backup
             //move current to backup

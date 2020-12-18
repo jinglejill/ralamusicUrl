@@ -8,6 +8,10 @@
     $globalDBName="SAIM";
     $dbUser = "FFD";
     $appImageUrl = "https://minimalist.co.th/saim";
+    $appUrl = "https://minimalist.co.th/saim";
+    
+    //firebase
+    $fcmServerKey = "AAAA0giYusQ:APA91bF_25L92doKo8UJB9qphUAEql8ZuSnDN7dYUdABK8vCnEBOoS8bBCUrYK3O4IYPj52uhXC_ZK0Ek5doR1c5nafP51ixNP23zVV59vEyvlo7491O9DdevylqnXSFp7Rr74wv9yu9";
     
     //line
     $lineNotifyToken = "Iw9r67OTA4B7ZuOqlv0lEiwTipakqPKvaNwqGabZZ2X";
@@ -37,8 +41,8 @@
 //    $url = "https://api.lazada.co.th/rest";
 //    $appKey = "119433";
 //    $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-//    $accessToken = "50000801a14kMPspe8DFUhLUVc1594f978hHviwmyToiamtQhxo3qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
-//    $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
+//    $accessToken = "50000800941srTr7jlPaRTABafvGJra0wDBhET8MyXcneJhakI08S1f443451ibq";//ralaTokenStart: 10-12-2020 11:00
+//    $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire ประมาณ16 feb 2021
 
     
     //shopee variable minimalist
@@ -72,6 +76,7 @@
     $serverUrl = "https://open.jd.co.th/api";
     $serverUrlBigData = "https://open.jd.co.th/api_bigdata";
     
+    
 //    //jd variable ralamusic
 //    $appKeyJd = "4f167657105d3afd732653da83fb49a5";
 //    $appSecretJd = "7789c6f973f9c3ad22c1206c97382663";
@@ -81,6 +86,93 @@
     
     $salt = "FvTivqTqZXsgLLx1v3P8TGRyVHaSOB1pvfm02wvGadj7RLHV8GrfxaZ84oGA8RsKdNRpxdAojXYg9iAj";
     
+    function getMainImageBySku($sku)
+    {
+        global $con;
+        $sku = mysqli_real_escape_string($con,$sku);
+        
+        
+        $sql = "select MainImage from mainProduct where sku = '$sku'";
+        $mainProductList = executeQueryArray($sql);
+        return $mainProductList[0]->MainImage;
+    }
+    
+    function editStockSharingList($param)
+    {
+        global $contentType;
+        global $appUrl;
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+//        $url = "http://www.ralamusic.com/SAIM/SAIMHasWebProductGet.php";
+        $url = $appUrl . "/SAIMStockSharingInsertList.php";
+        writeToLog("test url:"+$url);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //payload
+        $payload = json_encode($param);
+        writeToLog("payload:" . $payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:' . $contentType;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        
+        writeToLog("editStockSharingList result:" . $result);
+        $obj = json_decode($result);
+        
+        
+        return $obj->success;
+    }
+    
+    function getImageType($filename)
+    {
+        $image_info = getimagesize($filename);
+        if($image_info[2] == 1)
+        {
+            return "gif";
+        }
+        else if($image_info[2] == 2)
+        {
+            return "jpg";
+        }
+        else if($image_info[2] == 3)
+        {
+            return "png";
+        }
+        return "jpg";
+    }
     
     function cors()
     {
@@ -274,6 +366,61 @@
         return $orders;
     }
     
+    function getOrderItemJD($orderId)
+    {
+        $c = getApiManager();
+        $c->method = "jingdong.PopAdminExport.queryOrderDetail";
+        $data = array();
+        $data["orderId"] = $orderId;
+        
+        
+        $c->param_json = json_encode($data);
+        $resp = $c->call();
+        writeToLog("getOrderItemJD:" . $resp);
+        
+        
+        $openapi_data = json_decode($resp)->openapi_data;
+        $orderInfo = json_decode($openapi_data)->orderInfoVO;
+        
+        return $orderInfo;
+    }
+    
+    function getJdSkuById($id)
+    {
+        $sql = "select Sku from jdProduct where skuId = '$id'";
+        $jdProductList  = executeQueryArray($sql);
+        return $jdProductList[0]->Sku;
+    }
+    
+    function getOrderIdByWaybillNumber($waybillNumber)
+    {
+        $sql = "select OrderNo from jdOrder where waybillNumber = '$waybillNumber'";
+        $jdOrderList  = executeQueryArray($sql);
+        return $jdOrderList[0]->OrderNo;
+    }
+    
+    function getWaybillNumberJd($orderId)
+    {
+        $c = getApiManager();
+        $c->method = "jingdong.PlaceOrderServiceJsf.getPreWaybillCodeForOpenApi";
+        $reqWaybillCodeDTO = array();
+        $reqWaybillCodeDTO["orderId"] = $orderId;
+        
+        $data = array();
+        $data["reqWaybillCodeDTO"] = $reqWaybillCodeDTO;
+        
+        writeToLog("getWaybillNumberJd data:".$data);
+        $c->param_json = json_encode($data);
+        $resp = $c->call();
+        writeToLog("getWaybillNumberJd:" . $resp);
+        
+        
+        $openapi_data = json_decode($resp)->openapi_data;
+        $data = json_decode($openapi_data)->data;
+        
+        return $data->waybillCode;
+    }
+    
     function insertJdProductCurl($param)
     {
         global $contentType;
@@ -345,6 +492,7 @@
         writeToLog("insertJdProduct result:" . $resp);
         $openapi_data = json_decode($resp)->openapi_data;
         $code = json_decode($openapi_data)->code;
+        $message = json_decode($openapi_data)->message;
         $productId = json_decode($openapi_data)->data;
         
         if($code == 200)
@@ -353,14 +501,47 @@
             $skuId = $ret->skuList[0]->skuId;
             $retUpdate = updateSkuStatus($productId,1,$skuId,1);
             
-            return array("productId"=>$productId,"skuId"=>$skuId);
+            return array("code"=>$code,"message"=>$message,"productId"=>$productId,"skuId"=>$skuId);
         }
         else
         {
-            return null;
+            return array("code"=>$code,"message"=>$message);
         }
         
-        return null;
+        return array("code"=>'',"message"=>'');
+    }
+    
+    function updateJdProduct($data)
+    {
+        writeToLog(json_encode($data));
+        
+        $c = getApiManager();
+        $c->method = "com.productUpdateApiService.saveProduct";
+        $param = array();
+        $param["updateProductParam"] = $data;
+        $c->param_json = json_encode($param);
+        $resp = $c->call();
+        
+        writeToLog("insertJdProduct result:" . $resp);
+        $openapi_data = json_decode($resp)->openapi_data;
+        $code = json_decode($openapi_data)->code;
+        $message = json_decode($openapi_data)->message;
+        $productId = json_decode($openapi_data)->data;
+        
+        if($code == 200)
+        {
+            $ret = getJdProduct($productId);
+            $skuId = $ret->skuList[0]->skuId;
+//            $retUpdate = updateSkuStatus($productId,1,$skuId,1);
+            
+            return array("code"=>$code,"message"=>$message,"productId"=>$productId,"skuId"=>$skuId);
+        }
+        else
+        {
+            return array("code"=>$code,"message"=>$message);
+        }
+        
+        return array("code"=>'',"message"=>'');
     }
     
     function hasJdProduct($sku)
@@ -374,6 +555,32 @@
         $openapi_data = json_decode($resp)->openapi_data;
         $objs = json_decode($openapi_data)->objs;
         return sizeof($objs)>0;
+    }
+    
+    function deleteJdProduct($productId)
+    {
+        $c = getApiManager();
+        $c->method = "com.jd.oversea.api.ProductUpdateApiService";
+        $c->param_json = '{"productId":"' . $productId . '","locale":"en"}';
+        $resp = $c->call();
+        
+        writeToLog("deleteJdProduct result:" . $resp);
+//        $openapi_data = json_decode($resp)->openapi_data;
+//        $objs = json_decode($openapi_data)->objs;
+        return $resp;
+    }
+    
+    function deleteJdSku($skuId)
+    {
+        $c = getApiManager();
+        $c->method = "com.jd.oversea.api.ProductUpdateApiService.deleteSku";
+        $c->param_json = '{"skuId":"' . $skuId . '","locale":"en"}';
+        $resp = $c->call();
+        
+        writeToLog("deleteJdSku result:" . $resp);
+//        $openapi_data = json_decode($resp)->openapi_data;
+//        $objs = json_decode($openapi_data)->objs;
+        return $resp;
     }
     
     function getNormalOrUnListProductsJD($sku)
@@ -450,6 +657,9 @@
     
     function getJdProductSkuIdsInApp($sku)
     {
+        global $con;
+        
+        $sku = mysqli_real_escape_string($con,$sku);
         $sql = "select * from jdProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         $productSkuIds = array();
@@ -581,6 +791,9 @@
     
     function hasMainProduct($sku)
     {
+        global $con;
+        
+        $sku = mysqli_real_escape_string($con,$sku);
         $sql = "select Sku from mainProduct where Sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
@@ -588,7 +801,9 @@
 
     function hasLazadaProductInApp($sku)
     {
-//        $sql = "select * from lazadaProduct where SellerSku = '$sku'";
+        global $con;
+        
+        $sku = mysqli_real_escape_string($con,$sku);
         $sql = "select Sku from lazadaProduct where Sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
@@ -596,6 +811,9 @@
     
     function hasShopeeProductInApp($sku)
     {
+        global $con;
+        
+        $sku = mysqli_real_escape_string($con,$sku);
         $sql = "select Sku from shopeeProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
@@ -603,14 +821,10 @@
     
     function hasJdProductInApp($sku)
     {
+        global $con;
+        
+        $sku = mysqli_real_escape_string($con,$sku);
         $sql = "select Sku from jdProduct where sku = '$sku'";
-        $selectedRow = getSelectedRow($sql);
-        return sizeof($selectedRow)>0;
-    }
-    
-    function hasWebProductInApp($sku)
-    {
-        $sql = "select Sku from webProduct where sku = '$sku'";
         $selectedRow = getSelectedRow($sql);
         return sizeof($selectedRow)>0;
     }
@@ -625,7 +839,7 @@
     
     function shopeeOrderExist($orderSn)
     {
-        $sql = "select Sku from shopeeOrder where orderNo = '$orderSn'";
+        $sql = "select ShopeeOrderID from shopeeOrder where orderNo = '$orderSn'";
         $shopeeOrderList = executeQueryArray($sql);
         
         return sizeof($shopeeOrderList);
@@ -1021,6 +1235,87 @@
 //        //param
 //        $date = new DateTime();
 //        $timestamp = $date->getTimestamp();
+
+
+        //payload
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+
+
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+
+
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        $header[] = 'charset:' . $charSet;
+        writeToLog("header:" . json_encode($header));
+
+
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+
+    
+
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+        writeToLog("add shopee item result: " . $result);
+        return json_decode($result);
+    }
+    
+    function updateItemImageShopee($itemID, $images)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/img/update";
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+        
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = $itemID;
+        $paramBody["images"] = $images;
+        
 
 
         //payload
@@ -1700,6 +1995,18 @@
         return 0;
     }
     
+    function getVariationShopee($sku)
+    {
+        $variations = getAllVariationsShopee($sku);
+        if(sizeof($variations) > 0)
+        {
+            $variation = $variations[0];
+            
+            return $variation;
+        }
+        return null;
+    }
+    
     //in case of multiple link of the same sku
     function updateStockToAllSkuInOrder2($orderObj)
     {
@@ -1766,9 +2073,9 @@
                 {
                     return;
                 }
-                for($j=0; $j<sizeof($variations); $j++)
+                for($k=0; $k<sizeof($variations); $k++)
                 {
-                    $variation = $variations[$j];
+                    $variation = $variations[$k];
                     $stock = 0;
                     $stock += $quantity;
                     
@@ -2104,6 +2411,165 @@
         return $obj->item;
     }
     
+    function deleteItemShopee($itemID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/delete";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+
+        $obj = json_decode($result);
+        
+        
+        curl_close($ch);
+        return $obj;
+    }
+    
+    function deleteVariationShopee($itemID,$variationID)
+    {
+        global $host;
+        global $contentType;
+        global $key;
+        global $partnerID;
+        global $shopID;
+        
+        
+        //create curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        
+        //url
+        $url = "https://partner.shopeemobile.com/api/v1/item/delete_variation";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        
+        //param
+        $date = new DateTime();
+        $timestamp = $date->getTimestamp();
+
+        
+        //payload
+        $paramBody = array();
+        $paramBody["partner_id"] = $partnerID;
+        $paramBody["shopid"] = $shopID;
+        $paramBody["timestamp"] = $timestamp;
+        $paramBody["item_id"] = intval($itemID);
+        $paramBody["variation_id"] = intval($variationID);
+        
+        $payload = json_encode($paramBody);
+        writeToLog("payload:" . $payload);
+        
+        
+        $contentLength = strlen($payload);
+        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Host:' . $host;
+        $header[] = 'Content-Type:' . $contentType;
+        $header[] = 'Content-Length:' . $contentLength;
+        $header[] = 'Authorization:' . $authorization;
+        writeToLog("header:" . json_encode($header));
+        
+        
+        //set header and payload
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        
+        
+        //exec curl
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_errno = curl_errno($ch);
+        if ($http_status==503)
+        {
+            writeToLog( "HTTP Status == 503)");
+        }
+          
+        if ($result === false)
+        {
+            print_r('Curl error: ' . curl_error($ch));
+            writeToLog( "Curl Errno returned $curl_errno");
+        }
+        
+
+        $obj = json_decode($result);
+        
+        
+        curl_close($ch);
+        return $obj;
+    }
+    
     function getAllSkuShopee()
     {
         global $host;
@@ -2350,7 +2816,10 @@
     
     function getAllVariationsShopeeInApp($sku)
     {
-        $sql = "select * from shopeeProduct where sku = '$sku'";
+        global $con;
+        
+        $escapeSku = mysqli_real_escape_string($con,$sku);
+        $sql = "select * from shopeeProduct where sku = '$escapeSku'";
         $selectedRow = getSelectedRow($sql);
         $variations = array();
         for($i=0; $i<sizeof($selectedRow); $i++)
@@ -3075,7 +3544,7 @@
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+//        curl_setopt($ch, CURLOPT_FAILONERROR, true);
         
         
         //url
@@ -3622,7 +4091,10 @@
     
     function updateStockQuantityLazadaInApp($sku,$quantity)
     {
-        $sql = "select * from lazadaProduct where sku = '$sku'";
+        global $con;
+        
+        $escapeSku = mysqli_real_escape_string($con,$sku);
+        $sql = "select * from lazadaProduct where sku = '$escapeSku'";
         $selectedRow = getSelectedRow($sql);
         if(sizeof($selectedRow) > 0)
         {
@@ -3630,6 +4102,7 @@
         }
         return true;
     }
+    
     function updateStockQuantityLazada($sku,$quantity)
     {
         global $url;
@@ -3637,10 +4110,12 @@
         global $appSecret;
         global $accessToken;
         
-        
+        $id = getItemIDAndSkuIDLazada($sku);
         //update part
-        $payLoad = file_get_contents('./lazadaUpdateQuantityTemplate2.php');
-        $payLoad = str_replace("#sku#",$sku,$payLoad);
+        $payLoad = file_get_contents('./lazadaUpdateQuantityTemplate3.php');
+        $payLoad = str_replace("#sku_id#",$id["sku_id"],$payLoad);
+        $payLoad = str_replace("#item_id#",$id["item_id"],$payLoad);
+//        $payLoad = str_replace("#sku#",$sku,$payLoad);
         $payLoad = str_replace("#quantity#",$quantity,$payLoad);
             
             
@@ -3649,7 +4124,7 @@
         $request = new LazopRequest('/product/price_quantity/update','POST');
         $request->addApiParam('payload',$payLoad);
         $resp = $c->execute($request, $accessToken);
-        writeToLog("update stock quantity lazada result:".json_encode($resp));
+        writeToLog("update stock quantity lazada result:".$resp);
         $respObject = json_decode($resp);
         
         if($respObject->code == "0")
@@ -3772,6 +4247,70 @@
             writeToLog("Lazada: Cannot get product ($resp)");
             return null;
         }
+    }
+    
+    function getItemIDAndSkuIDLazada($sku)
+    {
+        $product = getLazadaProduct($sku);
+        $id = array();
+        $id["item_id"] = $product->item_id;
+        $id["sku_id"] = $product->skus[0]->SkuId;
+        return $id;
+    }
+    
+    function getLazadaProductByItemID($itemID)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('item_id',$itemID);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        writeToLog("getLazadaProduct:" . $resp);
+        
+        if(($respObject->data) != null)
+        {
+            return $respObject->data;
+        }
+        else
+        {
+            writeToLog("Lazada: Cannot get product ($resp)");
+            return null;
+        }
+    }
+    
+    function getLazadaProductApi($sku)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+        
+        
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/item/get','GET');
+        $request->addApiParam('seller_sku',$sku);
+        
+        $resp = $c->execute($request, $accessToken);
+        $respObject = json_decode($resp);
+        writeToLog("getLazadaProduct:" . $resp);
+        
+        return $respObject;
+//        if(($respObject->data) != null)
+//        {
+//            return $respObject->data;
+//        }
+//        else
+//        {
+//            writeToLog("Lazada: Cannot get product ($resp)");
+//            return null;
+//        }
     }
     
     function updateStockLazada($productName, $color, $size,$quantity)
@@ -3993,7 +4532,7 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000801a14kMPspe8DFUhLUVc1594f978hHviwmyToiamtQhxo3qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+                $accessToken = "50000800941srTr7jlPaRTABafvGJra0wDBhET8MyXcneJhakI08S1f443451ibq";//ralaTokenStart: 16-08-2020 02:20
                 $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
                 
                 
@@ -4027,7 +4566,7 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000801a32kMPspe8DFUhLUVchHviwmyToiamtQhxo319b19c16qlna2Wwa6M8v";//ralaTokenStart: 16-08-2020 02:20
+                $accessToken = "50000800941srTr7jlPaRTABafvGJra0wDBhET8MyXcneJhakI08S1f443451ibq";//ralaTokenStart: 16-08-2020 02:20
                 $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 15544206 ประมาณ16 feb 2021
                 
                 
@@ -4057,8 +4596,8 @@
                 $url = "https://api.lazada.co.th/rest";
                 $appKey = "119433";
                 $appSecret = "UXRPIrSZfCwKBhm9jR4rdgprOdMVHXKs";
-                $accessToken = "50000600431yzdabrzgShKANzsTCB0f2kkPgssdBFdS137667fb7ny2CK7k0ATit";//tokenStart: 23-06-2020 20:00
-                $refreshToken = "50001601a31kMPspeBeCQglRxiJGwivmyvjjxCpTEMR16b6facbzssvVaYFvVQXu";//expire in 23-12-2020  20:20
+                $accessToken = "50000800941srTr7jlPaRTABafvGJra0wDBhET8MyXcneJhakI08S1f443451ibq";//tokenStart: 23-06-2020 20:00
+                $refreshToken = "50001800132cSOwTpBCUzHRjJ9pZOrah6GYiLTeTvGWj12d1cfe9bp4PyLkeT59x";//expire in 23-12-2020  20:20
                 
                 
                 //shopee
@@ -4540,104 +5079,6 @@
 //        fclose($fp);
 //        return $status;
     }
-    function sendApplePushNotification($strDeviceToken,$arrBody)
-    {
-        global $pushFail;
-        $token = $strDeviceToken;
-        $pass = 'jill';
-        $message = 'คุณพิสุทธิ์ กำลังไปเขาใหญ่กับฉัน แกอยากได้อะไรไหมกั๊ง (สายน้ำผึ้ง)pushnotification';
-        
-        
-        $ctx = stream_context_create();
-        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
-        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
-        
-        
-        if(!$pushFail)
-        {            
-            $fp = stream_socket_client(
-                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
-                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
-        }
-        
-        
-        if (!$fp)
-        {
-            $pushFail = true;
-            $error = "apple push: ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
-            writeToLog($error);
-            
-            return;
-        }
-        
-        
-        $body['aps'] = $arrBody;
-        $json = json_encode($body);
-        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
-        $result = fwrite($fp, $msg, strlen($msg));
-        if (!$result)
-        {
-            $status = "0";
-            writeToLog("apple push notification: fail, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
-        }
-        else
-        {
-            $status = "1";
-            writeToLog("apple push notification: success, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
-        }
-        
-        fclose($fp);
-        return $status;
-    }
-    function sendTestApplePushNotification($strDeviceToken,$arrBody)
-    {
-        global $pushFail;
-        $token = $strDeviceToken;
-        $pass = 'jill';
-        $message = 'คุณพิสุทธิ์ กำลังไปเขาใหญ่กับฉัน แกอยากได้อะไรไหมกั๊ง (สายน้ำผึ้ง)pushnotification';
-        
-        
-        $ctx = stream_context_create();
-        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
-        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
-        
-        
-        if(!$pushFail)
-        {
-            $fp = stream_socket_client(
-                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
-                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
-        }
-        
-        
-        if (!$fp)
-        {
-            $pushFail = true;
-            $error = "apple push: ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
-            writeToLog($error);
-            
-            return;
-        }
-        
-        
-        $body['aps'] = $arrBody;
-        $json = json_encode($body);
-        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
-        $result = fwrite($fp, $msg, strlen($msg));
-        if (!$result)
-        {
-            $status = "0";
-            writeToLog("apple push notification: fail, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
-        }
-        else
-        {
-            $status = "1";
-            writeToLog("apple push notification: success, device token : " . $strDeviceToken . ", payload: " . json_encode($arrBody));
-        }
-        
-        fclose($fp);
-        return $status;
-    }
 
     function sendLineNotify($sMessage)
     {
@@ -4789,5 +5230,118 @@
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+    
+    function sendFirebasePushNotification($token, $noti)
+    {        
+        global $fcmServerKey;
+        $key = $fcmServerKey;
+        
+        writeToLog("send firebase push");
+        // create curl resource
+        $ch = curl_init();
+        
+        // set url
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/fcm/send");
+        
+        
+        
+        //payload
+        $paramBody = array(
+                           "to" => $token
+                           ,"notification" => $noti
+//                           ,"data" => $data
+                           );
+        $payload = json_encode($paramBody);
+        writeToLog($payload);
+        
+        
+        //header
+        $header = array();
+        $header[] = 'Content-Type:application/json';
+        $header[] = 'Authorization: key=' . $key;
+        
+        
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+        
+        
+        
+        //return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        // $output contains the output string
+        $output = curl_exec($ch);
+        
+        
+        if ($output === false)
+        {
+            // throw new Exception('Curl error: ' . curl_error($crl));
+            print_r('Curl error: ' . curl_error($ch));
+        }
+        // close curl resource to free up system resources
+        curl_close($ch);
+    }
+    
+    function sendApplePushNotification($token,$noti)
+    {
+        writeToLog("send push to device: " . $token . ", body: " . json_encode($noti));
+//        global $pushFail;
+        $pass = "jilljill";
+        $message = 'pushnotification';
+        
+
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', 'ck.pem');
+        stream_context_set_option($ctx, 'ssl', 'passphrase', $pass);
+        
+        
+//        if(!$pushFail)
+        {
+            global $sandBox;
+            $sandBox = false;
+            if($sandBox)
+            {
+                $fp = stream_socket_client(
+                                       'ssl://gateway.sandbox.push.apple.com:2195', $err,
+                                       $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+            }
+            else
+            {
+                $fp = stream_socket_client(
+                                           'ssl://gateway.push.apple.com:2195', $err,
+                                           $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+            }
+        }
+        
+        
+        if (!$fp)
+        {
+            $pushFail = true;
+            $error = "ติดต่อ Server ไม่ได้ ให้ลองย้อนกลับไป สร้าง pem ใหม่: $err $errstr" . PHP_EOL;
+            writeToLog($error);
+            
+            return;
+        }
+        $aps = array();
+        $aps["alert"] = $noti;
+        $body['aps'] = $aps;
+        $json = json_encode($body);
+        $msg = chr(0).pack('n', 32).pack('H*',$token).pack('n',strlen($json)).$json;
+        $result = fwrite($fp, $msg, strlen($msg));
+        if (!$result)
+        {
+            $status = "0";
+            writeToLog("push notification: fail, device token : " . $token . ", payload: " . json_encode($noti));
+        }
+        else
+        {
+            $status = "1";
+            writeToLog("push notification: success, device token : " . $token . ", payload: " . json_encode($noti));
+        }
+        
+        fclose($fp);
+        return $status;
     }
 ?>

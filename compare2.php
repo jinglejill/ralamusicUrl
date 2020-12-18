@@ -1,287 +1,39 @@
-{
-        //update*********************************************************
-        //updateItem,updateItemImg,
-        //updatePrice,updateStock
-        
-        
-        
-        $lazadaProduct = getLazadaProduct($sku);
-        writeToLog("source lazada:". json_encode($lazadaProduct));
-        
-        $sql = "select * from mainproduct where sku = '$sku'";
-        $product = executeQueryArray($sql);
-        $primaryCategory = $product[0]->PrimaryCategory;
+2. Identify what resonates with your audience.
 
-        
-        $sql = "select * from shopeeProduct where sku = '$sku'";
-        $shopeeProduct = executeQueryArray($sql);
-        $itemID = $shopeeProduct[0]->ItemID;
+Mistake: You forget about your persona.
 
-        $shopeeItem = getItemShopee($itemID);
+If you want your blog content to perform well (i.e. generate traffic, leads, and sales), it must resonate with your audience and compel them to take action. One of the biggest mistakes is assuming that your content will perform if you haven't actually considered your audience or the actions you want them to take.
 
-        
-        
-        $sql = "select * from categoryMapping where lazadaCategoryID = '$primaryCategory'";
-        $selectedRow = getSelectedRow($sql);
-        $attributesProduct = array();//id, value(options)
-        if(sizeof($selectedRow) > 0)
-        {
-            $shopeeCategoryID = $selectedRow[0]["ShopeeCategoryID"];
-            $attributes = getShopeeAttributes(intval($shopeeCategoryID));
+Solution: Understand your persona's pains and solve for them.
 
-            
-            for($i=0; $i<sizeof($attributes); $i++)//rala ส่วนมากมี 1 attribute_id
-            {
-                $attribute = $attributes[$i];
-                
-                $foundAttribute = false;
-                for($j=0; $j<sizeof($attribute->options); $j++)
-                {
-                    $option = $attribute->options[$j];
-                    if(strpos($option, $lazadaProduct->attributes->brand) !== false)
-                    {
-                        $foundAttribute = true;
-                        $attributeValue = $option;
-                        break;
-                    }
-                }
-                
-                if($foundAttribute)
-                {
-                    $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                    $attributesProduct[] = $attribute1;
-                }
-                else
-                {
-                    $attribute1 = array("attributes_id"=>$attribute->attribute_id,"value"=>$attribute->options[0]);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-                    $attributesProduct[] = $attribute1;
-                }
-            }
-        }
-        else
-        {
-            $shopeeCategoryID = $defaultCategoryID;
-            
-            
-            $attribute1 = array("attributes_id"=>$defaultAttributeID,"value"=>$defaultAttributeValue);//search brand มาใส่ หากไม่เจอ ให้เลือก no brand
-            $attributesProduct[] = $attribute1;
-        }
+By defining your buyer persona and the things that matter to them, you can bridge the gap with your content.
 
-        
-        //sku 3531-1575336982582-0
-        ///5439430586 item_id
-        
-        
-        
-        $categoryId = intval($shopeeCategoryID);
-        $name = $product[0]->Name;//name
-        $description = $lazadaProduct->attributes->short_description?$lazadaProduct->attributes->short_description:$lazadaProduct->attributes->name;//short_description parse html tag out (<ul>,<li>,\r,\t)
-        $description = str_replace('<ul>','',$description);
-        $description = str_replace('<li>','',$description);
-        $description = str_replace('\r','',$description);
-        $description = str_replace('\t','',$description);
-        $price = floatval($product[0]->Price);//skus[0]->price
-        $stock = intval($product[0]->Quantity);//skus[0]->quantity
-        $itemSku = $product[0]->Sku;//skus[0]->SellerSku
-        $weight = intval($lazadaProduct->skus[0]->package_weight);//package_weight parseInt
-        $packageLength = intval($lazadaProduct->skus[0]->package_length);//package_length parseInt
-        $packageWidth = intval($lazadaProduct->skus[0]->package_width);//package_width parseInt
-        $packageHeight = intval($lazadaProduct->skus[0]->package_height);//package_height parseInt
-        $status = $shopeeItem->status;//"UNLIST";//NORMAL, UNLIST
-        $daysToShip = $shopeeItem->days_to_ship;
-        $isPreOrder = $shopeeItem->is_pre_order;
-        $condition = $shopeeItem->condition;
-        $sizeChart = $shopeeItem->size_chart;
-//        $images = array();//url skus[0]->Images
-//
-//        if($product[0]->MainImage != "")
-//        {
-//            $image1 = array("url"=>$product[0]->MainImage);
-//            $images[] = $image1;
-//        }
-//        if($product[0]->Image2 != "")
-//        {
-//            $image2 = array("url"=>$product[0]->Image2);
-//            $images[] = $image2;
-//        }
-//        if($product[0]->Image3 != "")
-//        {
-//            $image3 = array("url"=>$product[0]->Image3);
-//            $images[] = $image3;
-//        }
-//        if($product[0]->Image4 != "")
-//        {
-//            $image4 = array("url"=>$product[0]->Image4);
-//            $images[] = $image4;
-//        }
-//        if($product[0]->Image5 != "")
-//        {
-//            $image5 = array("url"=>$product[0]->Image5);
-//            $images[] = $image5;
-//        }
-//        if($product[0]->Image6 != "")
-//        {
-//            $image6 = array("url"=>$product[0]->Image6);
-//            $images[] = $image6;
-//        }
-//        if($product[0]->Image7 != "")
-//        {
-//            $image7 = array("url"=>$product[0]->Image7);
-//            $images[] = $image7;
-//        }
-//        if($product[0]->Image8 != "")
-//        {
-//            $image8 = array("url"=>$product[0]->Image8);
-//            $images[] = $image8;
-//        }
-        
-        $logistics = $shopeeItem->logistics;
-   
-    //    $variations = array();
+"Your persona is the basis for everything you create. Writing for yourself won’t always resonate with your intended audience. If you, instead, speak your persona’s pains, challenges, and goals and they feel like you are speaking to them, they are more likely to stay on the page and convert on your offer."
+ 
+— Christina Perricone, Content Marketing Manager at HubSpot
+If you're not consciously thinking about your persona's pains, you're just creating content for content's sake, which is a waste of resources.
 
+3. Write like you talk.
 
+Mistake: Your writing is too stiff.
 
-        //create curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+Writing a blog post is much different than writing a term paper. But when bloggers first start out, they usually only have experience with the latter. The problem? The style of writing from a term paper is not the style of writing people enjoy reading.
 
+Let's be honest: Most of the people who see your post aren't going to read the whole thing. If you want to keep them interested, you have to compel them to keep reading by writing in a style that's effortless to read.
 
-        //url
-        $url = "https://partner.shopeemobile.com/api/v1/item/update";
-        curl_setopt($ch, CURLOPT_URL, $url);
+Solution: Try to write blogs that feel personable.
 
+It's okay to be more conversational in your writing -- in fact, we encourage it. The more approachable your writing is, the more people will enjoy reading it. People want to feel like they're doing business with real people, not robots.
 
-        //param
-        $date = new DateTime();
-        $timestamp = $date->getTimestamp();
+So loosen up your writing. Throw in contractions. Get rid of the jargon. Make a pun or two. That's how real people talk -- and that's what real people like to read.
 
-//        echo "<br>".json_encode($shopeeItem);
+4. Show your personality; don't tell it.
 
-//        //payload
-//        $paramBody = $shopeeItem;
-//        $paramBody->partner_id = $partnerID;
-//        $paramBody->timestamp = $timestamp;
-//        $paramBody->category_id = $categoryId;
-//        $paramBody->name = $name;
-//        $paramBody->description = $description;
-//        $paramBody->price = $price;
-//        $paramBody->stock = $stock;
-//        $paramBody->weight = $weight;
-//        $paramBody->package_length = $packageLength;
-//        $paramBody->package_width = $packageWidth;
-//        $paramBody->package_height = $packageHeight;
-////        $paramBody->images = $images;
-//        unset($paramBody->images);
-//        $paramBody->attributes = $attributesProduct;
-        
-        
-        $paramBody = array();
-        $paramBody["partner_id"] = $partnerID;
-        $paramBody["shopid"] = $shopID;
-        $paramBody["timestamp"] = $timestamp;
-        $paramBody["item_id"] = intval($itemID);
-        $paramBody["category_id"] = $categoryId;
-        $paramBody["name"] = $name;
-        $paramBody["description"] = $description;
-        $paramBody["price"] = $price;
-        $paramBody["stock"] = $stock;
-        $paramBody["item_sku"] = $itemSku;
-        $paramBody["weight"] = $weight;
-        $paramBody["package_length"] = $packageLength;
-        $paramBody["package_width"] = $packageWidth;
-        $paramBody["package_height"] = $packageHeight;
-        $paramBody["status"] = $status;
-        $paramBody["days_to_ship"] = $daysToShip;
-        $paramBody["is_pre_order"] = $isPreOrder;
-        $paramBody["condition"] = $condition;
-        $paramBody["size_chart"] = $sizeChart;
-//        $paramBody["images"] = $images;
-        $paramBody["logistics"] = $logistics;
-        $paramBody["attributes"] = $attributesProduct;
-    //    $paramBody["variations"] = $variations;
+Mistake: You think people care about you as a writer.
 
-//        echo "<br>param:".json_encode($paramBody);
-//        exit();
+It sounds harsh, but it's the truth: When people first start out blogging, they think that their audience will be inherently interested in their stories and their interests ... but that's not the case. It's no knock against them as a person -- it's just that when you're new, no one is interested in you and your experiences. People care way more about what you can teach them.
 
-        $payload = json_encode($paramBody);
-        writeToLog("payload:" . $payload);
+Solution: Infuse your personality without eclipsing the topic.
 
+Even though people don't really care that it's you that's writing the post, you can infuse parts of your personality in your writing to make them feel more comfortable with you. How you do that is entirely up to you. Some people like to crack jokes, some like to make pop culture references, and others have a way with vivid descriptions.
 
-        $contentLength = strlen($payload);
-        $authorization = hash_hmac('sha256', $url . "|" .  $payload, $key);
-
-
-        //header
-        $header = array();
-        $header[] = 'Host:' . $host;
-        $header[] = 'Content-Type:' . $contentType;
-        $header[] = 'Content-Length:' . $contentLength;
-        $header[] = 'Authorization:' . $authorization;
-        $header[] = 'charset:' . $charSet;
-        writeToLog("header:" . json_encode($header));
-
-
-        //set header and payload
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-
-    //    echo "test ";
-    //    exit();
-
-        //exec curl
-        $result = curl_exec($ch);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_errno = curl_errno($ch);
-        if ($http_status==503)
-        {
-            writeToLog( "HTTP Status == 503)");
-        }
-
-        if ($result === false)
-        {
-            print_r('Curl error: ' . curl_error($ch));
-            writeToLog( "Curl Errno returned $curl_errno");
-        }
-
-
-        writeToLog("update shopee item result: " . $result);
-//        echo $result;
-        $obj = json_decode($result);
-        if($obj->item_id)
-        {
-            //success
-            
-            
-//            $itemID = $obj->item_id;
-//            //insert into shopeeProduct
-//            $sql = "insert into shopeeProduct (itemID,sku,modifiedUser) values('$itemID','$sku','$modifiedUser')";
-//            $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
-//            if($ret != "")
-//            {
-//                $message = "เพิ่ม Shopee sku ในแอปไม่สำเร็จ";
-//                sendNotiToAdmin($message);
-//                $ret["message"] = $message;
-//                mysqli_close($con);
-//
-//                echo json_encode($ret);
-//                exit();
-//            }
-        }
-        else
-        {
-            //update fail
-            $message = "แก้ไขสินค้าใน Shopee ไม่สำเร็จ";
-            sendNotiToAdmin($message);
-            
-            
-            $ret["message"] = $message;
-            mysqli_rollback($con);
-            mysqli_close($con);
-
-            echo json_encode($ret);
-            exit();
-        }
-    }

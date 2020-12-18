@@ -33,14 +33,12 @@
     
   
     $skuEscape = mysqli_real_escape_string($con,$sku);
-//    $sku = mysqli_real_escape_string($con,$sku);
     if(!$lazadaProduct)
     {
-//        $sql = "select * from lazadaProductTemp where SellerSku = '$sku'";
-        $sql = "select * from lazadaProductTemp where SellerSku = '$skuEscape'";
-        $lazadaProductList = executeQueryArray($sql);
-        writeToLog("lazada product list: ".json_encode($lazadaProductList));
-        if(sizeof($lazadaProductList) == 0)
+//        $sql = "select * from lazadaProductTemp where SellerSku = '$skuEscape'";
+//        $lazadaProductList = executeQueryArray($sql);
+//        writeToLog("lazada product list: ".json_encode($lazadaProductList));
+//        if(sizeof($lazadaProductList) == 0)
         {
             $lazadaProductApi = getLazadaProduct($sku);
             if($lazadaProductApi)
@@ -71,10 +69,10 @@
                 $lazadaProduct->Image8 = $lazadaProductApi->skus[0]->Images[7];
             }
         }
-        else
-        {
-            $lazadaProduct = $lazadaProductList[0];
-        }
+//        else
+//        {
+//            $lazadaProduct = $lazadaProductList[0];
+//        }
     }
     writeToLog("source lazada:". json_encode($lazadaProduct, JSON_UNESCAPED_UNICODE));
     
@@ -99,7 +97,6 @@
         exit();
     }
     
-//    $sql = "select * from mainproduct where sku = '$sku'";
     $sql = "select * from mainproduct where sku = '$skuEscape'";
     $product = executeQueryArray($sql);
     $primaryCategory = $product[0]->PrimaryCategory;
@@ -202,7 +199,7 @@
     if($product[0]->MainImage != "")
     {
         $index = 1;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->MainImage);
         $jdImageUrl = JdImageUpload($product[0]->MainImage,$tmpFileName);
         
         
@@ -224,7 +221,7 @@
     if($product[0]->Image2 != "")
     {
         $index = 2;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image2);
         $jdImageUrl = JdImageUpload($product[0]->Image2,$tmpFileName);
         
         $image = array();
@@ -236,7 +233,7 @@
     if($product[0]->Image3 != "")
     {
         $index = 3;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image3);
         $jdImageUrl = JdImageUpload($product[0]->Image3,$tmpFileName);
         
         $image = array();
@@ -248,7 +245,7 @@
     if($product[0]->Image4 != "")
     {
         $index = 4;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image4);
         $jdImageUrl = JdImageUpload($product[0]->Image4,$tmpFileName);
         
         $image = array();
@@ -260,7 +257,7 @@
     if($product[0]->Image5 != "")
     {
         $index = 5;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image5);
         $jdImageUrl = JdImageUpload($product[0]->Image5,$tmpFileName);
         
         $image = array();
@@ -272,7 +269,7 @@
     if($product[0]->Image6 != "")
     {
         $index = 6;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image6);
         $jdImageUrl = JdImageUpload($product[0]->Image6,$tmpFileName);
         
         $image = array();
@@ -284,7 +281,7 @@
     if($product[0]->Image7 != "")
     {
         $index = 7;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image7);
         $jdImageUrl = JdImageUpload($product[0]->Image7,$tmpFileName);
         
         $image = array();
@@ -296,7 +293,7 @@
     if($product[0]->Image8 != "")
     {
         $index = 8;
-        $tmpFileName = str_replace("/","-",$sku)."-".$index.".jpg";
+        $tmpFileName = str_replace("/","-",$sku)."-".$index."." . getImageType($product[0]->Image8);
         $jdImageUrl = JdImageUpload($product[0]->Image8,$tmpFileName);
         
         $image = array();
@@ -334,23 +331,21 @@
     $paramBody["skuList"] = $skuList;
     $paramBody["imageList"] = $imageList;
     $paramBody["locale"] = "en_US";
-//    $paramBody["locale"] = "th_TH";
     $paramBody["vat"] = true;
     
     if($insert)
     {
         $result = insertJdProduct($paramBody);
         
-        if($result)
+        if($result["code"] == 200)
         {
             $productId = $result["productId"];
             $skuId = $result["skuId"];
             
             
-            //insert into shopeeProduct
-//            $sql = "insert into jdProduct (sku,productId,skuId,modifiedUser) values('$sku',$productId,$skuId,'$modifiedUser')";
+            //insert into jdProduct
             $sql = "insert into jdProduct (sku,productId,skuId,modifiedUser) values('$skuEscape',$productId,$skuId,'$modifiedUser')";
-            $ret = doQueryTask($con,$sql,$_POST["modifiedUser"]);
+            $ret = doQueryTask($con,$sql,$modifiedUser);
             if($ret != "")
             {
                 $message = "เพิ่ม JD sku ในแอปไม่สำเร็จ";
@@ -365,7 +360,7 @@
         else
         {
             //insert fail
-            $message = "เพิ่มสินค้าใน JD ไม่สำเร็จ";
+            $message = "เพิ่มสินค้าใน JD ไม่สำเร็จ (" . $result["message"] . ")";
             sendNotiToAdmin($message);
             
             $ret = array();

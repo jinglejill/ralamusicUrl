@@ -202,8 +202,7 @@
         global $con;
 
 
-        $productSku = $sku;
-
+        $productSku = mysqli_real_escape_string($con,$sku);
 
         //variation
         $sql = "SELECT product.ID FROM $wordPressDB.`wp_posts` as product LEFT JOIN $wordPressDB.wp_postmeta as product_sku ON product.ID = product_sku.post_ID WHERE product_sku.meta_key = '_sku' and product_sku.meta_value = '$productSku'";// and product.post_status = 'publish'
