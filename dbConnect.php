@@ -86,6 +86,63 @@
     
     $salt = "FvTivqTqZXsgLLx1v3P8TGRyVHaSOB1pvfm02wvGadj7RLHV8GrfxaZ84oGA8RsKdNRpxdAojXYg9iAj";
     
+//    function deleteOrderDeliveryGroup($param)
+//    {
+//        global $contentType;
+//        
+//        
+//        //create curl
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($ch, CURLOPT_POST, 1);
+////        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+//        
+//        
+//        //url
+//        $url = $appUrl . "/SAIMOrderDeliveryGroupDelete.php";
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        
+//        
+//        //payload
+//        $payload = json_encode($param,JSON_UNESCAPED_UNICODE);
+//        writeToLog("payload:" . $payload);
+//        
+//        
+//        //header
+//        $header = array();
+//        $header[] = 'Content-Type:' . $contentType;
+//        writeToLog("header:" . json_encode($header));
+//        
+//        
+//        //set header and payload
+//        curl_setopt( $ch, CURLOPT_HTTPHEADER, $header);
+//        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+//        
+//        
+//        //exec curl
+//        $result = curl_exec($ch);
+//        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//        $curl_errno = curl_errno($ch);
+//        if ($http_status==503)
+//        {
+//            writeToLog( "HTTP Status == 503)");
+//        }
+//          
+//        if ($result === false)
+//        {
+//            print_r('Curl error: ' . curl_error($ch));
+//            writeToLog( "Curl Errno returned $curl_errno");
+//        }
+//        
+//        
+//        writeToLog("web product insert result:" . $result);
+//        $obj = json_decode($result);
+//        
+//        
+//        return $obj;
+//    }
+    
     function getMainImageBySku($sku)
     {
         global $con;
@@ -172,6 +229,98 @@
             return "png";
         }
         return "jpg";
+    }
+    
+    function getImageWidth($filename)
+    {
+        $image_info = getimagesize($filename);
+        return $image_info[0];
+    }
+    
+    function getImageHeight($filename)
+    {
+        $image_info = getimagesize($filename);
+        return $image_info[1];
+    }
+    
+    function resizeImage($filename)
+    {
+        global $globalDBName;
+        
+        $parts = explode("/",$filename);
+        $imageName = $parts[sizeof($parts)-1];
+        
+        
+        //size
+        list($width, $height) = getimagesize($filename);
+        writeToLog("(width,height):(".$width.",".$height.")");
+        $percent = 1;
+        if($width > $height)
+        {
+            if($height >= 2532)
+            {
+                $percent = 2532.0/$width;
+            }
+        }
+        else
+        {
+            if($width >= 2532)
+            {
+                $percent = 2532.0/$height;
+            }
+        }
+        
+        $newwidth = $width * $percent;
+        $newheight = $height * $percent;
+        writeToLog("(newwidth,newheight):(".$newwidth.",".$newheight.")");
+        
+        
+        // Load
+        $newImage = imagecreatetruecolor($newwidth, $newheight);
+        $imageType = getImageType($filename);
+        $newFileName = '.\\'.$globalDBName.'\\Images\\'.$imageName;
+        
+        if($imageType == 'png')
+        {
+            // integer representation of the color black (rgb: 0,0,0)
+            $background = imagecolorallocate($newImage , 0, 0, 0);
+            // removing the black from the placeholder
+            imagecolortransparent($newImage, $background);
+
+            // turning off alpha blending (to ensure alpha channel information
+            // is preserved, rather than removed (blending with the rest of the
+            // image in the form of black))
+            imagealphablending($newImage, false);
+
+            // turning on alpha channel information saving (to ensure the full range
+            // of transparency is preserved)
+            imagesavealpha($newImage, true);
+        }
+        
+        if($imageType == "png")
+        {
+            $source = imagecreatefrompng($filename);
+            // Resize
+            imagecopyresized($newImage, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+            // Output
+            imagepng($newImage,$newFileName);
+        }
+        else if($imageType == "jpg")
+        {
+            $source = imagecreatefromjpeg($filename);
+            // Resize
+            imagecopyresized($newImage, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+            // Output
+            imagejpeg($newImage,$newFileName);
+        }
+        else if($imageType == "gif")
+        {
+            $source = imagecreatefromgif($filename);
+            // Resize
+            imagecopyresized($newImage, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+            // Output
+            imagegif($newImage,$newFileName);
+        }
     }
     
     function cors()
@@ -3785,6 +3934,28 @@
         }
     }
     
+    function updateLazadaProduct($lazadaProduct)
+    {
+        global $url;
+        global $appKey;
+        global $appSecret;
+        global $accessToken;
+                
+        
+        $lazadaProductAddNode = array("Product"=>$lazadaProduct);
+        $xmlPayload = array2xml(json_decode(json_encode($lazadaProductAddNode),true),false);
+        $c = new LazopClient($url,$appKey,$appSecret);
+        $request = new LazopRequest('/product/update','POST');
+        $request->addApiParam('payload',$xmlPayload);
+        $resp = $c->execute($request, $accessToken);
+        
+        
+        $sku = $lazadaProduct["Skus"]["Sku"]["SellerSku"];
+        writeToLog("updateLazadaProduct result (sku: $sku):" . $resp);
+        $respObject = json_decode($resp);
+        return $respObject;
+    }
+    
     function getDocument($docType,$orderItemIDs)
     {
         global $url;
@@ -4003,7 +4174,6 @@
         global $accessToken;
         
 
-//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
         $c = new LazopClient($url,$appKey,$appSecret);
         $request = new LazopRequest('/product/item/get','GET');
         $request->addApiParam('seller_sku',$sku);
@@ -4031,7 +4201,6 @@
         global $accessToken;
         
 
-//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
         $c = new LazopClient($url,$appKey,$appSecret);
         $request = new LazopRequest('/product/item/get','GET');
         $request->addApiParam('seller_sku',$sku);
@@ -4119,7 +4288,6 @@
         $payLoad = str_replace("#quantity#",$quantity,$payLoad);
             
             
-//        $accessToken = getLazadaAccessToken();//ทุกราวๆ ปลายเดือน หากจำได้เมื่อไร ก็มา get accessToken ทีนึง เพราะมันหมดอายุทุก 30 วัน
         $c = new LazopClient($url,$appKey,$appSecret);
         $request = new LazopRequest('/product/price_quantity/update','POST');
         $request->addApiParam('payload',$payLoad);
@@ -4169,14 +4337,35 @@
         global $refreshToken;
         
         
+        //get lazada refresh token
+        $sql = "select Value from setting where settingKey = 'lazadaRefreshToken'";
+        $settingList = executeQueryArray($sql);
+        $refreshToken = $settingList[0]->Value;
+        
+        
         $c = new LazopClient($url,$appKey,$appSecret);
         $request = new LazopRequest('/auth/token/refresh');
         $request->addApiParam('refresh_token',$refreshToken);
         $resp = $c->execute($request);
         
+        
         $respObject = json_decode($resp);
-        writeToLog("accessToken:" .  $respObject->access_token);
-        return $respObject->access_token;
+        writeToLog("accessToken:" .  json_encode($respObject));
+        return $respObject;
+    }
+    
+    function replaceLazadaAccessToken()
+    {
+        global $con;
+        
+        $ret = getLazadaAccessToken();
+        $token = $ret->access_token;
+        
+        
+        $sql = "update setting set value = '$token' where enumKey = 'lazadaToken'";
+        $ret2 = doQueryTask($con,$sql,$modifiedUser);
+        
+        return $ret;
     }
     
     function getStockLazada($productName, $color, $size)
@@ -4633,6 +4822,12 @@
         $timeZone = mysqli_query($con,"SET SESSION time_zone = '+07:00'");
         mysqli_set_charset($con, "utf8");
         $_POST["modifiedDate"] = date("Y-m-d H:i:s");
+        
+        
+        //get lazada token
+        $sql = "select Value from setting where settingKey = 'lazadaToken'";
+        $settingList = executeQueryArray($sql);
+        $accessToken = $settingList[0]->Value;
     }
     
     function getDeviceTokenFromUsername($user)
@@ -5343,5 +5538,23 @@
         
         fclose($fp);
         return $status;
+    }
+    
+    function array2xml($array, $xml = false)
+    {
+        if($xml === false)
+        {
+            $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Request/>');
+        }
+
+        foreach($array as $key => $value){
+            if(is_array($value)){
+                array2xml($value, $xml->addChild($key));
+            } else {
+                $xml->addChild($key, $value);
+            }
+        }
+
+        return $xml->asXML();
     }
 ?>

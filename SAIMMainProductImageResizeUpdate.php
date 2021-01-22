@@ -107,7 +107,7 @@
         // Output
         imagepng($newImage,$newFileName);
     }
-    else if($imageType == "jpg")
+    else if($imageType == "jpg" || $imageType == "jpeg")
     {
         $source = imagecreatefromjpeg($filename);
         // Resize

@@ -396,6 +396,7 @@
         global $con;
         global $modifiedUser;
         
+        $json = mysqli_real_escape_string($con,$json);
         $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
         $ret = doQueryTask($con,$sql,$modifiedUser);
         return $ret == "";

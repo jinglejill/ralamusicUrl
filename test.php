@@ -1,3 +1,4 @@
+order: {"success":true,"Order":{"OrderNo":"201204PW6T4W1Y","OrderDate":"2020-12-04 20:21","Channel":2,"Items":[{"Sku":"BOSS-VE-500","Name":"BOSS\u00ae VE-500 \u0e40\u0e2d\u0e1f\u0e40\u0e1f\u0e04\u0e23\u0e49\u0e2d\u0e07 2in1 \u0e40\u0e1b\u0e47\u0e19\u0e17\u0e31\u0e49\u0e07\u0e40\u0e2d\u0e1f\u0e40\u0e1f\u0e04\u0e23\u0e49\u0e2d\u0e07\u0e41\u0e25\u0e30\u0e40\u0e2d\u0e1f\u0e40\u0e1f\u0e04\u0e01\u0e35\u0e15\u0e32\u0e23\u0e4c \u0e21\u0e35 Looper \u0e2b\u0e19\u0e49\u0e32\u0e08\u0e2d LCD + \u0e41\u0e16\u0e21\u0e1f\u0e23\u0e35\u0e2d\u0e41\u0e14\u0e1b\u0e40\u0e15\u0e2d\u0e23\u0e4c ** \u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19 1 \u0e1b\u0e35 **","Quantity":1,"Image":"https:\/\/cf.shopee.co.th\/file\/5451179351aa50cd3fac92d6c52f6e7c","AccImage":[]}],"Images":[{"Id":1,"Image":"","Base64":"","Type":""},{"Id":2,"Image":"","Base64":"","Type":""},{"Id":3,"Image":"","Base64":"","Type":""},{"Id":4,"Image":"","Base64":"","Type":""},{"Id":5,"Image":"","Base64":"","Type":""},{"Id":6,"Image":"","Base64":"","Type":""},{"Id":7,"Image":"","Base64":"","Type":""},{"Id":8,"Image":"","Base64":"","Type":""}],"AccImages":[]}}
 <?php
     include_once('dbConnect.php');
     setConnectionValue("RALAMUSIC");
@@ -5,7 +6,301 @@
     set_time_limit(3600);
     writeToLog("file: " . basename(__FILE__));
     printAllPost();
+    
+    echo strlen("http://minimalist.co.th/saim/ralamusic/images/201215MT3B4J5R_202012251557_0.jpeg");
+    exit();
+    
+    
+    $orderSn = $_GET["orderNo"];
+    $orderObj = getShopeeOrder($orderSn);
+//    echo json_encode($orderObj);
+    echo date("Y-m-d H:i", $orderObj->orders[0]->create_time);
+    exit();
+    $sql = "select * from deleted where deletedid = '1397'";
+    $deleted = executeQueryArray($sql);
+    $json = $deleted[0]->Json;
+    $obj = json_decode($json);
+    echo $obj[0]->Name;
+    exit();
+    
+    
+    
+    $orderDeliveryGroupID = 412;
+    //OrderDeliveryItem
+    $sql = "select * from OrderDeliveryItem where orderDeliveryID in (select OrderDeliveryID from OrderDelivery where orderDeliveryGroupID = '$orderDeliveryGroupID')";
+    $dataList = executeQueryArray($sql);
+    $json = json_encode($dataList);
+//    echo $json;
+   
+    
+    
+//    echo $utf8encode;
+//        echo $jsonEscape;
+        $tableName = "OrderDeliveryItem";
+        $ret = keepDeleteRecord($tableName,$json);
 
+
+    exit();
+
+    function keepDeleteRecord($tableName,$json)
+    {
+        global $con;
+        global $modifiedUser;
+
+        
+        $json = str_replace("\u","\\u",$json);
+        $json = mysqli_real_escape_string($con,$json);
+        $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
+        $ret = doQueryTask($con,$sql,$modifiedUser);
+        return $ret == "";
+    }
+    
+    
+    
+//
+//    $sku = "K&M-11930-000-55";
+//    $lazadaProduct = getLazadaProduct($sku);
+//    echo json_encode($lazadaProduct);
+//    exit();
+//
+    
+    
+    
+//    $sql = "select * from lazadaProductTemp where status = 'active'";
+//    $sql = "select * from (select @row:=@row+1 as Row, a.* from (select SellerSku from lazadaProductTemp where status = 'active')a,(select @row:=0)t)b where row=6440 or row = 6441";
+    $sql = "select SellerSku from lazadaProductTemp where sellersku like '%&%'";
+    $lazadaProductTempList = executeQueryArray($sql);
+    
+    for($i=0; $i<sizeof($lazadaProductTempList); $i++)
+    {
+        $lazadaProductApi = getLazadaProduct($lazadaProductTempList[$i]->SellerSku);
+        $lazadaProduct = array();
+        $skus = array();
+        $sku = array();
+//        $sku["SellerSku"] = str_replace("&","&amp;",$lazadaProductTempList[$i]->SellerSku);
+        $sku["SellerSku"] = $lazadaProductTempList[$i]->SellerSku;
+        $sku["SkuId"] = $lazadaProductApi->skus[0]->SkuId;
+        $sku["special_from_date"] = "2021-01-12 00:00";
+        $sku["special_to_date"] = "2033-01-12 00:00";
+        $skus["Sku"] = $sku;
+        $lazadaProduct["Skus"] = $skus;
+        $lazadaProduct["ItemId"] = $lazadaProductApi->item_id;
+        
+        
+//        $lazadaProductAddNode = array("Product"=>$lazadaProduct);
+//        $xmlPayload = array2xml2(json_decode(json_encode($lazadaProductAddNode),true),false);
+//        echo $xmlPayload;
+//        exit();
+        $ret = updateLazadaProduct($lazadaProduct);
+        echo json_encode($ret);
+        exit();
+    }
+    
+    exit();
+//    $lazadaProductAddNode = array("Product"=>$lazadaProduct);
+//    $xmlPayload = array2xml(json_decode(json_encode($lazadaProductAddNode),true),false);
+//    echo $xmlPayload;
+//    exit();
+//    $c = new LazopClient($url,$appKey,$appSecret);
+//    $request = new LazopRequest('/product/update','POST');
+//    $request->addApiParam('payload',$xmlPayload);
+//    $resp = $c->execute($request, $accessToken);
+//    echo $resp;
+//    exit();
+    
+    function array2xml2($array, $xml = false)
+    {
+        if($xml === false)
+        {
+            $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Request/>');
+        }
+
+        foreach($array as $key => $value){
+            if(is_array($value)){
+                array2xml($value, $xml->addChild($key));
+            } else {
+                $xml->addChild($key, $value);
+            }
+        }
+
+        return $xml->asXML();
+    }
+
+//    resizeImage("http://www.minimalist.co.th/saim/ralamusic/images/355160807486578_202101121433_0.jpeg");
+//    exit();
+//
+//
+
+//
+//    $token = "65793e19bdfb17ce0d36ce741aec91ecd3b75052d8cf687facec7628681ebf08";
+//    $noti = array();
+//    $noti["title"] = "Order delivery recheck";
+//    $noti["body"] = "#$orderDeliveryGroupID (qty. $orderCount) at $checkDate";
+//    sendApplePushNotification($token,$noti);
+//    exit();
+//
+//
+//    $orderNo = $_GET["orderNo"];
+//    $shopeeOrder = getShopeeOrder($orderNo);
+//    echo json_encode($shopeeOrder);
+//    exit();
+//
+//
+//    $sql = "select * from deleted where deletedid = '1303'";
+//    $deleted = executeQueryArray($sql);
+//    $json = $deleted[0]->Json;
+//    $orderDeliveryGroupList = json_decode($json);
+//    $orderDeliveryGroup = $orderDeliveryGroupList[0];
+//    $orderDeliveryGroupID = $orderDeliveryGroup->OrderDeliveryGroupID;
+//    $checkDate = $orderDeliveryGroup->CheckDate;
+//    $modifiedUser = $orderDeliveryGroup->ModifiedUser;
+//    $modifiedDate = $orderDeliveryGroup->ModifiedDate;
+//
+//
+//    $sql = "insert into orderDeliveryGroup (`OrderDeliveryGroupID`, `CheckDate`, `ModifiedUser`, `ModifiedDate`) values ('$orderDeliveryGroupID','$checkDate','$modifiedUser','$modifiedDate')";
+////    echo "<br>";
+////    echo $sql;
+//    $ret = doQueryTask($con,$sql,$modifiedUser);
+//    if($ret != "")
+//    {
+//        writeToLog("INSERT INTO orderDeliveryGroup fail [OrderDeliveryGroupID]:[$orderDeliveryGroupID]");
+//        echo "<br>"."INSERT INTO orderDeliveryGroup fail [OrderDeliveryGroupID]:[$orderDeliveryGroupID]";
+//    }
+//
+//
+//
+//    $sql = "select * from deleted where deletedid = '1304'";
+//    $deleted = executeQueryArray($sql);
+//    $json = $deleted[0]->Json;
+//    $orderDeliveryList = json_decode($json);
+//    for($i=0; $i<sizeof($orderDeliveryList); $i++)
+//    {
+//        $orderDelivery = $orderDeliveryList[$i];
+//
+//        $orderDeliveryID = $orderDelivery->OrderDeliveryID;
+//        $orderDeliveryGroupID = $orderDelivery->OrderDeliveryGroupID;
+//        $channel = $orderDelivery->Channel;
+//        $orderNo = $orderDelivery->OrderNo;
+//        $orderDate = $orderDelivery->OrderDate;
+//        $image1 = $orderDelivery->Image1;
+//        $image2 = $orderDelivery->Image2;
+//        $image3 = $orderDelivery->Image3;
+//        $image4 = $orderDelivery->Image4;
+//        $image5 = $orderDelivery->Image5;
+//        $image6 = $orderDelivery->Image6;
+//        $image7 = $orderDelivery->Image7;
+//        $image8 = $orderDelivery->Image8;
+//
+//        $modifiedUser = $orderDelivery->ModifiedUser;
+//        $modifiedDate = $orderDelivery->ModifiedDate;
+//
+//
+//        $sql = "insert into orderDelivery (`OrderDeliveryID`, `OrderDeliveryGroupID`, `Channel`, `OrderNo`, `OrderDate`, `Image1`, `Image2`, `Image3`, `Image4`, `Image5`, `Image6`, `Image7`, `Image8`, `ModifiedUser`, `ModifiedDate`) values ('$orderDeliveryID','$orderDeliveryGroupID','$channel','$orderNo','$orderDate','$image1','$image2','$image3','$image4','$image5','$image6','$image7','$image8','$modifiedUser','$modifiedDate')";
+////        echo "<br>";
+////        echo $sql;
+//        $ret = doQueryTask($con,$sql,$modifiedUser);
+//        if($ret != "")
+//        {
+//            writeToLog("INSERT INTO orderDelivery fail [OrderDeliveryID]:[$orderDeliveryID]");
+//            echo "<br>"."INSERT INTO orderDelivery fail [OrderDeliveryID]:[$orderDeliveryID]";
+//        }
+//    }
+    
+    $sql = "select * from orderDeliveryItem where orderDeliveryItemid = '371'";
+    $dataList = executeQueryArray($sql);
+    $json = json_encode($dataList);
+    $tableName = "OrderDeliveryItem";
+    $ret = keepDeleteRecord($tableName,$json);
+//    echo $json;
+    exit();
+    
+    $deleted = executeQueryArray($sql);
+    $json = $deleted[0]->Json;
+
+    $orderDeliveryItemList = json_decode($json);
+    for($i=0; $i<sizeof($orderDeliveryItemList); $i++)
+    {
+        $orderDeliveryItem = $orderDeliveryItemList[$i];
+        
+        $orderDeliveryID = $orderDeliveryItem->OrderDeliveryID;
+        $orderDeliveryItemID = $orderDeliveryItem->OrderDeliveryItemID;
+        $sku = $orderDeliveryItem->Sku;
+        $name = $orderDeliveryItem->Name;
+        echo utf8_encode($name);
+        exit();
+        $quantity = $orderDeliveryItem->Quantity;
+        $image = $orderDeliveryItem->Image;
+        
+        $modifiedUser = $orderDeliveryItem->ModifiedUser;
+        $modifiedDate = $orderDeliveryItem->ModifiedDate;
+        
+        
+        $sql = "insert into orderDeliveryItem (`OrderDeliveryItemID`, `OrderDeliveryID`, `Sku`, `Name`, `Quantity`, `Image`, `ModifiedUser`, `ModifiedDate`) values ('1000','$orderDeliveryID','$sku','$name','$quantity','$image','$modifiedUser','$modifiedDate')";
+//        echo "<br>";
+//        echo $sql;
+        $ret = doQueryTask($con,$sql,$modifiedUser);
+        if($ret != "")
+        {
+            writeToLog("INSERT INTO orderDeliveryItem fail [OrderDeliveryItemID]:[$orderDeliveryItemID]");
+            echo "<br>"."INSERT INTO orderDeliveryItem fail [OrderDeliveryItemID]:[$orderDeliveryItemID]";
+        }
+    }
+    
+    exit();
+    
+    
+    
+    
+//    $orderSn = $_GET["orderSn"];
+//    $orderObj = getShopeeOrder($orderSn);
+//    echo json_encode($orderObj);
+//    exit();
+//
+//
+//    $filename = $_GET["filename"];//"https://minimalist.co.th/saim/RALAMUSIC/Images/2012300SGJV45G_202012311030_0.jpeg";
+//    $image = new Imagick($filename);
+//    $orientation = $image->getImageOrientation();
+//
+    
+//    if($orientation == 1)
+//    {
+//        $width = $image->getImageWidth();
+//        $height = $image->getImageHeight();
+//    }
+//    else
+//    {
+//        $width = $image->getImageHeight();
+//        $height = $image->getImageWidth();
+//    }
+//    echo json_encode(array($width,$height));
+    
+    echo $orientation;
+//    echo "<br>";
+//    echo $width;
+//    echo "<br>";
+//    echo $height;
+//    echo $orientation;
+    
+    
+//    list($width, $height) = getimagesize($filename);
+//    echo $width > $height;
+//    $image_info = getimagesize($filename);
+//    echo getImageWidth($filename);//$image_info[0];
+//    echo "<br>";
+//    echo getImageHeight($filename);
+//    echo json_encode($image_info);
+    exit();
+//    $storeName = "RALAMUSIC";
+    
+    
+    $filename = "https://minimalist.co.th/saim/RALAMUSIC/Images/testImageOriginal.jpeg";
+    resizeImage($filename);
+    exit();
+    
+    
+    echo json_encode(getPendingOrdersLazada());
+    exit();
+    
     
     $noti = array();
     $noti["title"] = "Order delivery recheck";
@@ -1869,3 +2164,15 @@
 ?>
 
 
+//<View style={[{flex:1}]}>
+//                    <Image
+//                      source={item.Image != ''?{uri: item.Image}:require('./../assets/images/noImage.jpg')}
+//                      style={styles.image}
+//                    />
+//                    <View style={{height:padding.sm}}>
+//                    </View>
+//                  </View>
+
+
+
+//{width:dimensions.fullWidth,height:item.Height/item.Width*dimensions.fullWidth}

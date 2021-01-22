@@ -41,6 +41,20 @@
     
     if(!$edit)//add
     {
+        $sql = "select * from orderDeliveryGroup where orderDeliveryGroupID = '$orderDeliveryGroupID'";
+        $orderDeliveryGroupList = executeQueryArray($sql);
+        if(sizeof($orderDeliveryGroupList)==0)
+        {
+            $ret = array();
+            $ret["success"] = false;
+            $ret["message"] = "Group นี้ ถูกลบไปแล้ว\nกรุณาสร้าง group ขึ้นใหม่ก่อน แล้วจึงเพิ่มรายการ";
+            mysqli_close($con);
+            
+            echo json_encode($ret);
+            exit();
+        }
+        
+        
         $sql = "select * from orderDelivery where orderNo = '$orderNo'";
         $orderDeliveryList = executeQueryArray($sql);
         if(sizeof($orderDeliveryList)>0)
@@ -70,6 +84,7 @@
                 file_put_contents($currentFolder . $menuFolder . $fileName, base64_decode($base64));
                 
                 $imageUrl[$i+1] = "$appImageUrl/$storeName/Images/$fileName";
+                resizeImage($imageUrl[$i+1]);
             }
         }
         
@@ -112,6 +127,16 @@
     {
         $sql = "select * from orderDelivery where orderNo = '$orderNo'";
         $orderDeliveryList = executeQueryArray($sql);
+        if(sizeof($orderDeliveryList) == 0)
+        {
+            $ret = array();
+            $ret["success"] = false;
+            $ret["message"] = "ไม่พบ Order no. นี้";
+            mysqli_close($con);
+            
+            echo json_encode($ret);
+            exit();
+        }
         $orderDelivery = $orderDeliveryList[0];
         $imageOld = array();
         $imageOld[] = $orderDelivery->Image1;
@@ -140,7 +165,7 @@
                 file_put_contents($currentFolder . $menuFolder . $fileName, base64_decode($base64));
                 
                 $imageUrl[$i+1] = "$appImageUrl/$storeName/Images/$fileName";
-                
+                resizeImage($imageUrl[$i+1]);
                 if($imageOld[$i] != "")
                 {
                     $deleteImageList[] = $imageOld[$i];

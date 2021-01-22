@@ -33,7 +33,6 @@
     $sql = "select * from mainProduct where sku = '$escapeSku'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    $json = mysqli_real_escape_string($con,$json);
     
     
     //move images to deleted
@@ -87,18 +86,10 @@
     }
     //******
     
-    
+    //MainProduct
     $tableName = "MainProduct";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบสินค้าไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     $sql = "delete from mainProduct where sku = '$escapeSku'";
     $ret = doQueryTask($con,$sql,$modifiedUser);
@@ -128,20 +119,9 @@
     $sql = "select * from lazadaProduct where sku = '$escapeLazadaSku'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    $json = mysqli_real_escape_string($con,$json);
-    
-    
     $tableName = "LazadaProduct";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบสินค้าไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     $sql = "delete from lazadaProduct where sku = '$escapeLazadaSku'";
     $ret = doQueryTask($con,$sql,$modifiedUser);
@@ -159,20 +139,9 @@
     $sql = "select * from shopeeProduct where sku = '$escapeShopeeSku'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    $json = mysqli_real_escape_string($con,$json);
-    
-    
     $tableName = "ShopeeProduct";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบสินค้าไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     $sql = "delete from shopeeProduct where sku = '$escapeShopeeSku'";
     $ret = doQueryTask($con,$sql,$modifiedUser);
@@ -190,20 +159,9 @@
     $sql = "select * from jdProduct where sku = '$escapeJdSku'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    $json = mysqli_real_escape_string($con,$json);
-    
-    
     $tableName = "JdProduct";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบสินค้าไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     $sql = "delete from jdProduct where sku = '$escapeJdSku'";
     $ret = doQueryTask($con,$sql,$modifiedUser);
@@ -222,20 +180,9 @@
     $sql = "select * from mapSku where sku = '$escapeSku'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    $json = mysqli_real_escape_string($con,$json);
-    
-    
     $tableName = "MapSku";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบสินค้าไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     $sql = "delete from mapSku where sku = '$escapeSku'";
     $ret = doQueryTask($con,$sql,$modifiedUser);
@@ -293,4 +240,18 @@
     
     echo json_encode(array("success"=>true));
     exit();
+    
+    
+    function keepDeleteRecord($tableName,$json)
+    {
+        global $con;
+        global $modifiedUser;
+        
+        
+        $json = str_replace("\u","\\u",$json);
+        $json = mysqli_real_escape_string($con,$json);
+        $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
+        $ret = doQueryTask($con,$sql,$modifiedUser);
+        return $ret == "";
+    }
 ?>

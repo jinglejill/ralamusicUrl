@@ -144,7 +144,7 @@
     $thName = mysqli_real_escape_string($con,$thName);
     $thName = iconv_substr($thName, 0, 120,'UTF-8');
     $afterSales = "";//"Warranty by Seller - 2 Weeks";
-    $price = floatval($product[0]->Price);//skus[0]->price
+    $price = floatval($product[0]->SpecialPrice);//skus[0]->price
     $stock = intval($product[0]->Quantity);//skus[0]->quantity
     
     

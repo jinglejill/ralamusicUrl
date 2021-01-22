@@ -77,7 +77,7 @@
             $shopeeOrder = $orderObj->orders[0];
             $order = array();
             $order["OrderNo"] = $orderNo;
-            $order["OrderDate"] = $orderObj->orders[0]->pay_time?date("Y-m-d H:i", $orderObj->orders[0]->pay_time):null;
+            $order["OrderDate"] = $orderObj->orders[0]->create_time?date("Y-m-d H:i", $orderObj->orders[0]->create_time):null;
             $order["Channel"] = 2;
             
             

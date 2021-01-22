@@ -135,7 +135,10 @@
     {
         global $con;
         global $modifiedUser;
+                
         
+        $json = str_replace("\u","\\u",$json);
+        $json = mysqli_real_escape_string($con,$json);
         $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
         $ret = doQueryTask($con,$sql,$modifiedUser);
         return $ret == "";

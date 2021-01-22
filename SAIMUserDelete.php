@@ -35,33 +35,15 @@
     $userAccountID = $dataList[0]->UserAccountID;
     
     $tableName = "UserAccount";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบผู้ใช้ไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
+    
     
     //user role
     $sql = "select * from userrole where useraccountID = '$userAccountID'";
     $dataList = executeQueryArray($sql);
     $json = json_encode($dataList);
-    
     $tableName = "UserRole";
-    $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
-    $ret = doQueryTask($con,$sql,$modifiedUser);
-    if($ret != "")
-    {
-        $ret["message"] = "ลบผู้ใช้ไม่สำเร็จ";
-        mysqli_close($con);
-        
-        echo json_encode($ret);
-        exit();
-    }
+    $ret = keepDeleteRecord($tableName,$json);
     
     
     
@@ -94,4 +76,16 @@
     
     echo json_encode(array("success"=>true));
     exit();
+    
+    
+    function keepDeleteRecord($tableName,$json)
+    {
+        global $con;
+        global $modifiedUser;
+        
+        $json = mysqli_real_escape_string($con,$json);
+        $sql = "insert into deleted (json,tableName,ModifiedUser) values ('$json','$tableName','$modifiedUser')";
+        $ret = doQueryTask($con,$sql,$modifiedUser);
+        return $ret == "";
+    }
 ?>
